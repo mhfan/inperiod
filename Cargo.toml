@@ -1,20 +1,43 @@
+
 [package]
+edition = "2021"
 name = "inperiod"
 version = "0.1.0"
+license = "MIT OR Apache-2.0"
 authors = ["MeiHui FAN <mhfan@ustc.edu>"]
-edition = "2021"
+homepage = "https://mhfan.github.io/inperiod"
+categories  = ["Web programming", "WebAssembly"]
+description = "Modern fancy interactive online periodic table of chemistry elements"
+keywords = ["periodic", "periodic table", "elements", "chemistry elements", "dioxus"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.197", features = ["derive"] }
-
-dioxus = { version = "0.5", features = ["fullstack", "router"] }
-
-# Debug
-dioxus-logger = "0.5.1"
+serde  = { version = "1.0", features = ["derive"] }
+dioxus = { version = "0.5", features = ["web"] } # "web", "fullstack", "router"
+dioxus-sdk = { version = "0.5", features = ["i18n"] }
+dioxus-logger = "0.5"   # Debug
+manganis = "0.2"
 
 [features]
 default = []
-server = ["dioxus/axum"]
+desktop = ["dioxus/desktop"]
+server  = ["dioxus/axum"]
 web = ["dioxus/web"]
+
+[profile.dev]
+opt-level = 1
+#incremental = false
+
+#[profile.dev.package."*"]
+#opt-level = 3
+
+[profile.release]
+strip = "debuginfo"
+codegen-units = 1
+#opt-level = "s"
+panic = 'abort'
+lto = true
+
+[workspace]
+
