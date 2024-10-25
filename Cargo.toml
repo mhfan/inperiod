@@ -13,11 +13,12 @@ keywords = ["periodic", "periodic table", "elements", "chemistry elements", "dio
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde  = { version = "1.0", features = ["derive"] }
 dioxus = { version = "0.5", features = ["web"] } # "web", "fullstack", "router"
-dioxus-sdk = { version = "0.5", features = ["i18n"] }
-dioxus-logger = "0.5"   # Debug
-manganis = "0.2"
+#dioxus-sdk = { version = "0.5", features = ["i18n"] }
+#serde  = { version = "1.0", features = ["derive"] }
+#dioxus-logger = "0.5"   # Debug
+mendeleev = "0.8"
+#manganis = "0.2"
 
 [features]
 default = []
@@ -33,11 +34,13 @@ opt-level = 1
 #opt-level = 3
 
 [profile.release]
-strip = "debuginfo"
 codegen-units = 1
-#opt-level = "s"
+strip = true # "debuginfo"
+opt-level = "z" # "s"
 panic = 'abort'
 lto = true
+#debug = false
+#incremental = false
 
 [workspace]
 

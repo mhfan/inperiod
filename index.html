@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{app_title}</title>
+  <meta charset="UTF-8" />
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='icon' href='ptable.png'/>
+  {style_include}{script_include}
+  <script type="module">
+    import init from "/{base_path}/assets/dioxus/{app_name}.js";
+    init("/{base_path}/assets/dioxus/{app_name}_bg.wasm").then(wasm => {
+      if (wasm.__wbindgen_start == undefined) { wasm.main(); }
+    });
+  </script>
+</head>
+<body id="main" style="width: 181rem; overflow: visible;">
+  <!--div id="main"></div-->
+</body>
+</html>
+

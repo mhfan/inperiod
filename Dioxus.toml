@@ -11,13 +11,13 @@ default_platform = "web"
 
 [web.app]
 title = "Elements Periodic Table"   # HTML title tag content
-#base_path = "/"
+#base_path = "inperiod" # "/"
 
 [web.watcher]
 reload_html = true  # when watcher trigger, regenerate the `index.html`
 
 # which files or dirs will be watcher monitoring
-watch_path = ["src", "assets"]
+watch_path = ["src", "assets", "tailwind_base.css", "tailwind.config.js"]
 
 [web.resource]	# include `assets` in web platform
 style = ["tailwind.css"]    # CSS style file
@@ -25,4 +25,8 @@ script = []	# Javascript code file
 
 [web.resource.dev]
 script = []	# Javascript code file, serve: [dev-server] only
+#script = ["https://cdn.tailwindcss.com"]
+
+#[bundle]
+#resources = ["ptable.png"]
 
