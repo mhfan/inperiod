@@ -25,4 +25,8 @@ script = []	# Javascript code file
 
 [web.resource.dev]
 script = []	# Javascript code file, serve: [dev-server] only
+#script = ["https://cdn.tailwindcss.com"]
+
+#[bundle]
+#resources = ["ptable.png"]
 
