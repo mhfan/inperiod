@@ -8,14 +8,16 @@
 //! module/crate level documentation
 // src/lib.rs (default library entry point)
 
-/*  https://gitlab.com/ygor.souza/mendeleev, https://github.com/lmmentel/mendeleev
+/*  https://github.com/lmmentel/mendeleev
+    https://www.webelements.com/periodicity/contents/
     https://en.wikipedia.org/wiki/Category:Chemical_element_data_pages
     https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
     https://pubchem.ncbi.nlm.nih.gov/periodic-table/
     https://www.nist.gov/pml/periodic-table-elements
+    https://ciaaw.org/atomic-weights.htm
     https://github.com/baotlake/periodic-table-pro
     https://github.com/Bowserinator/Periodic-Table-JSON
-    https://github.com/sandmor/periodic-table-on-an-enum
+    https://periodictable.com/Properties/A/HumanAbundance.html
 
     https://commons.wikimedia.org/wiki/File:元素周期表.png
     https://commons.wikimedia.org/wiki/File:Periodic_table_large.svg
@@ -26,10 +28,8 @@
     https://commons.wikimedia.org/wiki/File:Periodic_Table_-_Atomic_Properties_of_the_Elements.png
     https://commons.wikimedia.org/wiki/File:Periodic_Table_of_the_elements.jpg
     https://commons.wikimedia.org/wiki/File:Periodic_table_detailed_enwp.svg
-
-    https://en.m.wikipedia.org/wiki/Abundance_of_the_chemical_elements
-    https://en.wikipedia.org/wiki/Periodic_table
-    https://elements.wlonk.com/index.htm, https://ptable.com */
+    https://elements.wlonk.com/index.htm, https://ptable.com
+    https://en.wikipedia.org/wiki/Periodic_table */
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)] pub enum ChemElem { // #[non_exhaustive]
@@ -157,7 +157,7 @@
 impl From<u8> for ChemElem {
     fn from(val: u8) -> Self {
         assert!(0 < val && val < ChemElem::MAX as u8, "Invalid element/atomic number!");
-        unsafe { std::mem::transmute::<u8, ChemElem>(val) }
+        unsafe { std::mem::transmute(val) }
     }
 }
 
@@ -173,8 +173,8 @@ impl ChemElem {
     pub const fn name   (&self) -> &'static str { ELEM_NAME  [*self as usize] }
     pub const fn symbol (&self) -> &'static str { ELEM_SYMBOL[*self as usize] }
     pub const fn name_py(&self) -> &'static str { ELEM_PY[*self as usize] }
-    pub const fn name_ch(&self) -> char         { ELEM_CH[*self as usize] }
-    pub const fn atomic_number(&self) -> u8 { *self as u8 }
+    pub const fn name_ch(&self) -> char         { ELEM_CH[*self as usize] } // XXX: &str or String?
+    pub const fn atomic_number(&self) -> u8 { *self as _ }
     pub const fn iter() -> ElemIter { ElemIter::new() }
     pub fn list() -> Vec<ChemElem> { ChemElem::iter().collect() }
 
@@ -192,7 +192,7 @@ impl ChemElem {
             assert_eq!(elem.symbol(), "Fe");
             assert_eq!(elem.name_ch(), '铁');
             assert_eq!(elem.name_py(), "tiě");
-        } else { assert!(false); }
+        } else { unreachable!() }
     ``` */
     #[allow(clippy::should_implement_trait)]
     pub fn from_str<S: AsRef<str>>(s: S) -> Option<Self> {
@@ -211,7 +211,8 @@ impl ChemElem {
         }
     }
 
-    pub const fn group(&self) -> u8 {   // XXX: cache/save it for frequent usage?
+    /// https://en.wikipedia.org/wiki/Group_(periodic_table)#List_of_group_names
+    pub const fn group(&self) -> u8 {   // XXX: cache/save it for frequent access?
         match self.atomic_number() {
             1| 3|11|19|37|55|87  => 1,  // Alkali metals
                4|12|20|38|56|88  => 2,  // Alkaline earth metals
@@ -225,14 +226,14 @@ impl ChemElem {
                     28|46|78|110 => 10,
                     29|47|79|111 => 11, // Coinage metals
                     30|48|80|112 => 12,
-               5|13|31|49|81|113 => 13, // Boron group
-               6|14|32|50|82|114 => 14, // Carbon group
+               5|13|31|49|81|113 => 13, // Triels
+               6|14|32|50|82|114 => 14, // Tetrels
                7|15|33|51|83|115 => 15, // Pnictogens
                8|16|34|52|84|116 => 16, // Chalcogens
                9|17|35|53|85|117 => 17, // Halogens
             2|10|18|36|54|86|118 => 18, // Noble gases
-            //57..=70|89..=102 => 0,    // Rare earth metals (Lanthanides and Actinides)
-            _ => 0, // None?
+                57..=70|89..=102 => 0,  // Rare earth metals (Lanthanides and Actinides)
+            _ => unreachable!(),
         }
     }
 
@@ -249,7 +250,7 @@ impl ChemElem {
         match self.atomic_number() {
             1|6|7|8|15|16|34 => ElemClass::OtherNonmetal("Other Nonmetals"),
             5|14|33|52|85 => ElemClass::Metalloid("Metalloids"), // semi-metals
-            13|31|49|50|81..=84|114 => // XXX: 113..=117
+            13|31|49|50|81..=84|114 => // XXX: 113..=117 ?
                 ElemClass::PoorMetal("Poor metals"),  // post-transition metals
             109..=118 if self.atomic_number() != 112 => ElemClass::Unknown("Unknown"),
 
@@ -269,7 +270,7 @@ impl ChemElem {
     pub const fn period(&self) -> u8 {
         match self.atomic_number() {
             1|2 => 1, 3..=10 => 2, 11..=18 => 3, 19..=36 => 4,
-            37..=54 => 5, 55..=86 => 6, 87..=118 => 7, _ => 0, // None?
+            37..=54 => 5, 55..=86 => 6, 87..=118 => 7, _ => unreachable!(),
         }
     }
 
@@ -277,13 +278,12 @@ impl ChemElem {
         match self.group() { 1|2 => b's', 3..=12 => b'd', 13..=18 => b'p', _ => b'f', }
     }
 
+    /// https://ciaaw.org/radioactive-elements.htm
     pub const fn is_ratioactive(&self) -> bool { matches!(self.atomic_number(), 43|61|84..=118) }
-
-    // TODO: parse PubChemElements_all.json? electron_configuration, electron_affinity,
-    // atomic_mass/weight, atomic_radius, melting_point, boiling_point, density,
 
     /// XXX: https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)
     //  https://github.com/baotlake/periodic-table-pro/blob/37239360e6f5daa605b3fd947895ed2dfdce0cd7/packages/data/json/crystalStructure.json
+    //  https://environmentalchemistry.com/yogi/periodic/crystal.html
     //  https://periodictable.com/Properties/A/CrystalStructure.html
     pub const fn crystal_structure(&self) -> Option<(&'static str, &'static str)> {
         Some(match self.atomic_number() {
@@ -307,195 +307,181 @@ impl ChemElem {
 
     /// https://www.nist.gov/pml/periodic-table-elements
     /// https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
-    //  https://physics.nist.gov/cgi-bin/ASD/ie.pl?spectra=h-Og&submit=Retrieve+Data&units=1&format=2&order=0&at_num_out=on&sp_name_out=on&shells_out=on&level_out=on&e_out=0&unc_out=on
     pub const fn ground_state(&self) -> Option<(&'static str, &'static str, &'static str)> {
-        Some( match self.atomic_number() {
-            28 => ("3", "F", "4"),
-            41 => ("6", "D", "1/2"),
-            44 => ("5", "F", "5"),
-            46|70|102 => ("1", "S", "0"),
-            57|71|89  => ("2", "D", "3/2"),
-            58 => ("1", "G°", "4"),
-            59 => ("4", "I°", "9/2"),
-            60 => ("5", "I",  "4"),
-            61 => ("6", "H°", "5/2"),
-            62|94 => ("7", "F",  "0"),
-            63|95 => ("8", "S°", "7/2"),
-            64|96 => ("9", "D°", "2"),
-            65|97 => ("6", "H°", "15/2"),
-            66|98 => ("5", "I",  "8"),
-            67|99 => ("5", "I°", "15/2"),
-            68|100 => ("3", "H",  "6"),
-            69|101 => ("3", "F°", "7/2"),
-            74 => ("5", "D", "0"),
-            78 => ("3", "D", "3"),
-            90 => ("3", "F", "2"),
-            91 => ("4", "K", "11/2"),
-            92 => ("5", "L°", "6"),
-            93 => ("6", "L",  "11/2"),
-            109..=118 => return None, // ("", "-", "")
-
-            _ => match self.group() {
-                1|11 => ("2", "S", "1/2"),
-                2|12|18 => ("1", "S", "0"),
-                3  => ("3", "D", "3/2"),
-                4  => ("3", "F", "2"),
-                5  => ("4", "F", "3/2"),
-                6  => ("7", "S", "3"),
-                7  => ("6", "S", "5/2"),
-                8  => ("5", "D", "4"),
-                9  => ("4", "F", "9/2"),
-                13 => ("2", "P°", "1/2"),
-                14 => ("3", "P",  "0"),
-                15 => ("2", "S°", "3/2"),
-                16 => ("3", "P",  "2"),
-                17 => ("2", "P°", "3/2"),
-                _ => return None,
-            }
-        })
+        self.ground_level()
     }
 
+    /// https://en.wikipedia.org/wiki/Electronegativity     // XXX: other EN scaling?
     /// https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)
-    /*  pip install mendeleev
-        from mendeleev.fetch import fetch_electronegativities;
-        df = fetch_electronegativities(scales=["Pauling"]);
-        print(df["Pauling"].to_string());
-        df["Pauling"].to_csv("en_pauling.csv"); */
-    pub const fn en_pauling(&self) -> Option<f32> {
-        Some(match self.atomic_number() {       1  => 2.2,  // 2
-            3  => 0.98, 4  => 1.57, 5  => 2.04, 6  => 2.55, 7  => 3.04, 8  => 3.44, 9  => 3.98, // 10
-            11 => 0.93, 12 => 1.31, 13 => 1.61, 14 => 1.9,  15 => 2.19, 16 => 2.58, 17 => 3.16, // 18
-            19 => 0.82, 20 => 1.0,  21 => 1.36, 22 => 1.54, 23 => 1.63, 24 => 1.66, 25 => 1.55,
-            26 => 1.83, 27 => 1.88, 28 => 1.91, 29 => 1.9,  30 => 1.65, 31 => 1.81, 32 => 2.01,
-            33 => 2.18, 34 => 2.55, 35 => 2.96, // 36
-            37 => 0.82, 38 => 0.95, 39 => 1.22, 40 => 1.33, 41 => 1.6,  42 => 2.16, 43 => 2.1,
-            44 => 2.2,  45 => 2.28, 46 => 2.2,  47 => 1.93, 48 => 1.69, 49 => 1.78, 50 => 1.96,
-            51 => 2.05, 52 => 2.1,  53 => 2.66, 54 => 2.6,  55 => 0.79, 56 => 0.89, 57 => 1.1,
-            58 => 1.12, 59 => 1.13, 60 => 1.14, // 61
-            62 => 1.17, 64 => 1.2,              // 63, 65
-            66 => 1.22, 67 => 1.23, 68 => 1.24, 69 => 1.25, // 70
-            71 => 1.0, 72 => 1.3, 73 => 1.5, 74 => 1.7, 75 => 1.9, 76 => 2.2, 77 => 2.2, 78 => 2.2,
-            79 => 2.4, 80 => 1.9, 81 => 1.8, 82 => 1.8, 83 => 1.9, 84 => 2.0, 85 => 2.2, // 86
-            87 => 0.7, 88 => 0.9, 89 => 1.1, 90 => 1.3, 91 => 1.5, 92 => 1.7, 93 => 1.3, 94 => 1.3,
-            _ => return None,   // 95..=118
-        })
+    pub const fn en_pauling(&self) -> Option<f32> { self.electronegativity() }
+
+    // TODO: abundance, origin
+}
+
+pub mod ciaaw;
+pub mod ostates;
+pub mod pubchem;    //include!(concat!(env!("OUT_DIR"), "/pubchem.rs"));
+pub mod nist_asd;
+//pub mod en_pauling;
+pub mod ground_level;
+
+pub const ROMAN_NUM: [&str; 11] = [ "",
+    "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", ];
+/// https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ᐟ";
+    '⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹', '⁺', '⁻', '⁼', '⁽', '⁾', 'ᐟ', ];
+//const UNICODE_SUBS: [char; 16] = [ //&str = r"₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⸝";
+//    '₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₊', '₋', '₌', '₍', '₎', 'ₐ', ];
+
+#[derive(PartialEq, Clone, Copy)] pub enum AtomicWeight {
+    //Interval(core::ops::RangeInclusive<f64>), // conversional?
+    //Uncertainty { value: f64, uncertainty: f64 },
+    Abridged { value: f32, uncertainty: f32 },
+    MassNumber(u32),
+}
+
+/** ```
+    use inperiod::AtomicWeight;
+    assert!(" 1.0080 ".parse::<AtomicWeight>() ==
+        Ok(AtomicWeight::Abridged { value: 1.008, uncertainty: 0. }));
+    assert_eq!("1.0080 (2)".parse::<AtomicWeight>(),
+        Ok(AtomicWeight::Abridged { value: 1.008, uncertainty: 0.0002 }));
+    assert_eq!("1.0080(12)".parse::<AtomicWeight>().unwrap().to_string(), "1.0080(12)");
+    assert_eq!("[294]".parse::<AtomicWeight>(), Ok(AtomicWeight::MassNumber(294)));
+    assert_eq!("1.0080(2)".parse::<AtomicWeight>().unwrap(),
+        "1.0080 ± 0.0002".parse::<AtomicWeight>().unwrap());
+    assert!("9.109 383 7139(28)".parse::<AtomicWeight>().is_ok());
+``` */
+impl std::str::FromStr for AtomicWeight {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.trim();
+
+        if s.starts_with('[') && s.ends_with(']') {
+            let s = s[1..s.len()-1].trim();
+            /* if let Some((start, end)) = s.split_once(',') {
+                let start = start.trim_end().parse().map_err(|_| "Invalid value")?;
+                let end   = end.trim_start().parse().map_err(|_| "Invalid value")?;
+                Ok(AtomicWeight::Interval(core::ops::RangeInclusive::new(start, end)))
+            } else { */
+                Ok(AtomicWeight::MassNumber(s.parse().map_err(|_| "Invalid value")?))
+            //}
+        } else if let Some((value_part, uncertainty_part)) = s.split_once('±') {
+            let value = value_part.trim_end().parse().map_err(|_| "Invalid value")?;
+            let uncertainty = uncertainty_part.trim_start()
+                .parse().map_err(|_| "Invalid uncertainty")?;
+            Ok(AtomicWeight::Abridged { value, uncertainty })
+        } else if let Some((value_part, rest)) = s.split_once('(') {
+            let value_part = value_part.replace(' ', "");
+            let value = value_part.parse().map_err(|_| "Invalid value")?;
+            let uncertainty_str = rest.trim_end_matches(')').trim();
+
+            let scale = if let Some(pos) = value_part.find('.') {
+                10f32.powi((value_part.len() - pos - 1) as i32)
+            } else { 1. };
+
+            let uncertainty = uncertainty_str.parse::<u8>().map_err(|_|
+                "Invalid uncertainty")? as f32 / scale;
+            Ok(AtomicWeight::Abridged { value, uncertainty })
+        } else {
+            let value = s.parse().map_err(|_| "Invalid value")?;
+            Ok(AtomicWeight::Abridged { value, uncertainty: 0. })
+        }
     }
+}
 
-    /** ```
-        assert!(inperiod::ChemElem::iter().map(|x| x.oxidation_states()).all(
-            |(main, all)| main.iter().all(|&x| all.contains(&x))));
-    ```
-    https://en.wikipedia.org/wiki/Oxidation_state */
-    pub const fn oxidation_states(&self) -> (&'static [i8], &'static [i8]) {
-        let main: &'static [i8] = match self.atomic_number() {
-            1|85 => &[-1, 1], // 2
-            3|11|19|37|47|55|87 => &[1],
-            4|12|20|28..=30|36|38|48|56|88 => &[2],
-            5|13|21|31|39|45|49|57|59..=62|64..=71|79|83|89|95..=103 => &[3],
-            6|14 => &[-4, 4],
-            7|15|33|51 => &[-3, 3, 5],
-            8 =>  &[-2],
-            9 =>  &[-1], // 10
-            16 => &[-2, 2, 4, 6],
-            17|53 => &[-1, 1, 3, 5, 7], // 18
-            22|40|72|75|76|90|94|104 => &[4],
-            23|41|73 => &[5],
-            24 => &[3, 6],
-            25 => &[2, 4, 7],
-            26|27|63 =>  &[2, 3],
-            32|50 => &[-4, 2, 4],
-            34|52 => &[-2, 2, 4, 6],
-            35 => &[-1, 1, 3, 5],
-            42|74 => &[4, 6],
-            43 => &[4, 7],
-            44|58|77 => &[3, 4],
-            46|78|82 => &[2, 4],
-            54 => &[2, 4, 6],
-            80 => &[1, 2],
-            81 => &[1, 3],
-            84 => &[-2, 2, 4], // 86
-            91|93 => &[5],
-            92 => &[6],
-            _  => &[], // 105..=118
-        };
+use core::fmt;
+impl fmt::Display for AtomicWeight {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            AtomicWeight::Abridged { value, uncertainty } => {
+                #[allow(clippy::overly_complex_bool_expr)]
+                if true || *uncertainty == 0. { return write!(f, "{value}") } // XXX:
+                //return write!(f, "{} ± {}", self.value, self.uncertainty)?;
 
-        let all: &'static [i8] = match self.atomic_number() {
-            1|19|37|55 => &[-1,    1], // 2
-            3|87 =>    &[1],
-            4|12 => &[0, 1, 2],
-            5 =>      &[-5,             -1, 0, 1, 2, 3],
-            6|14|32|50 => &[-4, -3, -2, -1, 0, 1, 2, 3, 4],
-            7|15|33|51|83 =>  &[-3, -2, -1, 0, 1, 2, 3, 4, 5],
-            8 =>              &[-2, -1, 0, 1, 2],
-            9 =>            &[-1], // 10
-            11 =>           &[-1, 0, 1],
-            13 =>       &[-2, -1, 0, 1, 2, 3],
-            16|34|52 => &[-2, -1, 0, 1, 2, 3, 4, 5, 6],
-            17 =>           &[-1,    1, 2, 3, 4, 5, 6, 7], // 18
-            20|36|38|56 =>         &[1, 2],
-            21|39|57|62|64|67..=71 =>   &[0, 1, 2, 3],
-            22|28 =>            &[-2, -1, 0, 1, 2, 3, 4],
-            23|41|73 =>     &[-3,     -1, 0, 1, 2, 3, 4, 5],
-            24|42|74 => &[-4,     -2, -1, 0, 1, 2, 3, 4, 5, 6],
-            25|75 =>        &[-3,     -1, 0, 1, 2, 3, 4, 5, 6, 7],
-            26 =>       &[-4,     -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
-            27 =>           &[-3,     -1, 0, 1, 2, 3, 4, 5],
-            29|72 =>            &[-2,     0, 1, 2, 3, 4],
-            30 =>               &[-2,     0, 1, 2],
-            31 => &[-5, -4, -3, -2, -1, 0, 1, 2, 3],
-            35 =>     &[-1,    1, 2, 3, 4, 5,    7],
-            40|58 =>         &[1, 2, 3, 4],
-            43|45 =>  &[-3,     -1,    1, 2, 3, 4, 5, 6, 7],
-            44 => &[-4,     -2,        1, 2, 3, 4, 5, 6, 7, 8],
-            46 =>                    &[1, 2, 3, 4, 5],
-            47 =>         &[-2, -1, 0, 1, 2, 3],
-            48|80 =>      &[-2,        1, 2],
-            49 => &[-5,     -2, -1, 0, 1, 2, 3],
-            53 => &[-1,    1, 2, 3, 4, 5,    7],
-            54 =>           &[2,    4,    6,    8],
-            59 =>     &[0, 1, 2, 3, 4, 5],
-            60 =>     &[0,    2, 3, 4],
-            61|100..=102 => &[2, 3],
-            63 =>     &[0,    2, 3],
-            65|66 =>  &[0, 1, 2, 3, 4],
-            76 => &[-4,     -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8],
-            77 =>     &[-3, -2, -1,    1, 2, 3, 4, 5, 6, 7, 8, 9],
-            78 =>     &[-3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-            79 =>     &[-3, -2, -1, 0, 1, 2, 3,    5],
-            81 => &[-5,     -2, -1,    1, 2, 3],
-            82 => &[-4,     -2, -1, 0, 1, 2, 3, 4],
-            84 => &[-2, 2, 4, 5, 6],
-            85 => &[-1, 1, 3, 5, 7],
-            86 => &[2, 6],
-            88 => &[2],
-            89|103 => &[3],
-            90 => &[-1, 1, 2, 3, 4],
-            91|97|98 =>  &[2, 3, 4, 5],
-            92 => &[-1, 1, 2, 3, 4, 5, 6],
-            93|95 =>     &[2, 3, 4, 5, 6, 7],
-            94 =>        &[2, 3, 4, 5, 6, 7, 8],
-            96|106 =>       &[3, 4, 5, 6],
-            99 =>        &[2, 3, 4],
-            104 => &[3, 4],
-            105 => &[3, 4, 5],
-            107 => &[3, 4, 5, 7],
-            108 => &[3, 4, 6, 8],
-            109 => &[1, 3, 6],
-            110 => &[2, 4, 6],
-            111 => &[-1, 3, 5],
-            112 => &[2, 4], // 113 ~ 115
-            116 => &[-2, 4],
-            117 => &[-1, 5],
-            118 => &[-1, 1, 2, 4, 6],
-            _   => &[],
-        };
-
-        //let extend = all.iter().filter_map(|&x|
-        //    if main.contains(&x) { Some(x) } else { None }).collect::<Vec<_>>();
-
-        (main, all)
+                if *uncertainty < 1. {
+                    let mut prec = (-uncertainty.log10()).ceil() as i32;
+                    let mut uncertainty = uncertainty * 10f32.powi(prec);
+                    while uncertainty.fract() != 0. { prec += 1; uncertainty *= 10.; }
+                    write!(f, "{:.prec$}({})", value, uncertainty, prec = prec as usize)
+                } else { write!(f, "{}({})", value, uncertainty) }
+            }
+            AtomicWeight::MassNumber(number) => write!(f, "[{}]", number),
+        }
     }
+}
 
+/* fn parse_ecfg(ecfg: &str) -> ElectronCFG {
+    let (base, rest) = ecfg.trim_start().find(']').map_or((None, ecfg),
+        |pos| (ChemElem::from_str(&ecfg[1..pos]), &ecfg[pos+1..]));
+
+    let valence = rest.split_ascii_whitespace().filter_map(|part| {
+        let mut chars = part.chars();
+        let level = chars.next()?.to_digit(10)? as u8;
+        let shell = chars.next()? as u8;
+        Some(Subshell { level, orbital, ecount: part[2..].parse::<u8>().ok()? })
+    }).collect();
+
+    ElectronCFG { base, valence }
+} */
+
+//  Electronic energy levels: https://www.webelements.com/oganesson/atoms.html
+/** ```
+    use inperiod::ChemElem;
+    assert_eq!(ChemElem::H .electron_configuration().to_string(), "1s");
+    assert_eq!(ChemElem::He.electron_configuration().to_string(), "1s²");
+    assert_eq!(ChemElem::Og.electron_configuration().to_string(), "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶")
+``` */
+impl core::fmt::Display for ElectronCFG {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let mut first = true;
+        if let Some(base) = self.base {     first = false;
+            //write!(f, "{}", base.electron_configuration().to_string())?; // expanding
+            write!(f, "[{}]", base.symbol())?;
+        }
+        for subshell in self.valence {
+            if !first { write!(f, " ")?; }
+            write!(f, "{}{}", subshell.level, subshell.orbital as char)?;
+            if 1 < subshell.ecount {
+                let mut ecount = subshell.ecount as usize;
+                if 9 <  ecount {     // XXX: max two digits
+                    write!(f, "{}", UNICODE_SUPERS[ecount / 10])?;
+                    ecount %= 10;
+                }   write!(f, "{}", UNICODE_SUPERS[ecount])?;
+            }
+        }   Ok(())
+    }
+}
+
+pub struct ElectronCFG {
+    /// The noble gas of the preceding period, if any
+    base: Option<ChemElem>,
+    /// The subshells in the valence shell
+    valence: &'static [Subshell],
+}
+
+/// A subshell (s, p, d, or f) in the electronic configuration
+struct Subshell {
+    /// The shell's principal quantum number, energy level
+    level: u8,
+    /// The label type of orbital/subshell, based on its azimuthal quantum number
+    orbital: u8, // OrbitalType,
+    /// The number of electrons in this oribital
+    ecount: u8,
+}
+
+impl From<(u8, u8, u8)> for Subshell {
+    fn from(val: (u8, u8, u8)) -> Self { Self { level: val.0, orbital: val.1, ecount: val.2 } }
+}
+
+/// Electron subshell type, based on the azimuthal quantum number ℓ
+#[repr(u8)] pub enum OrbitalType {
+    /** ℓ = 0, historical name "Sharp" */       S = b's',
+    /** ℓ = 1, historical name "Principal" */   P = b'p',
+    /** ℓ = 2, historical name "Diffuse" */     D = b'd',
+    /** ℓ = 3, historical name "Fundamental" */ F = b'f',
+    /** ℓ = 4, no historical name */            G = b'g',
 }
 
 pub enum ElemClass {
@@ -617,4 +603,17 @@ const ELEM_PY: [&str; ChemElem::MAX as usize] = [ "", // placeholder
     //  White dwarf supernovae, Merging neutron stars, Radioactive decay, synthetic/human-made
     //abundance: f32,  // universe/galaxy, solar, crust, ocean, human body
 } */
+
+#[cfg(test)] mod tests {    use super::*;
+    #[test] fn electron() {
+        fn electron_count(elem: ChemElem) -> u8 {
+            let ecfg = elem.electron_configuration();
+            ecfg.valence.iter().map(|s| s.ecount).sum::<u8>()
+                + ecfg.base.map_or(0, electron_count)
+        }
+        for elem   in ChemElem::iter() {
+            assert_eq!(elem.atomic_number(), electron_count(elem));
+        }
+    }
+}
 

@@ -147,24 +147,24 @@ fn App() -> Element {
         div { class: "flex flex-col col-span-3 row-span-2",
             p { class: "text-lg font-bold leading-none pb-1", "Notes:" }
             ul { class: "list-disc",
+                li { "Standard relative atomic mass/weight based on " i { "¹²C" } } // Ar°(E)
                 li { i { "[ ]" } " indicate mass number of most stable isotope" }
                 li { "Density units are " i { "g/cm3" } " for solids and " i { "g/L" }
                     " for liquid" br{} " or " i { "kg/m3" } " at 0° Celsius for gases" }
-                li { "Electron configuration based on "
-                    a { href: "https://iupac.org/what-we-do/periodic-table-of-elements/",
-                        "IUPAC" } " guidelines" }
                 //li { "Common oxidation states highlight in " b { "bold" } }
                 li { "* mark means electronegativity is in the bottom-right" }
-                li { "Rare earth metals include: Lanthanoids (La ~ Lu), Sc and Y" }
-                li { "Atomic radius is van der Waals radii" }
+                li { "Rare earth metals include: " i { "Lanthanoids (La ~ Lu), Sc and Y" } }
+                li { "Atomic radius is " i { "van der Waals radii" } }
                 //li { i { "§" } " indicates crystal structure is unusual" }
                 // or may require explanation
             }
             p { class: "text-lg font-bold mt-auto", "References:" }
-            p { a { href: "https://www.nist.gov/pml/periodic-table-elements", "Nist.gov" } ", "
+            p { a { href: "https://iupac.org/what-we-do/periodic-table-of-elements/", "IUPAC" } ", "
+                a { href: "https://www.nist.gov/pml/periodic-table-elements", "Nist.gov" } ", "
                 a { href: "https://pubchem.ncbi.nlm.nih.gov/periodic-table/", "PubChem" } ", "
+                a { href: "https://www.webelements.com/periodicity/contents/", "WebElements" } ", "
                 a { href: "https://en.wikipedia.org/wiki/Category:Chemical_element_data_pages",
-                    "Wikipedia" } ", "
+                    "Wikipedia" } ", " br{}
                 a { href: "https://www.vertex42.com/ExcelTemplates/periodic-table-of-elements.html",
                     "Vertex42" } ", and "
                 a { href: "https://github.com/lmmentel/mendeleev", "mendeleev" }
@@ -187,21 +187,14 @@ fn App() -> Element {
     }
 } }
 
-const ROMAN_NUM: [&str; 11] = [
-    "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", ];
-/// https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
-const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ᐟ";
-    '⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹', '⁺', '⁻', '⁼', '⁽', '⁾', 'ᐟ', ];
-//const UNICODE_SUBS: [char; 16] = [ //&str = r"₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⸝";
-//    '₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₊', '₋', '₌', '₍', '₎', 'ₐ', ];
-
+use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
-    let chem = inperiod::ChemElem::from(ordinal);
-    let elem = mendeleev::ALL_ELEMENTS[ordinal as usize - 1];
+    let elem = ChemElem::from(ordinal);
+    //let elem = mendeleev::ALL_ELEMENTS[ordinal as usize - 1];
     //let os_main = elem.oxidation_states(mendeleev::OxidationStateCategory::Main);
-    let (name, (os_main, os_all)) = (chem.name(), chem.oxidation_states());
+    let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-    use mendeleev::AtomicWeight;
+    /* use mendeleev::AtomicWeight;
     fn fmt_mass(mass: &AtomicWeight, maxp: usize) -> String {
         #[inline] fn trim_fmt_mass(val: &f64, maxp: usize) -> String {
             format!("{val:.prec$}", prec = maxp)
@@ -209,20 +202,19 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
         }
         match mass {
             AtomicWeight::Interval { conventional, .. } => trim_fmt_mass(conventional, maxp),
-            AtomicWeight::Uncertainty { weight, .. } => trim_fmt_mass(weight, maxp),
-            AtomicWeight::MassNumber { number } => format!("[{}]", number), // XXX:
+            AtomicWeight::Uncertainty { weight, .. }    => trim_fmt_mass(weight, maxp),
+            AtomicWeight::MassNumber { number } => format!("[{}]", number),
         }
-    }
+    } */
 
     let simplify_ecfg = || match ordinal {
         //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
         81..=86   => format!("[Hg] 6p{}", UNICODE_SUPERS[ordinal as usize -  80]),
         113..=118 => format!("[Cn] 7p{}", UNICODE_SUPERS[ordinal as usize - 112]),
-        _ => elem.electronic_configuration().to_string()
+        _ => elem.electron_configuration().to_string()
     };
 
-    use inperiod::ElemClass::*;
-    let get_bg_color = || match chem.category() {   // chem.category()
+    let get_bg_color = || match elem.category() {
         OtherNonmetal(_) => "bg-non-metal",
         Metalloid(_)     => "bg-metalloid",
         PoorMetal(_)     => "bg-poor-metal",
@@ -252,16 +244,20 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
         div { class: format_args!("flex flex-col rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 relative {} {}",
             get_bg_color(), draw_metal_bound()), if annote {
-                p { class: "absolute font-bold text-lg/6 text-amber-600",
+                a { class: "absolute font-bold text-lg/6 text-amber-600",
+                    href: "https://ciaaw.org/radioactive-elements.htm",
                     style: "top: -1.5rem; right: 1rem;", "ratioactive" }
                 div { class: "absolute text-lg leading-tight text-nowrap text-right",
                     style: "right: calc(100% + 0.4rem);",
-                    p { "*atomic weight/mass" }
-                    a { href: "https://physics.nist.gov/cgi-bin/ASD/ie.pl?spectra=h-Og&submit=Retrieve+Data&units=1&format=0&order=0&at_num_out=on&sp_name_out=on&shells_out=on&level_out=on&e_out=0&unc_out=on", "1st ionization energy (eV)" }
+                    p { a { href: "https://ciaaw.org/atomic-weights.htm",
+                        "*standard atomic weight/mass" } }
+                    a { href: "https://www.nist.gov/pml/periodic-table-elements",
+                        "1st ionization energy (eV)" }
                     p { class: "mt-3 mb-5", "symbol" } p { "name" }
                     p { span { class: "text-blue-700", "melting" } "/"
                         span { class: "text-red-700",  "boiling" } " point (°C)" }
-                    p { "*density" } p { "*electron configuration" }
+                    // https://en.wikipedia.org/wiki/Electron_configurations_of_the_elements_(data_page)
+                    p { "*density" } p { "electron configuration" }
                 }
                 div { class: "absolute text-lg leading-tight text-nowrap",
                     style: "left: calc(100% + 0.4rem);",
@@ -270,25 +266,29 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
                     p { class: "my-1", "main "
                 a { href: "https://en.wikipedia.org/wiki/Oxidation_state", "oxidation states" } }
                     p { "Chinese name with pinyin" }
-                    a { href: "https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)", "electronegativity (pauling)*" }
+                    a { href: "https://en.wikipedia.org/wiki/Electronegativity",
+                        "electronegativity (pauling)*" }
                     p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", "crystal structure" } }
-                    a { href: "https://www.nist.gov/system/files/documents/2024/06/25/NIST_periodictable_August24-print.pdf", "ground-state level" }
-                    p { span { class: "text-purple-700 font-bold", "atomic radius" } " (pm)*" }
+                    a { href: "https://www.nist.gov/pml/periodic-table-elements",
+                        "ground-state level" }
+                    p { span { class: "text-purple-700 font-bold",
+                        a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
+                            "atomic radius" } } " (pm)*" }
                 }
             }
 
             div { class: "flex",
                 div { class: "grow",
-                    p { class: "flex text-lg/6 font-bold",
-                        { fmt_mass(&elem.atomic_weight(), match ordinal { 90..=92 => 3, _ => 4 }) }
-                        if chem.is_ratioactive() { span { class: "ml-1 text-center grow", "☢" } }
+                    p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
+                        if elem.is_ratioactive() { span { class: "ml-1 text-center grow", "☢" } }
                     }
                     p { class: "flex text-base/5", {
                         elem.ionization_energy().map_or_else(|| "-".to_string(),
-                            |ie| format!("{}", ie.0)) }
+                            |ie| format!("{:.3}", ie.0).trim_end_matches('0')
+                                .trim_end_matches('.').to_owned()) }
                         span { class: "ml-2 text-center grow", {
                             elem.electron_affinity().map_or_else(|| " ".to_string(),
-                                |ea| format!("{}", ea.0))
+                                |ea| ea.to_string())
                         } }
                     }
                 }
@@ -297,11 +297,11 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
             div { class: "flex-col grow",
                 div { class: "flex",
                     span { class: format_args!("text-5xl self-center grow ml-1 {}",
-                        color_for_symbol()), { chem.symbol() } }
+                        color_for_symbol()), { elem.symbol() } }
                     div { class: "flex flex-col mr-1",
-                        p { class: "text-center leading-tight", { chem.name_py() } }
-                        a { href: format_args!("https://zh.wikipedia.org/wiki/{}", chem.name_ch()),
-                            class: "text-right text-3xl", { chem.name_ch().to_string() } }
+                        p { class: "text-center leading-tight", { elem.name_py() } }
+                        a { href: format_args!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
+                            class: "text-right text-3xl", { elem.name_ch().to_string() } }
                     }
                     div { class: "text-right ml-1 relative",
                         div { class: "absolute w-full h-full group font-bold leading-tight", {
@@ -323,21 +323,20 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
                         class: "text-lg/6", { name } }
                     span { class: "ml-2 font-bold", { match ordinal {
                         42|59 => "*".to_string(), // name is too long
-                        _ => chem.en_pauling().map_or_else(|| "".to_string(),
-                            |en| format!("{}", en))
+                        _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
                     } } }
                 }
 
                 p { class: "flex text-base/5 relative",
                     span { class: "text-blue-700 font-bold", {
                         elem.melting_point().map_or_else(|| "-".to_string(),
-                            |mp| format!("{}", (mp.0 - 273.15 + 0.5) as i32))
+                            |mp| format!("{}", (mp - 273.15 + 0.5) as i32))
                     } } "/"
                     span { class: "text-red-700",  {
                         elem.boiling_point().map_or_else(|| "-".to_string(),
-                            |bp| format!("{}", (bp.0 - 273.15 + 0.5) as i32))
+                            |bp| format!("{}", (bp - 273.15 + 0.5) as i32))
                     } }
-                    { chem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
+                    { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
                         |(cs, file)| rsx! {
                         span { class: "pl-2 grow peer", { cs.to_string() } }
                         div { class: "absolute w-[10vw] max-w-none border rounded
@@ -346,21 +345,20 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
                                 89..=103|2|10|18|36|54|71|86|118 =>
                                     "right: calc(100% + 0.4rem); bottom: 0px;",
                                 _ => "left: calc(100% + 0.4rem);", }),
-                            p { class: "text-center text-xl font-bold mb-2", // XXX:
+                            p { class: "text-center text-xl font-bold mb-2", // XXX: title
                             }
                             img { class: "w-full", src: format_args!("crystal-s/{file}"), }
                         } }
                     ) }
                 }
                 p { class: "flex text-base/5", {
-                    elem.density().map_or_else(|| "-".to_string(), |den| format!("{:.4}", den.0)
+                    elem.density().map_or_else(|| "-".to_string(), |den| format!("{:.4}", den)
                         .trim_end_matches('0').trim_end_matches('.').to_string()) }
                     span { class: "ml-2 font-bold text-purple-700", {
-                        elem.atomic_radius().map_or_else(|| "-".to_string(),
-                            |cr| format!("{}  ", cr.0)) // XXX: covalent/metallic/ironic radius?
+                        elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string())
                     } }
                     span { class: "ml-2 font-bold", {
-                        chem.ground_state().map_or_else(|| rsx! { "-" },
+                        elem.ground_state().map_or_else(|| rsx! { "-" },
                             |(s1, s2, s3)| if 1 < s2.len() { rsx! {
                                 sup  { {s1} } { s2.chars().next().unwrap().to_string() }
                                 span { style: "position: relative; top: -0.1em;", "°" }
@@ -368,10 +366,11 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
                             } } else { rsx! { sup { {s1} } {s2} sub { {s3} } } })
                     } }
                 }
+                // https://www.webelements.com/_media/elements/electronic_configuration/electronic_configuration_Og.png
                 p { class: "flex mt-auto text-nowrap font-bold text-lg/6", { simplify_ecfg() }
                     if matches!(ordinal, 42|59) {
                         span { class: "ml-2 font-bold grow text-right", {
-                            chem.en_pauling().map(|en| format!("{}", en)) // XXX:
+                            elem.en_pauling().map(|en| en.to_string())
                         } }
                     }
                 }
@@ -384,7 +383,7 @@ const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹⁺�
 #[component] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
 } }
 
-//  https://physics.nist.gov/cuu/Constants/index.html
+/// https://physics.nist.gov/cuu/Constants/index.html
 #[component] fn PhysConsts() -> Element { rsx! {
         p { class: "flex text-lg/6 justify-between px-1",
             span { class: "font-bold", "Common physical constants" }
