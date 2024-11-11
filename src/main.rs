@@ -1,7 +1,8 @@
-#![allow(non_snake_case)]
 
+#![allow(non_snake_case)]
 use dioxus::prelude::*;
 //use dioxus_logger::tracing;
+//use dioxus_sdk::{i18n::*, translate}; // TODO:
 
 // Urls are relative to your Cargo.toml file
 //const _TAILWIND_CSS: &str = manganis::mg!(file("assets/tailwind.css"));
@@ -31,9 +32,11 @@ fn App() -> Element {
     }
 }
 
-#[component] fn PeriodicTable() -> Element { rsx! {     // w-fit scale-75 origin-top-left
-    div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto]
-        grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] w-full p-6 gap-0.5 relative",
+#[component] fn PeriodicTable() -> Element { rsx! {     // scale-50 origin-top-left
+    div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
+        grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
+        //style: "transform: scale(0.5); transform-origin: top left;",
+        style: "zoom: 0.5;", // XXX: malformed in Safari, which works scale on <html>
 
         p { class: "font-bold relative -bottom-4 rotate-180",
             style: "writing-mode: vertical-rl;", "PERIOD" }
@@ -110,7 +113,7 @@ fn App() -> Element {
                         p { class: "content-center rounded-sm bg-metalloid", "Metalloids 类金属" }
 
                         p { class: "content-center rounded-sm bg-lanthanide",
-                            "* Rare Earth Metals" br{} "稀土金属" }
+                            "Rare Earth Metals*" br{} "稀土金属" }
                         p { class: "content-center rounded-sm bg-unknown", "Unknown 未知" }
                     }
                 }
@@ -280,7 +283,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             div { class: "flex",
                 div { class: "grow",
                     p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
-                        if elem.is_ratioactive() { span { class: "ml-1 text-center grow", "☢" } }
+                        if elem.is_ratioactive() { span { class: "ml-1 text-center grow", "☢️" } }
                     }
                     p { class: "flex text-base/5", {
                         elem.ionization_energy().map_or_else(|| "-".to_string(),
