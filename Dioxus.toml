@@ -11,7 +11,7 @@ default_platform = "web"
 
 [web.app]
 title = "Elements Periodic Table"   # HTML title tag content
-#base_path = "inperiod" # "/"
+base_path = "inperiod" # "/"
 
 [web.watcher]
 reload_html = true  # when watcher trigger, regenerate the `index.html`
