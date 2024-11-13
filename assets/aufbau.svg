@@ -1,34 +1,39 @@
 
-<svg width="320" height="300" xmlns="http://www.w3.org/2000/svg">
-<text y="16" font-size="small" letter-spacing="-1">
-    <tspan x="16" dy="32">n = 1</tspan>
-    <tspan x="16" dy="32">n = 2</tspan>
-    <tspan x="16" dy="32">n = 3</tspan>
-    <tspan x="16" dy="32">n = 4</tspan>
-    <tspan x="16" dy="32">n = 5</tspan>
-    <tspan x="16" dy="32">n = 6</tspan>
-    <tspan x="16" dy="32">n = 7</tspan>
-    <tspan x="16" dy="32">n = 8</tspan>
+<svg width="500" height="300" font-size="small" xmlns="http://www.w3.org/2000/svg">
+<title>Aufbau Principle</title>
+
+<text transform="translate(16,16)">
+    <tspan x="0" y= "32">1 K<tspan dy="-6" font-size="10">2</tspan></tspan>
+    <tspan x="0" y= "64">2 L<tspan dy="-6" font-size="10">8</tspan></tspan>
+    <tspan x="0" y= "96">3 M<tspan dy="-6" font-size="10">18</tspan></tspan>
+    <tspan x="0" y="128">4 N<tspan dy="-6" font-size="10">32</tspan></tspan>
+    <tspan x="0" y="160">5 O<tspan dy="-6" font-size="10">32</tspan></tspan>
+    <tspan x="0" y="192">6 P<tspan dy="-6" font-size="10">18</tspan></tspan>
+    <tspan x="0" y="224">7 Q<tspan dy="-6" font-size="10">8</tspan></tspan>
 </text>
+<text fill="blue" letter-spacing="-2" transform="translate(24,280) rotate(-90)">n =</text>
 
 <g transform="translate(16,27)" stroke="gray" stroke-width="0.2">
     <path d="M0,32 h152"/>
     <path d="M0,64 h216"/>
     <path d="M0,96 h280"/>
-    <path d="M0,128 h280"/>
-    <path d="M0,160 h280"/>
-    <path d="M0,192 h216"/>
-    <path d="M0,224 h152"/>
+    <path d="M0,128h280"/>
+    <path d="M0,160h280"/>
+    <path d="M0,192h216"/>
+    <path d="M0,224h152"/>
 </g>
 
-<text y="18" font-size="small" letter-spacing="-2">
+<text y="18" letter-spacing="-2">
     <tspan x="64" >ℓ = 0</tspan>
     <tspan x="128">ℓ = 1</tspan>
     <tspan x="192">ℓ = 2</tspan>
     <tspan x="256">ℓ = 3</tspan>
+    <tspan x="320" opacity="0.1">ℓ = 4</tspan>
+    <tspan x="384" opacity="0.1">ℓ = 5</tspan>
+    <tspan x="448" opacity="0.1">ℓ = 6</tspan>
 </text>
 
-<text x="180" y="276" font-size="small">Aufbau Principle</text>
+<text x="112" y="296">Aufbau Principle</text>
 <text x="180" y="40"  font-size="8" fill="blue">
     <tspan>n: Principle quantum number</tspan>
     <tspan x="180" dy="12">ℓ: Azimuthal quantum number</tspan>
@@ -53,7 +58,8 @@
   <use href="#orbit_s"/> <use href="#orbit_s" y="32"/>
   <use href="#orbit_p"/> <use href="#orbit_p" y="32"/>
   <use href="#orbit_d"/> <use href="#orbit_d" y="32"/>
-  <use href="#orbit_f"/> <use href="#orbit_f" y="32"/>
+  <use href="#orbit_f"/> <!--use href="#orbit_f" y="32"/-->
+  <use href="#orbit_d" y="64" x="64"/>
 </g>
 
 <g transform="translate(80,11)" fill="pink">
@@ -64,7 +70,7 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
-    <use href="#orbit" y="256"/>
+    <use href="#orbit" y="256" opacity="0.2"/>
     <g transform="translate(-10,6)" fill="black">
         <text y="32" >1s</text>
         <text y="64" >2s</text>
@@ -73,7 +79,7 @@
         <text y="160">5s</text>
         <text y="192">6s</text>
         <text y="224">7s</text>
-        <text y="256">8s</text>
+        <text y="256">s<tspan dy="-6" font-size="10">2</tspan></text>
     </g>
 </g>
 
@@ -84,13 +90,14 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
-    <g transform="translate(-10,38)" fill="black">
-        <text y="32" >2p</text>
-        <text y="64" >3p</text>
-        <text y="96" >4p</text>
-        <text y="128">5p</text>
-        <text y="160">6p</text>
-        <text y="192">7p</text>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="64" >2p</text>
+        <text y="96" >3p</text>
+        <text y="128">4p</text>
+        <text y="160">5p</text>
+        <text y="192">6p</text>
+        <text y="224">7p</text>
+        <text y="256">p<tspan dy="-6" font-size="10">6</tspan></text>
     </g>
 </g>
 
@@ -99,20 +106,58 @@
     <use href="#orbit" y="128"/>
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
-    <g transform="translate(-10,70)" fill="black">
-        <text y="32" >3d</text>
-        <text y="64" >4d</text>
-        <text y="96" >5d</text>
-        <text y="128">6d</text>
+    <use href="#orbit" y="224" opacity="0.1"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="96" >3d</text>
+        <text y="128">4d</text>
+        <text y="160">5d</text>
+        <text y="192">6d</text>
+        <text y="224" opacity="0.1">7d</text>
+        <text y="256">d<tspan dy="-6" font-size="10">10</tspan></text>
     </g>
 </g>
 
 <g transform="translate(272,11)" fill="orange">
     <use href="#orbit" y="128"/>
     <use href="#orbit" y="160"/>
-    <g transform="translate(-10,102)" fill="black">
-        <text y="32">4f</text>
-        <text y="64">5f</text>
+    <use href="#orbit" y="192" opacity="0.1"/>
+    <use href="#orbit" y="224" opacity="0.1"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="128">4f</text>
+        <text y="160">5f</text>
+        <text y="192" opacity="0.1">6f</text>
+        <text y="224" opacity="0.1">7f</text>
+        <text y="256">f<tspan dy="-6" font-size="10">14</tspan></text>
+    </g>
+</g>
+
+<g transform="translate(336,11)" fill="gray" opacity="0.1">
+    <use href="#orbit" y="160"/>
+    <use href="#orbit" y="192"/>
+    <use href="#orbit" y="224"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="160">5g</text>
+        <text y="192">6g</text>
+        <text y="224">7g</text>
+        <text y="256">g<tspan dy="-6" font-size="10">18</tspan></text>
+    </g>
+</g>
+
+<g transform="translate(400,11)" fill="gray" opacity="0.1">
+    <use href="#orbit" y="192"/>
+    <use href="#orbit" y="224"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="192">6h</text>
+        <text y="224">7h</text>
+        <text y="256">h<tspan dy="-6" font-size="10">22</tspan></text>
+    </g>
+</g>
+
+<g transform="translate(464,11)" fill="gray" opacity="0.1">
+    <use href="#orbit" y="224"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="224">7i</text>
+        <text y="256">i<tspan dy="-6" font-size="10">26</tspan></text>
     </g>
 </g>
 

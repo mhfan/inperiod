@@ -36,7 +36,7 @@ fn App() -> Element {
     div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
         //style: "transform: scale(0.5); transform-origin: top left;",
-        style: "zoom: 0.5;", // XXX: malformed in Safari, which works scale on <html>
+        style: "zoom: 0.5;", // FIXME: malformed in Safari, which works well scaling on <html>
 
         p { class: "font-bold relative -bottom-4 rotate-180",
             style: "writing-mode: vertical-rl;", "PERIOD" }
@@ -49,12 +49,18 @@ fn App() -> Element {
             style: "writing-mode: vertical-rl;", "E-shell" br{} "E-max" }
 
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
-            { (1..=7).map(|i| rsx! { p { "{i}" } }) } }
+            for i in 1..=7 { p { "{i}" } } }
         ElemTile { ordinal: 1, annote: false }
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
-        ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-8" }
-        { (13..=17).map(|i| rsx! { p { class: "self-end text-center text-lg font-bold",
-            { format!("{}A - {i}", ROMAN_NUM[i - 10]) } } }) } ElemTile { ordinal: 2, annote: false }
+        ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
+        div { class: "relative col-span-6",
+            // https://www.nagwa.com/en/explainers/809139094679/
+            img { class: "absolute h-[150%]", src: "aufbau.svg" }
+        }
+
+        for i in 13..=17 { p { class: "self-end text-center text-lg font-bold",
+            { format!("{}A - {i}", ROMAN_NUM[i - 10]) }
+        } } ElemTile { ordinal: 2, annote: false }
 
         div { class: "grid grid-rows-[repeat(7,1fr)] row-span-7 gap-0.5
             font-mono text-nowrap text-right tracking-tighter divide-y",
@@ -74,10 +80,11 @@ fn App() -> Element {
 
         ElemTile { ordinal: 3, annote: false }
         ElemTile { ordinal: 4, annote: false } div { class: "empty col-span-10" }
-        {  (5..=12).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 5..=12 { ElemTile { ordinal: i, annote: false } }
 
-        {   (3..=7).map(|i| rsx! { p { class: "self-end text-center text-lg font-bold",
-            { format!("{}B - {i}", ROMAN_NUM[i]) } } }) }
+        for i in 3..=7  { p { class: "self-end text-center text-lg font-bold",
+            { format!("{}B - {i}", ROMAN_NUM[i]) }
+        } }
         p { class: "self-end text-center text-lg font-bold
             col-span-3 shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10" } // border-b-2
         p { class: "self-end text-center text-lg font-bold",  "IB - 11" }
@@ -117,26 +124,26 @@ fn App() -> Element {
                         p { class: "content-center rounded-sm bg-unknown", "Unknown 未知" }
                     }
                 }
-                div { class: "ml-6 self-end text-lg/6", PhysConsts {} }
+                div { class: "self-end ml-6 text-lg/6", PhysConsts {} }
             }
         }
         div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;",
         }   // XXX:
 
-        { (13..=56).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1
             shadow-border-1 shadow-indigo-300 bg-lanthanide",
-            span { class: "font-bold self-end", "71" }
+            span { class: "self-end font-bold", "71" }
             p { class: "text-center m-auto",
                 b { "57 ~ 70" } br{} "Lanthanoids" br{} "(镧系)" }
         }
-        { (72..=88).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 72..=88 { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1
             shadow-border-1 shadow-indigo-300 bg-actinide",
-            span { class: "font-bold self-end", "103" }
+            span { class: "self-end font-bold", "103" }
             p { class: "text-center m-auto", b { "89 ~ 102" } br{} "Actinoids" br{} "(锕系)" }
         }
-        { (104..=118).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 104..=118 { ElemTile { ordinal: i, annote: false } }
 
         div { class: "empty row-span-4" }
         div { class: "text-center text-lg/6 rounded-sm col-span-2  bg-red-100 self-start",
@@ -174,16 +181,16 @@ fn App() -> Element {
             }
         }
 
-        { (57..= 71).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 57..= 71 { ElemTile { ordinal: i, annote: false } }
         p { style: "writing-mode: vertical-rl;",
             class: "text-center text-lg font-bold rotate-180", "Lanthanides" }
-        { (89..=103).map(|i| rsx! { ElemTile { ordinal: i, annote: false } }) }
+        for i in 89..=103 { ElemTile { ordinal: i, annote: false } }
         p { style: "writing-mode: vertical-rl;",
             class: "text-center text-lg font-bold rotate-180", "Actinides" }
 
         div { class: "col-span-3", p { class: "mt-2", "© 2024 "
             a { href: "https://github.com/mhfan", "M.H.Fan" } ", All rights reserved." } }
-        div { class: "text-center text-lg/6 self-start rounded-sm
+        div { class: "self-start rounded-sm text-center text-lg/6
             col-[span_14_/_span_14] bg-yellow-100", b { "f" } "-block" }
         div { class: "self-start rounded-sm border-l bg-blue-100",
             p { class: "invisible", "d-block" } } div { class: "empty" }
@@ -193,25 +200,11 @@ fn App() -> Element {
 use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
     let elem = ChemElem::from(ordinal);
-    //let elem = mendeleev::ALL_ELEMENTS[ordinal as usize - 1];
-    //let os_main = elem.oxidation_states(mendeleev::OxidationStateCategory::Main);
+    let mut over_ecfg = use_signal(|| false);
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-    /* use mendeleev::AtomicWeight;
-    fn fmt_mass(mass: &AtomicWeight, maxp: usize) -> String {
-        #[inline] fn trim_fmt_mass(val: &f64, maxp: usize) -> String {
-            format!("{val:.prec$}", prec = maxp)
-                .trim_end_matches('0').trim_end_matches('.').to_string()
-        }
-        match mass {
-            AtomicWeight::Interval { conventional, .. } => trim_fmt_mass(conventional, maxp),
-            AtomicWeight::Uncertainty { weight, .. }    => trim_fmt_mass(weight, maxp),
-            AtomicWeight::MassNumber { number } => format!("[{}]", number),
-        }
-    } */
-
     let simplify_ecfg = || match ordinal {
-        //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
+        //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..])) // to expand
         81..=86   => format!("[Hg] 6p{}", UNICODE_SUPERS[ordinal as usize -  80]),
         113..=118 => format!("[Cn] 7p{}", UNICODE_SUPERS[ordinal as usize - 112]),
         _ => elem.electron_configuration().to_string()
@@ -244,13 +237,13 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
     };
 
     rsx! { //shadow-border-1 shadow-indigo-300 // 152x198
-        div { class: format_args!("flex flex-col rounded-sm p-1 border border-indigo-300
+        div { class: format!("flex flex-col rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 relative {} {}",
             get_bg_color(), draw_metal_bound()), if annote {
-                a { class: "absolute font-bold text-lg/6 text-amber-600",
+                a { class: "absolute font-bold text-lg/6 text-amber-600 pointer-events-none",
                     href: "https://ciaaw.org/radioactive-elements.htm",
                     style: "top: -1.5rem; right: 1rem;", "ratioactive" }
-                div { class: "absolute text-lg leading-tight text-nowrap text-right",
+                div { class: "absolute text-lg leading-tight text-nowrap text-right pointer-events-none",
                     style: "right: calc(100% + 0.4rem);",
                     p { a { href: "https://ciaaw.org/atomic-weights.htm",
                         "*standard atomic weight/mass" } }
@@ -259,10 +252,11 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     p { class: "mt-3 mb-5", "symbol" } p { "name" }
                     p { span { class: "text-blue-700", "melting" } "/"
                         span { class: "text-red-700",  "boiling" } " point (°C)" }
-                    // https://en.wikipedia.org/wiki/Electron_configurations_of_the_elements_(data_page)
-                    p { "*density" } p { "electron configuration" }
+                    p { "*density" } a {
+                        href: "https://en.wikipedia.org/wiki/Electron_configuration",
+                        "electron configuration" }
                 }
-                div { class: "absolute text-lg leading-tight text-nowrap",
+                div { class: "absolute text-lg leading-tight text-nowrap pointer-events-none",
                     style: "left: calc(100% + 0.4rem);",
                     p { class: "mt-1", "atomic number" }
                     p { "electron affinity" }
@@ -299,30 +293,30 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             }
             div { class: "flex-col grow",
                 div { class: "flex",
-                    span { class: format_args!("text-5xl self-center grow ml-1 {}",
+                    span { class: format!("self-center text-5xl grow ml-1 {}",
                         color_for_symbol()), { elem.symbol() } }
                     div { class: "flex flex-col mr-1",
                         p { class: "text-center leading-tight", { elem.name_py() } }
-                        a { href: format_args!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
+                        a { href: format!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
                             class: "text-right text-3xl", { elem.name_ch().to_string() } }
                     }
                     div { class: "text-right ml-1 relative",
-                        div { class: "absolute w-full h-full group font-bold leading-tight", {
-                            os_main.iter().rev().map(|os| rsx! { pre { { format!("{}{os}",
+                        div { class: "absolute w-full h-full group font-bold leading-tight",
+                            for os in os_main.iter().rev() { pre { { format!("{}{os}",
                                 match *os { x if 0 < x => "+", 0 => " ", _ => "" })
-                            } } }) }
+                            } } }
                             if os_main.len() < os_all.len() { div { class:
-                                "absolute left-full -top-2 ml-1.5 p-1 text-lg/5 border rounded
-                                border-orange-600 bg-indigo-50 group-hover:block hidden z-10", {
-                                os_all.iter().rev().map(|os| rsx! { pre { class:
+                                "absolute hidden left-full -top-2 ml-1.5 p-1 text-lg/5 rounded
+                                border border-orange-600 bg-indigo-50 group-hover:block z-10",
+                                for os in os_all.iter().rev() { pre { class:
                                     if os_main.contains(os) { "font-extrabold" } else { "" },
                         { format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" }) }
-                                } }) }
+                                } }
                             } }
                         }   pre { class: "invisible", "  " }
                     }
                 }
-                p { a { href: format_args!("https://en.wikipedia.org/wiki/{name}"),
+                p { a { href: format!("https://en.wikipedia.org/wiki/{name}"),
                         class: "text-lg/6", { name } }
                     span { class: "ml-2 font-bold", { match ordinal {
                         42|59 => "*".to_string(), // name is too long
@@ -342,15 +336,14 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
                         |(cs, file)| rsx! {
                         span { class: "pl-2 grow peer", { cs.to_string() } }
-                        div { class: "absolute w-[10vw] max-w-none border rounded
+                        figure { class: "absolute w-[10rem] max-w-none border rounded
                                 border-orange-600 bg-indigo-50 hidden peer-hover:block z-10",
-                            style: format_args!("{}", match ordinal {
+                            style: format!("{}", match ordinal {
                                 89..=103|2|10|18|36|54|71|86|118 =>
                                     "right: calc(100% + 0.4rem); bottom: 0px;",
                                 _ => "left: calc(100% + 0.4rem);", }),
-                            p { class: "text-center text-xl font-bold mb-2", // XXX: title
-                            }
-                            img { class: "w-full", src: format_args!("crystal-s/{file}"), }
+                            //figcaption {} // XXX: title/desc
+                            img { class: "w-full", src: format!("crystal-s/{file}"), }
                         } }
                     ) }
                 }
@@ -362,15 +355,29 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     } }
                     span { class: "ml-2 font-bold", {
                         elem.ground_state().map_or_else(|| rsx! { "-" },
-                            |(s1, s2, s3)| if 1 < s2.len() { rsx! {
+                            |(s1, s2, s3)| rsx! { if 1 < s2.len() {
                                 sup  { {s1} } { s2.chars().next().unwrap().to_string() }
                                 span { style: "position: relative; top: -0.1em;", "°" }
                                 sub  { style: "left: -0.6em;", {s3} }
-                            } } else { rsx! { sup { {s1} } {s2} sub { {s3} } } })
+                            } else { sup { {s1} } {s2} sub { {s3} } } })
                     } }
                 }
-                // https://www.webelements.com/_media/elements/electronic_configuration/electronic_configuration_Og.png
-                p { class: "flex mt-auto text-nowrap font-bold text-lg/6", { simplify_ecfg() }
+                p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
+                    onmouseout:  move |_| over_ecfg.set(false),
+                    onmouseover: move |_| over_ecfg.set(true), { simplify_ecfg() }
+                    if *over_ecfg.read() { figure {
+                        class: "absolute w-[40rem] max-w-none border rounded
+                            border-orange-600 bg-indigo-50 group-hover:block z-10",
+                        style: format!("{}", match ordinal {
+                            2|7..=10 => "right: calc(100% + 0.125rem); top: -0.1em;",
+                            57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
+                            _ => if ordinal == 71  ||
+                                    ordinal == 103 || matches!(elem.group(), 0|15..=18) {
+                                        "right: calc(100% + 0.125rem); bottom: -0.2em;"
+                            } else {     "left: calc(100% + 0.125rem); top: -0.1em;" }
+                        }), ShowEcfg { ordinal } //figcaption {}
+                    } }
+
                     if matches!(ordinal, 42|59) {
                         span { class: "ml-2 font-bold grow text-right", {
                             elem.en_pauling().map(|en| en.to_string())
@@ -381,6 +388,111 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             }
         }
     }
+}
+
+#[component] fn ShowEcfg(ordinal: u8) -> Element {
+    let elem = ChemElem::from(ordinal);
+    let ecfg = elem.electron_configuration().expand();
+
+    rsx! { svg { width: "640", height: "512", xmlns: "http://www.w3.org/2000/svg",
+        "font-size": "small", "font-weight": "normal",
+        title { "Electron shell/orbital configuration" }
+
+        g { text { x: "200", y: "500", "Electron shell/orbital configuration" }
+            text { x: "560", y: "464", "font-size": "48", { elem.symbol() } }
+
+            path { stroke: "gray", "stroke-opacity": "0.3", d:
+                    "M32,32 h 588 m 0,64 h-588 m 0,64 h 588 m 0,64 h-588
+                     m 0,64 h 588 m 0,64 h-588 m 0,64 h 588 m 0,64 h-588 ",
+            }
+            text { x: "20", y: "400", transform: "rotate(-90 20,400)",
+                "Energy increase (not to scale)"
+            }
+            path { "stroke-linecap": "round", "stroke-linejoin": "round", fill: "gray",
+                "stroke-width": "2", stroke: "gray", d: "M15,64 l-4,12 h8 Z v88",
+            }
+        }
+        g { fill: "black",
+            text { transform: "translate(68,0)",
+                tspan { x: "0",  y: "24", "8s" }
+                tspan { x: "0", dy: "64", "7s" }
+                tspan { x: "0", dy: "64", "6s" }
+                tspan { x: "0", dy: "64", "5s" }
+                tspan { x: "0", dy: "64", "4s" }
+                tspan { x: "0", dy: "64", "3s" }
+                tspan { x: "0", dy: "64", "2s" }
+                tspan { x: "0", dy: "64", "1s" }
+            }
+            text { transform: "translate(180,0)",
+                tspan { x: "0",  y: "48", "7p" }
+                tspan { x: "0", dy: "64", "6p" }
+                tspan { x: "0", dy: "64", "5p" }
+                tspan { x: "0", dy: "64", "4p" }
+                tspan { x: "0", dy: "64", "3p" }
+                tspan { x: "0", dy: "64", "2p" }
+            }
+            text { transform: "translate(358,0)",
+                tspan { x: "0",  y: "62", "6d" }
+                tspan { x: "0", dy: "64", "5d" }
+                tspan { x: "0", dy: "64", "4d" }
+                tspan { x: "0", dy: "64", "3d" }
+            }
+            text { x: "598", y:  "76", "5f" }
+            text { x: "598", y: "140", "4f" }
+            text { y: "24", "letter-spacing": "-2",
+                tspan { x: "110", "ℓ = 1" }
+                tspan { x: "256", "ℓ = 2" }
+                tspan { x: "464", "ℓ = 3" }
+            }
+        }
+        g { stroke: "gray", "stroke-dasharray": "4 4", "stroke-opacity": "0.5",
+            path { d: "M84,80  L180,48" }
+            path { d: "M84,144 L180,112 m16,-4 L358,62" }
+            path { d: "M84,208 L180,176 m16,-4 L358,126 m16,-4 L598,76" }
+            path { d: "M84,272 L180,240 m16,-4 L358,190 m16,-4 L598,140" }
+            path { d: "M84,336 L180,306 m16,-4 L358,254" }
+            path { d: "M84,400 L180,370" }
+        }
+        g { "stroke-width": "4", "stroke-linecap": "round", "stroke-dasharray": "24 8",
+            path { stroke: "red", d:
+                    "M40,20 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24
+                     m 0,64 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24",
+            }
+            path { stroke: "green",
+                d: "M88,44 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88",
+            }
+            path { stroke: "blue", d: "M202,58 h 152 m 0,64 h-152 m  0,64 h 152 m 0,64 h-152" }
+            path { stroke: "orange", "stroke-dasharray": "24 8", d: "M378,72 h 216 m 0,64 h-216" }
+        }
+
+        g { "font-size": "24", for shell in ecfg {
+            if shell.orbital == b's' { text {
+                transform: format!("translate(38,{})",  541 - 64 * shell.level as usize),
+                tspan { x: "0", dx: "0 -16", if shell.ecount == 2 { "⭡⭣" } else { "⭡" } }
+            } } else if shell.orbital == b'p' { text {
+                transform: format!("translate(86,{})",  501 - 64 * shell.level as usize),
+                for i in 0..3 { if i < shell.ecount {
+                    tspan { x: "0", dx: format!("{} -16", i * 32),
+                        if shell.ecount < 4 + i { "⭡" } else { "⭡⭣" }
+                    }
+                } }
+            } } else if shell.orbital == b'd' { text {
+                transform: format!("translate(200,{})", 451 - 64 * shell.level as usize),
+                for i in 0..5 { if i < shell.ecount {
+                    tspan { x: "0", dx: format!("{} -16", i * 32),
+                        if shell.ecount < 6 + i { "⭡" } else { "⭡⭣" }
+                    }
+                } }
+            } } else if shell.orbital == b'f' { text {
+                transform: format!("translate(376,{})", 401 - 64 * shell.level as usize),
+                for i in 0..7 { if i < shell.ecount {
+                    tspan { x: "0", dx: format!("{} -16", i * 32),
+                        if shell.ecount < 8 + i { "⭡" } else { "⭡⭣" }
+                    }
+                } }
+            } }
+        } }
+    } }
 }
 
 #[component] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/

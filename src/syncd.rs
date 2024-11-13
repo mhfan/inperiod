@@ -76,7 +76,7 @@ fn parse_oxstates() -> Result<(), Box<dyn Error>> {
                 .any(|x| x.value().name() == "b")); // "span"
         }
 
-        if states.iter().all(|&x| x.is_none()) { continue }
+        if states.iter().all(|&x| x.is_none()) { file.write_all(b"\n")?; continue }
         file.write_fmt(format_args!("            {an:>3} => &[ "))?;
         for (i, &x) in states.iter().enumerate() {
             if x.is_none() { file.write_all(b"   ")?; } else {

@@ -286,7 +286,12 @@ impl ChemElem {
     //  https://environmentalchemistry.com/yogi/periodic/crystal.html
     //  https://periodictable.com/Properties/A/CrystalStructure.html
     pub const fn crystal_structure(&self) -> Option<(&'static str, &'static str)> {
-        Some(match self.atomic_number() {
+        /*return Some(match self.atomic_number() {
+            1|6|7|12|30|34|43|44|48|52|71|75|76 => ("hex", "Hexagonal.svg"), // HCP
+            _ => return None, // ("-", "")
+        });
+
+        #[allow(unreachable_code)] */Some(match self.atomic_number() {
             1|6|7|57..=61|95..=98 => ("hex", "Hexagonal.svg"),       // 六方晶系, 双六方密堆积 (DHCP)
             2|4|12|21|22|27|30|39|40|43|44|48|64..=69|71|72|75|76|81|
                 103|104|107|108|112|113 => ("HCP", "Hexagonal_close_packed.svg"), // 六方密堆积
@@ -431,10 +436,13 @@ impl fmt::Display for AtomicWeight {
     use inperiod::ChemElem;
     assert_eq!(ChemElem::H .electron_configuration().to_string(), "1s");
     assert_eq!(ChemElem::He.electron_configuration().to_string(), "1s²");
-    assert_eq!(ChemElem::Og.electron_configuration().to_string(), "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶")
+    let ecfg = ChemElem::Og.electron_configuration();
+    assert_eq!(ecfg.to_string(), "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶");
+    assert_eq!(ecfg.expand().map(|x| x.to_string()).collect::<Vec<_>>().join(" "),
+        "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁶ 4d¹⁰ 5s² 5p⁶ 4f¹⁴ 5d¹⁰ 6s² 6p⁶ 5f¹⁴ 6d¹⁰ 7s² 7p⁶");
 ``` */
-impl core::fmt::Display for ElectronCFG {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+impl fmt::Display for ElectronCFG {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut first = true;
         if let Some(base) = self.base {     first = false;
             //write!(f, "{}", base.electron_configuration().to_string())?; // expanding
@@ -442,18 +450,27 @@ impl core::fmt::Display for ElectronCFG {
         }
         for subshell in self.valence {
             if !first { write!(f, " ")?; }
-            write!(f, "{}{}", subshell.level, subshell.orbital as char)?;
-            if 1 < subshell.ecount {
-                let mut ecount = subshell.ecount as usize;
-                if 9 <  ecount {     // XXX: max two digits
-                    write!(f, "{}", UNICODE_SUPERS[ecount / 10])?;
-                    ecount %= 10;
-                }   write!(f, "{}", UNICODE_SUPERS[ecount])?;
-            }
+            write!(f, "{subshell}")?;
         }   Ok(())
     }
 }
 
+impl fmt::Display for Subshell {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", self.level, self.orbital as char)?;
+        if 1 < self.ecount {
+            let mut ecount = self.ecount as usize;
+            if 9 <  ecount {     // XXX: max two digits
+                write!(f, "{}", UNICODE_SUPERS[ecount / 10])?;
+                ecount %= 10;
+            }   write!(f, "{}", UNICODE_SUPERS[ecount])?;
+        }   Ok(())
+    }
+}
+
+/// shell: K/L/M/N/O/P/Q/R (n: 1 ~ 8), capacity: 2 * n^2
+///
+/// orbital: s/p/d/f/g/h/i (l: 0 ~ 6), capacity: 4 * (l + 1) - 2
 pub struct ElectronCFG {
     /// The noble gas of the preceding period, if any
     base: Option<ChemElem>,
@@ -461,14 +478,22 @@ pub struct ElectronCFG {
     valence: &'static [Subshell],
 }
 
+impl ElectronCFG {
+    pub fn expand(&self) -> Box<dyn Iterator<Item = &'static Subshell>> {
+        if let Some(elem) = self.base {
+            Box::new(elem.electron_configuration().expand().chain(self.valence.iter()))
+        } else { Box::new(self.valence.iter()) }
+    }
+}
+
 /// A subshell (s, p, d, or f) in the electronic configuration
-struct Subshell {
+pub struct Subshell {
     /// The shell's principal quantum number, energy level
-    level: u8,
+    pub level: u8,
     /// The label type of orbital/subshell, based on its azimuthal quantum number
-    orbital: u8, // OrbitalType,
+    pub orbital: u8, // OrbitalType,
     /// The number of electrons in this oribital
-    ecount: u8,
+    pub ecount: u8,
 }
 
 impl From<(u8, u8, u8)> for Subshell {
