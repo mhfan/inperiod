@@ -1,0 +1,192 @@
+
+<svg width="640" height="512" xmlns="http://www.w3.org/2000/svg">
+
+  <g>
+    <path stroke="gray" stroke-width="1" stroke-opacity="0.3"
+        d=" M32,32 h 588 m 0,64 h-588
+            m 0,64 h 588 m 0,64 h-588
+            m 0,64 h 588 m 0,64 h-588
+            m 0,64 h 588 m 0,64 h-588 " />
+
+    <!--text y="32" opacity="0.8">
+      <tspan x="620" dy="64">Q</tspan>
+      <tspan x="620" dy="64">P</tspan>
+      <tspan x="620" dy="64">O</tspan>
+      <tspan x="620" dy="64">N</tspan>
+      <tspan x="620" dy="64">M</tspan>
+      <tspan x="620" dy="64">L</tspan>
+      <tspan x="620" dy="64">K</tspan>
+    </text-->
+
+    <text x="20" y="400" font-size="small" transform="rotate(-90 20,400)">Energy increase (not to scale)</text>
+    <path d="M15,64 l-4,12 h8 Z v88" stroke="gray" fill="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <text x="200" y="500" font-size="small">Electron shell/orbit configuration</text>
+  </g>
+
+  <g font-size="small" fill="purple">
+    <text>
+        <tspan x="68"  y="24">8s</tspan>
+        <tspan x="68" dy="64">7s</tspan>
+        <tspan x="68" dy="64">6s</tspan>
+        <tspan x="68" dy="64">5s</tspan>
+        <tspan x="68" dy="64">4s</tspan>
+        <tspan x="68" dy="64">3s</tspan>
+        <tspan x="68" dy="64">2s</tspan>
+        <tspan x="68" dy="64">1s</tspan>
+    </text>
+
+    <text>
+        <tspan x="180"  y="48">7p</tspan>
+        <tspan x="180" dy="64">6p</tspan>
+        <tspan x="180" dy="64">5p</tspan>
+        <tspan x="180" dy="64">4p</tspan>
+        <tspan x="180" dy="64">3p</tspan>
+        <tspan x="180" dy="64">2p</tspan>
+    </text>
+
+    <text>
+        <tspan x="358"  y="62">6d</tspan>
+        <tspan x="358" dy="64">5d</tspan>
+        <tspan x="358" dy="64">4d</tspan>
+        <tspan x="358" dy="64">3d</tspan>
+    </text>
+
+    <text x="598" y="76" >5f</text>
+    <text x="598" y="140">4f</text>
+
+    <text y="24" letter-spacing="-2">
+      <tspan x="110">(ℓ = 1)</tspan>
+      <tspan x="256">(ℓ = 2)</tspan>
+      <tspan x="464">(ℓ = 3)</tspan>
+    </text>
+  </g>
+
+  <g stroke="gray" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="4 4">
+    <path d="M84,80  L180,48" />
+    <path d="M84,144 L180,112 m16,-4 L358,62" />
+    <path d="M84,208 L180,176 m16,-4 L358,126 m16,-4 L598,76" />
+    <path d="M84,272 L180,240 m16,-4 L358,190 m16,-4 L598,140" />
+    <path d="M84,336 L180,306 m16,-4 L358,254" />
+    <path d="M84,400 L180,370" />
+  </g>
+
+  <g stroke-width="4" stroke-linecap="round" stroke-dasharray="24 8">
+    <path stroke="red"
+        d=" M40,20 h 24 m 0,64 h-24
+            m 0,64 h 24 m 0,64 h-24
+            m 0,64 h 24 m 0,64 h-24
+            m 0,64 h 24 m 0,64 h-24 " />
+
+    <path stroke="green"
+        d=" M88,44 h 88 m 0,64 h-88
+            m 0,64 h 88 m 0,64 h-88
+            m 0,64 h 88 m 0,64 h-88 " />
+
+    <path stroke="blue"
+        d=" M202,58 h 152 m 0,64 h-152
+            m  0,64 h 152 m 0,64 h-152 " />
+
+    <path stroke="orange"
+        stroke-dasharray="24 8" d="M378,72 h 216 m 0,64 h-216 " />
+  </g>
+
+<g font-size="24">
+  <text transform="translate(36,-35)">
+    <tspan x="0" dx="0 -16" dy="64" opacity="0.1">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+    <tspan x="0" dx="0 -16" dy="64">⭡⭣</tspan>
+  </text>
+
+  <text transform="translate(84,-11)">
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+    </tspan>
+  </text>
+
+  <text transform="translate(198,3)">
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+    </tspan>
+  </text>
+
+  <text transform="translate(374,17)">
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+        <tspan x="0" dx="160 -16">⭡⭣</tspan>
+        <tspan x="0" dx="192 -16">⭡⭣</tspan>
+    </tspan>
+    <tspan dy="64">
+        <tspan x="0" dx= "0 -16">⭡⭣</tspan>
+        <tspan x="0" dx="32 -16">⭡⭣</tspan>
+        <tspan x="0" dx="64 -16">⭡⭣</tspan>
+        <tspan x="0" dx="96 -16">⭡⭣</tspan>
+        <tspan x="0" dx="128 -16">⭡⭣</tspan>
+        <tspan x="0" dx="160 -16">⭡⭣</tspan>
+        <tspan x="0" dx="192 -16">⭡⭣</tspan>
+    </tspan>
+  </text>
+  </g>
+  <text x="560" y="464" font-size="48">Og</text>
+</svg>

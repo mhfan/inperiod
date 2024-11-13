@@ -1,0 +1,48 @@
+
+<svg viewBox="0 -32 512 512" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+    <rect id="elem" width="32" height="32" rx="1"/>
+</defs>
+
+<symbol id="alkali">
+    <use href="#elem" y="16"/>
+    <use href="#alkaline"/>
+</symbol>
+
+<symbol id="alkaline">
+    <use href="#elem" y="80"/>
+    <use href="#transition"/>
+</symbol>
+
+<symbol id="transition">
+    <use href="#elem" y="144"/>
+    <use href="#elem" y="210"/>
+    <use href="#elem" y="274"/>
+</symbol>
+
+<symbol id="actinoids">
+    <use href="#elem" x="80" />
+    <use href="#elem" x="144"/>
+    <use href="#elem" x="210"/>
+    <use href="#elem" x="274"/>
+    <use href="#elem" x="338"/>
+    <use href="#elem" x="402"/>
+</symbol>
+
+<use href="#alkali"    x="16"  fill="red"/>
+<use href="#alkaline"  x="80"  fill="darkred"/>
+<g fill="blue">
+    <use href="#transition" x="144"/>
+    <use href="#transition" x="210"/>
+    <use href="#transition" x="274"/>
+</g>
+<use href="#alkaline"  x="338" fill="green"/>
+<use href="#alkaline"  x="402" fill="green"/>
+<use href="#alkali"    x="466" fill="purple"/>
+
+<use href="#actinoids" y="338" fill="orange"/>
+<use href="#actinoids" y="402" fill="darkorange"/>
+
+</svg>
+

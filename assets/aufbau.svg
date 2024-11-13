@@ -1,0 +1,120 @@
+
+<svg width="320" height="300" xmlns="http://www.w3.org/2000/svg">
+<text y="16" font-size="small" letter-spacing="-1">
+    <tspan x="16" dy="32">n = 1</tspan>
+    <tspan x="16" dy="32">n = 2</tspan>
+    <tspan x="16" dy="32">n = 3</tspan>
+    <tspan x="16" dy="32">n = 4</tspan>
+    <tspan x="16" dy="32">n = 5</tspan>
+    <tspan x="16" dy="32">n = 6</tspan>
+    <tspan x="16" dy="32">n = 7</tspan>
+    <tspan x="16" dy="32">n = 8</tspan>
+</text>
+
+<g transform="translate(16,27)" stroke="gray" stroke-width="0.2">
+    <path d="M0,32 h152"/>
+    <path d="M0,64 h216"/>
+    <path d="M0,96 h280"/>
+    <path d="M0,128 h280"/>
+    <path d="M0,160 h280"/>
+    <path d="M0,192 h216"/>
+    <path d="M0,224 h152"/>
+</g>
+
+<text y="18" font-size="small" letter-spacing="-2">
+    <tspan x="64" >ℓ = 0</tspan>
+    <tspan x="128">ℓ = 1</tspan>
+    <tspan x="192">ℓ = 2</tspan>
+    <tspan x="256">ℓ = 3</tspan>
+</text>
+
+<text x="180" y="276" font-size="small">Aufbau Principle</text>
+<text x="180" y="40"  font-size="8" fill="blue">
+    <tspan>n: Principle quantum number</tspan>
+    <tspan x="180" dy="12">ℓ: Azimuthal quantum number</tspan>
+</text>
+
+<defs>
+  <ellipse id="orbit" rx="16" ry="12" stroke="black" stroke-width="0.5"/>
+
+  <marker id="arrow" fill="red" viewBox="0 0 16 16" refX="8" refY="8"
+    markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+    <path d="M0,2 L16,8 L0,14 L6,8 z" />
+  <!-- A marker to be used as an arrowhead -->
+  </marker>
+
+  <path id="orbit_s" d="M8,8 h48"  transform="translate(48,51)  rotate(-26.5)"/>
+  <path id="orbit_p" d="M8,8 h120" transform="translate(48,115)  rotate(-26.5)"/>
+  <path id="orbit_d" d="M8,8 h192" transform="translate(48,179) rotate(-26.5)"/>
+  <path id="orbit_f" d="M8,8 h264" transform="translate(48,243) rotate(-26.5)"/>
+</defs>
+
+<g stroke="red" marker-start="url(#arrow)">
+  <use href="#orbit_s"/> <use href="#orbit_s" y="32"/>
+  <use href="#orbit_p"/> <use href="#orbit_p" y="32"/>
+  <use href="#orbit_d"/> <use href="#orbit_d" y="32"/>
+  <use href="#orbit_f"/> <use href="#orbit_f" y="32"/>
+</g>
+
+<g transform="translate(80,11)" fill="pink">
+    <use href="#orbit" y="32" />
+    <use href="#orbit" y="64" />
+    <use href="#orbit" y="96" />
+    <use href="#orbit" y="128"/>
+    <use href="#orbit" y="160"/>
+    <use href="#orbit" y="192"/>
+    <use href="#orbit" y="224"/>
+    <use href="#orbit" y="256"/>
+    <g transform="translate(-10,6)" fill="black">
+        <text y="32" >1s</text>
+        <text y="64" >2s</text>
+        <text y="96" >3s</text>
+        <text y="128">4s</text>
+        <text y="160">5s</text>
+        <text y="192">6s</text>
+        <text y="224">7s</text>
+        <text y="256">8s</text>
+    </g>
+</g>
+
+<g transform="translate(144,11)" fill="lightgreen">
+    <use href="#orbit" y="64"/>
+    <use href="#orbit" y="96" />
+    <use href="#orbit" y="128"/>
+    <use href="#orbit" y="160"/>
+    <use href="#orbit" y="192"/>
+    <use href="#orbit" y="224"/>
+    <g transform="translate(-10,38)" fill="black">
+        <text y="32" >2p</text>
+        <text y="64" >3p</text>
+        <text y="96" >4p</text>
+        <text y="128">5p</text>
+        <text y="160">6p</text>
+        <text y="192">7p</text>
+    </g>
+</g>
+
+<g transform="translate(208,11)" fill="lightblue">
+    <use href="#orbit" y="96" />
+    <use href="#orbit" y="128"/>
+    <use href="#orbit" y="160"/>
+    <use href="#orbit" y="192"/>
+    <g transform="translate(-10,70)" fill="black">
+        <text y="32" >3d</text>
+        <text y="64" >4d</text>
+        <text y="96" >5d</text>
+        <text y="128">6d</text>
+    </g>
+</g>
+
+<g transform="translate(272,11)" fill="orange">
+    <use href="#orbit" y="128"/>
+    <use href="#orbit" y="160"/>
+    <g transform="translate(-10,102)" fill="black">
+        <text y="32">4f</text>
+        <text y="64">5f</text>
+    </g>
+</g>
+
+</svg>
+
