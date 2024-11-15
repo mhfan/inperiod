@@ -338,7 +338,7 @@ pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹�
 //const UNICODE_SUBS: [char; 16] = [ //&str = r"₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⸝";
 //    '₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₊', '₋', '₌', '₍', '₎', 'ₐ', ];
 
-#[derive(PartialEq, Clone, Copy)] pub enum AtomicWeight {
+#[derive(PartialEq, Debug)] pub enum AtomicWeight {
     //Interval(core::ops::RangeInclusive<f64>), // conversional?
     //Uncertainty { value: f64, uncertainty: f64 },
     Abridged { value: f32, uncertainty: f32 },
@@ -352,9 +352,10 @@ pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹�
     assert_eq!("1.0080 (2)".parse::<AtomicWeight>(),
         Ok(AtomicWeight::Abridged { value: 1.008, uncertainty: 0.0002 }));
     assert_eq!("1.0080(12)".parse::<AtomicWeight>().unwrap().to_string(), "1.0080(12)");
+    assert_eq!("39.95 ± 0.16".parse::<AtomicWeight>().unwrap().to_string(), "39.95(16)");
     assert_eq!("[294]".parse::<AtomicWeight>(), Ok(AtomicWeight::MassNumber(294)));
     assert_eq!("1.0080(2)".parse::<AtomicWeight>().unwrap(),
-        "1.0080 ± 0.0002".parse::<AtomicWeight>().unwrap());
+        "1.0080 ±  0.0002".parse::<AtomicWeight>().unwrap());
     assert!("9.109 383 7139(28)".parse::<AtomicWeight>().is_ok());
 ``` */
 impl std::str::FromStr for AtomicWeight {
@@ -400,19 +401,19 @@ use core::fmt;
 impl fmt::Display for AtomicWeight {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            AtomicWeight::MassNumber(number) => write!(f, "[{}]", number),
             AtomicWeight::Abridged { value, uncertainty } => {
-                #[allow(clippy::overly_complex_bool_expr)]
-                if true || *uncertainty == 0. { return write!(f, "{value}") } // XXX:
-                //return write!(f, "{} ± {}", self.value, self.uncertainty)?;
+                if *uncertainty == 0. { return write!(f, "{value}") }
+                //return write!(f, "{value} ± {uncertainty}")?;
 
                 if *uncertainty < 1. {
                     let mut prec = (-uncertainty.log10()).ceil() as i32;
-                    let mut uncertainty = uncertainty * 10f32.powi(prec);
-                    while uncertainty.fract() != 0. { prec += 1; uncertainty *= 10.; }
-                    write!(f, "{:.prec$}({})", value, uncertainty, prec = prec as usize)
-                } else { write!(f, "{}({})", value, uncertainty) }
+                    let mut digit =  uncertainty * 10f32.powi(prec);
+                    while f32::EPSILON * 10. < digit.fract() &&
+                        digit.fract() < 1. - f32::EPSILON * 10. {  prec += 1; digit *= 10.; }
+                    write!(f, "{value:.prec$}({})", digit.round(), prec = prec as usize)
+                } else { write!(f, "{value}({uncertainty})") }
             }
-            AtomicWeight::MassNumber(number) => write!(f, "[{}]", number),
         }
     }
 }
@@ -431,7 +432,6 @@ impl fmt::Display for AtomicWeight {
     ElectronCFG { base, valence }
 } */
 
-//  Electronic energy levels: https://www.webelements.com/oganesson/atoms.html
 /** ```
     use inperiod::ChemElem;
     assert_eq!(ChemElem::H .electron_configuration().to_string(), "1s");
@@ -440,12 +440,12 @@ impl fmt::Display for AtomicWeight {
     assert_eq!(ecfg.to_string(), "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶");
     assert_eq!(ecfg.expand().map(|x| x.to_string()).collect::<Vec<_>>().join(" "),
         "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s² 4p⁶ 4d¹⁰ 5s² 5p⁶ 4f¹⁴ 5d¹⁰ 6s² 6p⁶ 5f¹⁴ 6d¹⁰ 7s² 7p⁶");
+    // https://www.webelements.com/oganesson/atoms.html
 ``` */
 impl fmt::Display for ElectronCFG {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut first = true;
         if let Some(base) = self.base {     first = false;
-            //write!(f, "{}", base.electron_configuration().to_string())?; // expanding
             write!(f, "[{}]", base.symbol())?;
         }
         for subshell in self.valence {

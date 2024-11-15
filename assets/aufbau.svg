@@ -11,7 +11,7 @@
     <tspan x="0" y="192">6 P<tspan dy="-6" font-size="10">18</tspan></tspan>
     <tspan x="0" y="224">7 Q<tspan dy="-6" font-size="10">8</tspan></tspan>
 </text>
-<text fill="blue" letter-spacing="-2" transform="translate(24,280) rotate(-90)">n =</text>
+<text fill="blue" letter-spacing="-1" transform="translate(22,274) rotate(-90)">n =</text>
 
 <g transform="translate(16,27)" stroke="gray" stroke-width="0.2">
     <path d="M0,32 h152"/>
@@ -23,7 +23,7 @@
     <path d="M0,224h152"/>
 </g>
 
-<text y="18" letter-spacing="-2">
+<text y="18" letter-spacing="-1">
     <tspan x="64" >ℓ = 0</tspan>
     <tspan x="128">ℓ = 1</tspan>
     <tspan x="192">ℓ = 2</tspan>

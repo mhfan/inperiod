@@ -38,9 +38,10 @@ jobs:
             npm -g install -D tailwindcss
 
       - name: Build Project
-        run: |
+        run: | #cargo r --bin syncd -F syncdep
             npx tailwindcss -m -i ./tailwind_base.css -o ./assets/tailwind.css
             dx build --release
+            cargo t
 
       #- name: Setup GitHub Pages
       #  uses: actions/configure-pages@v3

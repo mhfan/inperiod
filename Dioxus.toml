@@ -17,7 +17,7 @@ base_path = "inperiod" # "/"
 reload_html = true  # when watcher trigger, regenerate the `index.html`
 
 # which files or dirs will be watcher monitoring
-watch_path = ["src", "assets", "tailwind_base.css", "tailwind.config.js"]
+watch_path = ["src", "assets", "index.html", "tailwind_base.css", "tailwind.config.js"]
 
 [web.resource]	# include `assets` in web platform
 style = ["tailwind.css"]    # CSS style file
@@ -27,6 +27,6 @@ script = []	# Javascript code file
 script = []	# Javascript code file, serve: [dev-server] only
 #script = ["https://cdn.tailwindcss.com"]
 
-#[bundle]
-#resources = ["ptable.png"]
+[bundle]
+icon = ["assets/ptable.svg"]
 

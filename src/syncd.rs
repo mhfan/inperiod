@@ -193,7 +193,7 @@ fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
     let mut file = File::create(PathBuf::from("src").join("ciaaw.rs"))?;
     file.write_all(HEADER)?;
     file.write_all(b"\nuse super::{ChemElem, AtomicWeight::{self, *}};\n\nimpl ChemElem {\n")?;
-    file.write_all(b"    pub const fn atomic_weight(&self) -> AtomicWeight {\n")?;
+    file.write_all(b"    pub const fn atomic_weight(&self) -> &AtomicWeight {\n")?;
 
     file.write_all(b"const MASS: [AtomicWeight; ChemElem::MAX as usize] = [ MassNumber(0),\n")?;
     let document = Html::parse_document(&reqwest_get(
@@ -215,7 +215,7 @@ fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    file.write_all(b"];\n        MASS[*self as usize]\n    }\n")?;
+    file.write_all(b"];\n        &MASS[*self as usize]\n    }\n")?;
     file.write_all(b"}\n\n")?;  file.flush()?;  Ok(())
 }
 

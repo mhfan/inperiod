@@ -14,11 +14,11 @@ fn main() {
     #[cfg(not(feature = "desktop"))] launch(App);
     #[cfg(feature = "desktop")] LaunchBuilder::desktop().with_cfg(dioxus::desktop::Config::new()
         .with_window(dioxus::desktop::WindowBuilder::new().with_title(env!("CARGO_PKG_NAME")))
-        .with_custom_head("<link rel='stylesheet' href='tailwind.css'/>".into())
         //.with_custom_head("<script  src='https://cdn.tailwindcss.com'/>".into())
-        .with_custom_head("<link rel='icon' href='ptable.png'/>".into())
-        //.with_custom_index(r"<!DOCTYPE html><html>...</html>".into())
-        //.with_icon("assets/ptable.png".into())    // FIXME:
+        .with_custom_head("<link rel='stylesheet' href='tailwind.css'/>".into())
+        .with_custom_index(include_str!("../index.html").replace(r"{base_path}", ".")
+            .replace(r"{style_include}{script_include}", "").into())
+        //.with_icon("assets/ptable.svg".into())    // FIXME:
     ).launch(App);
 }
 
@@ -32,11 +32,11 @@ fn App() -> Element {
     }
 }
 
-#[component] fn PeriodicTable() -> Element { rsx! {     // scale-50 origin-top-left
+#[component] fn PeriodicTable() -> Element { rsx! {     // scale-50 origin-top-left h-[128rem]
     div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
-        //style: "transform: scale(0.5); transform-origin: top left;",
-        style: "zoom: 0.5;", // FIXME: malformed in Safari, which works well scaling on <html>
+        //style: "transform: scale(0.5); transform-origin: 0 0;",
+        //style: "zoom: 0.5;", // FIXME: malformed in Safari, which works well scaling on <html>
 
         p { class: "font-bold relative -bottom-4 rotate-180",
             style: "writing-mode: vertical-rl;", "PERIOD" }
@@ -50,7 +50,7 @@ fn App() -> Element {
 
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
             for i in 1..=7 { p { "{i}" } } }
-        ElemTile { ordinal: 1, annote: false }
+        ElemTile { ordinal: 1,  annote: false }
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
         ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
         div { class: "relative col-span-6",
@@ -239,11 +239,12 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
     rsx! { //shadow-border-1 shadow-indigo-300 // 152x198
         div { class: format!("flex flex-col rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 relative {} {}",
-            get_bg_color(), draw_metal_bound()), if annote {
-                a { class: "absolute font-bold text-lg/6 text-amber-600 pointer-events-none",
+            get_bg_color(), draw_metal_bound()), if annote { div { //class: "pointer-events-none",
+                //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
+                a { class: "absolute font-bold text-lg/6 text-amber-600",
                     href: "https://ciaaw.org/radioactive-elements.htm",
                     style: "top: -1.5rem; right: 1rem;", "ratioactive" }
-                div { class: "absolute text-lg leading-tight text-nowrap text-right pointer-events-none",
+                div { class: "absolute text-lg leading-tight text-nowrap text-right",
                     style: "right: calc(100% + 0.4rem);",
                     p { a { href: "https://ciaaw.org/atomic-weights.htm",
                         "*standard atomic weight/mass" } }
@@ -256,7 +257,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         href: "https://en.wikipedia.org/wiki/Electron_configuration",
                         "electron configuration" }
                 }
-                div { class: "absolute text-lg leading-tight text-nowrap pointer-events-none",
+                div { class: "absolute text-lg leading-tight text-nowrap",
                     style: "left: calc(100% + 0.4rem);",
                     p { class: "mt-1", "atomic number" }
                     p { "electron affinity" }
@@ -272,7 +273,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
                             "atomic radius" } } " (pm)*" }
                 }
-            }
+            } }
 
             div { class: "flex",
                 div { class: "grow",
@@ -337,7 +338,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         |(cs, file)| rsx! {
                         span { class: "pl-2 grow peer", { cs.to_string() } }
                         figure { class: "absolute w-[10rem] max-w-none border rounded
-                                border-orange-600 bg-indigo-50 hidden peer-hover:block z-10",
+                                border-orange-600 bg-white hidden peer-hover:block z-10",
                             style: format!("{}", match ordinal {
                                 89..=103|2|10|18|36|54|71|86|118 =>
                                     "right: calc(100% + 0.4rem); bottom: 0px;",
@@ -367,14 +368,14 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     onmouseover: move |_| over_ecfg.set(true), { simplify_ecfg() }
                     if *over_ecfg.read() { figure {
                         class: "absolute w-[40rem] max-w-none border rounded
-                            border-orange-600 bg-indigo-50 group-hover:block z-10",
+                            border-orange-600 bg-white group-hover:block z-10",
                         style: format!("{}", match ordinal {
-                            2|7..=10 => "right: calc(100% + 0.125rem); top: -0.1em;",
+                            2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
                             57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
                             _ => if ordinal == 71  ||
                                     ordinal == 103 || matches!(elem.group(), 0|15..=18) {
                                         "right: calc(100% + 0.125rem); bottom: -0.2em;"
-                            } else {     "left: calc(100% + 0.125rem); top: -0.1em;" }
+                            } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
                         }), ShowEcfg { ordinal } //figcaption {}
                     } }
 
@@ -409,7 +410,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 "Energy increase (not to scale)"
             }
             path { "stroke-linecap": "round", "stroke-linejoin": "round", fill: "gray",
-                "stroke-width": "2", stroke: "gray", d: "M15,64 l-4,12 h8 Z v88",
+                "stroke-width": "2", stroke: "gray", d: "M15,96 l-4,12 h8 Z v88",
             }
         }
         g { fill: "black",
@@ -467,17 +468,17 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 
         g { "font-size": "24", for shell in ecfg {
             if shell.orbital == b's' { text {
-                transform: format!("translate(38,{})",  541 - 64 * shell.level as usize),
+                transform: format!("translate(38,{})",  541 - 64 * shell.level as i32),
                 tspan { x: "0", dx: "0 -16", if shell.ecount == 2 { "⭡⭣" } else { "⭡" } }
             } } else if shell.orbital == b'p' { text {
-                transform: format!("translate(86,{})",  501 - 64 * shell.level as usize),
+                transform: format!("translate(86,{})",  501 - 64 * shell.level as i32),
                 for i in 0..3 { if i < shell.ecount {
                     tspan { x: "0", dx: format!("{} -16", i * 32),
                         if shell.ecount < 4 + i { "⭡" } else { "⭡⭣" }
                     }
                 } }
             } } else if shell.orbital == b'd' { text {
-                transform: format!("translate(200,{})", 451 - 64 * shell.level as usize),
+                transform: format!("translate(200,{})", 451 - 64 * shell.level as i32),
                 for i in 0..5 { if i < shell.ecount {
                     tspan { x: "0", dx: format!("{} -16", i * 32),
                         if shell.ecount < 6 + i { "⭡" } else { "⭡⭣" }
