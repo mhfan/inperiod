@@ -249,10 +249,10 @@ impl ChemElem {
     pub const fn category(&self) -> ElemClass {
         match self.atomic_number() {
             1|6|7|8|15|16|34 => ElemClass::OtherNonmetal("Other Nonmetals"),
-            5|14|33|52|85 => ElemClass::Metalloid("Metalloids"), // semi-metals
-            13|31|49|50|81..=84|114 => // XXX: 113..=117 ?
+            5|14|32|33|51|52 => ElemClass::Metalloid("Metalloids"), // semi-metals
+            13|31|49|50|81..=84|113..117 =>
                 ElemClass::PoorMetal("Poor metals"),  // post-transition metals
-            109..=118 if self.atomic_number() != 112 => ElemClass::Unknown("Unknown"),
+            //109..=118 if self.atomic_number() != 112 => ElemClass::Unknown("Unknown"),
 
             // Rare earth metals (Lanthanoids plus Sc and Y)
             57..=70  => ElemClass::Lanthanide("Lanthanoids"),   // Lanthanides (include Lu)
