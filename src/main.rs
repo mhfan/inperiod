@@ -32,7 +32,12 @@ fn App() -> Element {
     }
 }
 
+//#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
+//#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
+
 #[component] fn PeriodicTable() -> Element { rsx! {     // scale-50 origin-top-left h-[128rem]
+    //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
+    //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
     div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
         //style: "transform: scale(0.5); transform-origin: 0 0;",
@@ -49,7 +54,12 @@ fn App() -> Element {
             style: "writing-mode: vertical-rl;", "E-shell" br{} "E-max" }
 
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
-            for i in 1..=7 { p { "{i}" } } }
+            for i in 1..=7 { p {
+                /*onmouseout:  move |_|  group_sel.write().r#type = SelType::None,
+                onmouseover: move |_| *group_sel.write() = Selection {
+                    r#type: SelType::Period, val: i, }, */"{i}"
+            } }
+        }
         ElemTile { ordinal: 1,  annote: false }
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
         ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
@@ -85,6 +95,9 @@ fn App() -> Element {
         for i in 3..=7  { p { class: "self-end text-center text-lg font-bold",
             { format!("{}B - {i}", ROMAN_NUM[i]) }
         } }
+        /* for i in 8..=10 { p { class: "self-end text-center text-lg font-bold
+            shadow-[0_2px] shadow-indigo-300", { format!("VIIIB - {i}") }
+        } } */
         p { class: "self-end text-center text-lg font-bold
             col-span-3 shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10" } // border-b-2
         p { class: "self-end text-center text-lg font-bold",  "IB - 11" }
@@ -203,25 +216,25 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
     let mut over_ecfg = use_signal(|| false);
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-    let simplify_ecfg = || match ordinal {
-        //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..])) // to expand
+    let simplify_long_ecfg = || match ordinal {
+        //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
         81..=86   => format!("[Hg] 6p{}", UNICODE_SUPERS[ordinal as usize -  80]),
         113..=118 => format!("[Cn] 7p{}", UNICODE_SUPERS[ordinal as usize - 112]),
         _ => elem.electron_configuration().to_string()
     };
 
     let get_bg_color = || match elem.category() {
-        OtherNonmetal(_) => "bg-non-metal",
-        Metalloid(_)     => "bg-metalloid",
-        PoorMetal(_)     => "bg-poor-metal",
-        Lanthanide(_)    => "bg-lanthanide",
-        Actinide(_)      => "bg-actinide",
-        Unknown(_)       => "bg-unknown",
-        Alkali(_)        => "bg-alkali",
-        Alkaline(_)      => "bg-alkaline",
-        Halogen(_)       => "bg-halogen",
-        NobleGas(_)      => "bg-noble-gas",
-        Transition(_)    => "bg-transition"
+        AlkaliMetals        => "bg-alkali",
+        AlkalineEarthMetals => "bg-alkaline",
+        TransitionMetals    => "bg-transition",
+        PoorMetals          => "bg-poor-metal",
+        Metalloids          => "bg-metalloid",
+        OtherNonmetals      => "bg-non-metal",
+        Halogens            => "bg-halogen",
+        NobleGases          => "bg-noble-gas",
+        Lanthanoids         => "bg-lanthanide",
+        Actinoids           => "bg-actinide",
+        Unknown             => "bg-unknown",
     };
 
     let draw_metal_bound = || match ordinal {
@@ -236,9 +249,21 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
         35|80 => "text-liquid", _ => "",
     };
 
-    rsx! { //shadow-border-1 shadow-indigo-300 // 152x198
+    /* let need_highlight = move || {
+        let sel = use_context::<Signal<Selection>>()();
+        match sel.r#type {
+            SelType::Period => sel.val == elem.period(),
+            SelType::Group  => sel.val == elem.group(),
+            SelType::Block  => sel.val == elem.block(),
+            SelType::Class  => sel.val == elem.category(),
+            _ => false,
+        }
+    }; */
+
+    rsx! { //shadow-border-1 shadow-indigo-300 // size: 152x198
         div { class: format!("flex flex-col rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 relative {} {}",
+            //if need_highlight() { "outline-green-800 outline-2 outline" } else { "" },
             get_bg_color(), draw_metal_bound()), if annote { div { //class: "pointer-events-none",
                 //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
                 a { class: "absolute font-bold text-lg/6 text-amber-600",
@@ -365,7 +390,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 }
                 p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
                     onmouseout:  move |_| over_ecfg.set(false),
-                    onmouseover: move |_| over_ecfg.set(true), { simplify_ecfg() }
+                    onmouseover: move |_| over_ecfg.set(true), { simplify_long_ecfg() }
                     if *over_ecfg.read() { figure {
                         class: "absolute w-[40rem] max-w-none border rounded
                             border-orange-600 bg-white group-hover:block z-10",
@@ -373,7 +398,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                             2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
                             57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
                             _ => if ordinal == 71  ||
-                                    ordinal == 103 || matches!(elem.group(), 0|15..=18) {
+                                    ordinal == 103 || matches!(elem.group(), 15..=19) {
                                         "right: calc(100% + 0.125rem); bottom: -0.2em;"
                             } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
                         }), ShowEcfg { ordinal } //figcaption {}
@@ -385,7 +410,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         } }
                     }
                 }
-                // TODO: abundance, origin
+                // TODO: show origin/source and abundance according to selection
             }
         }
     }

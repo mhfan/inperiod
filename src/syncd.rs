@@ -7,7 +7,7 @@
 
 #![allow(non_snake_case)] #![allow(unused)]
 use std::{error::Error, fs::{self, File}, io::Write, path::PathBuf};
-use reqwest::blocking::get as reqwest_get;  // XXX: reqwest::get(url).await?.text().await?;
+use reqwest::blocking::get as reqwest_get;  // TODO: reqwest::get(url).await?.text().await?;
 use scraper::{Html, Selector};
 
 fn main() -> Result<(), Box<dyn Error>> {   // cargo r --bin syncd -F syncdep

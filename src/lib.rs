@@ -24,6 +24,7 @@
     https://www.futurity.org/periodic-table-new-elements-1087782-2/
     https://www.vertex42.com/Files/pdfs/2/periodic-table_color.pdf
     https://www.vertex42.com/ExcelTemplates/periodic-table-of-elements.html
+    https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
     https://iupac.org/what-we-do/periodic-table-of-elements/, https://svs.gsfc.nasa.gov/13873/
     https://commons.wikimedia.org/wiki/File:Periodic_Table_-_Atomic_Properties_of_the_Elements.png
     https://commons.wikimedia.org/wiki/File:Periodic_Table_of_the_elements.jpg
@@ -232,7 +233,7 @@ impl ChemElem {
                8|16|34|52|84|116 => 16, // Chalcogens
                9|17|35|53|85|117 => 17, // Halogens
             2|10|18|36|54|86|118 => 18, // Noble gases
-                57..=70|89..=102 => 0,  // Rare earth metals (Lanthanides and Actinides)
+                57..=70|89..=102 => 19, // f-group/block (Lanthanides and Actinides)
             _ => unreachable!(),
         }
     }
@@ -248,21 +249,20 @@ impl ChemElem {
     /// https://en.wikipedia.org/wiki/Periodic_table#Classification_of_elements
     pub const fn category(&self) -> ElemClass {
         match self.atomic_number() {
-            1|6|7|8|15|16|34 => ElemClass::OtherNonmetal("Other Nonmetals"),
-            5|14|32|33|51|52 => ElemClass::Metalloid("Metalloids"), // semi-metals
-            13|31|49|50|81..=84|113..117 =>
-                ElemClass::PoorMetal("Poor metals"),  // post-transition metals
+            1|6|7|8|15|16|34 => ElemClass::OtherNonmetals,
+            5|14|32|33|51|52 => ElemClass::Metalloids,  // semi-metals
+            13|31|49|50|81..=84|113..117 => ElemClass::PoorMetals,  // post-transition metals
             //109..=118 if self.atomic_number() != 112 => ElemClass::Unknown("Unknown"),
 
-            // Rare earth metals (Lanthanoids plus Sc and Y)
-            57..=70  => ElemClass::Lanthanide("Lanthanoids"),   // Lanthanides (include Lu)
-            89..=102 => ElemClass::Actinide("Actinoids"),       // Actinides (include Lr)
+            // Rare earth metals  (Lanthanoids plus Sc and Y)
+            57..=70  => ElemClass::Lanthanoids,     // Lanthanides (include Lu)
+            89..=102 => ElemClass::Actinoids,       // Actinides   (include Lr)
             _ => match self.group() {
-                1  => ElemClass::Alkali("Alkali metals"),
-                2  => ElemClass::Alkaline("Alkaline earth metals"),
-                17 => ElemClass::Halogen("Halogens"),
-                18 => ElemClass::NobleGas("Noble gases"),
-                _  => ElemClass::Transition("Transition metals"),   // 3..=12 and (112)
+                1  => ElemClass::AlkaliMetals,
+                2  => ElemClass::AlkalineEarthMetals,
+                17 => ElemClass::Halogens,
+                18 => ElemClass::NobleGases,
+                _  => ElemClass::TransitionMetals,  // 3..=12
             }
         }
     }
@@ -509,18 +509,18 @@ impl From<(u8, u8, u8)> for Subshell {
     /** ℓ = 4, no historical name */            G = b'g',
 }
 
-pub enum ElemClass {
-    Alkali(&'static str),
-    Alkaline(&'static str),
-    Transition(&'static str),
-    PoorMetal(&'static str),
-    Metalloid(&'static str),
-    OtherNonmetal(&'static str),
-    Halogen(&'static str),
-    NobleGas(&'static str),
-    Unknown(&'static str),
-    Lanthanide(&'static str),
-    Actinide(&'static str),
+#[repr(u8)] #[derive(Debug)] pub enum ElemClass {
+    Unknown = 0,
+    AlkaliMetals,
+    AlkalineEarthMetals,
+    TransitionMetals,
+    PoorMetals,
+    Metalloids,
+    OtherNonmetals,
+    Halogens,
+    NobleGases,
+    Lanthanoids,
+    Actinoids,
 }
 
 const ELEM_SYMBOL: [&str; ChemElem::MAX as usize] = [ "", // placeholder
