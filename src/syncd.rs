@@ -235,7 +235,8 @@ fn parse_pubchem() -> Result<(), Box<dyn Error>> {
     //let path = PathBuf::from(env::var("OUT_DIR")?).join("pubchem.rs"))?;
     let mut file = File::create(PathBuf::from("src").join("pubchem.rs"))?;
     file.write_all(HEADER)?;
-    file.write_all(b"\nuse super::{ChemElem, ElectronCFG, Subshell};\n\nimpl ChemElem {\n")?;
+    file.write_all(b"\nuse super::{ChemElem, ElectronCFG, Subshell, ecfg, ssc};\n")?;
+    file.write_all(b"\nimpl ChemElem {\n")?;
 
     let column = &elem_all.Table.Columns.Column;
     let Some(an_pos) = column.iter().position(|x| x == "AtomicNumber")
@@ -289,29 +290,27 @@ fn parse_pubchem() -> Result<(), Box<dyn Error>> {
     // https://en.wikipedia.org/wiki/Electron_configurations_of_the_elements_(data_page)
     if let Some(pos) = column.iter().position(|x| x == "ElectronConfiguration") {
         file.write_all(b"    pub const fn electron_configuration(&self) -> &ElectronCFG {\n")?;
-        file.write_all(b"const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [\n")?;
-        file.write_all(b"    ElectronCFG { base: None, valence: &[] },\n")?;
+        file.write_all(b"const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [ ecfg!(),\n")?;
 
         for row in elem_all.Table.Row.iter() {
             let ecfg = row.Cell[pos].as_str();
             let (base, rest) = ecfg.trim_start().find(']')
                 .map_or(("", ecfg), |pos| (&ecfg[1..pos], &ecfg[pos+1..]));
 
-            file.write_all(b"    ElectronCFG { base: ")?;
-            if base.is_empty() { file.write_all(b"None,")?; } else {
-                file.write_fmt(format_args!("Some(ChemElem::{base}),"))?;
-            }   file.write_all(b" valence: &[\n")?;
+            file.write_all(b"    ecfg![")?;
+            if !base.is_empty() { file.write_fmt(format_args!("{base}, "))?; }
 
             let mut coll = rest.split_ascii_whitespace().collect::<Vec<_>>();
             coll.sort_by(|&a, &b| a.as_bytes()[0].cmp(&b.as_bytes()[0]));
 
+            let mut first = true;
             for part in coll {
                 if part.starts_with('(') { continue }
+                if !first { file.write_all(b", ")?; } first = false;
                 let p3 = if 2 < part.len() { &part[2..] } else { "1" };
-                file.write_fmt(format_args!(
-                    "        Subshell {{ level: {}, orbital: b'{}', ecount: {:>2} }},\n",
+                file.write_fmt(format_args!("ssc!({}, b'{}', {:>2})",
                     &part[..1], &part[1..2], p3))?;
-            }   file.write_all(b"    ] },\n")?;
+            }   file.write_all(b"],\n")?;
         }       file.write_all(b"];\n")?;
         file.write_all(b"        &ECFG[*self as usize]\n    }\n")?;
     }

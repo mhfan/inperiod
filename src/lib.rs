@@ -509,6 +509,17 @@ impl From<(u8, u8, u8)> for Subshell {
     /** ℓ = 4, no historical name */            G = b'g',
 }
 
+#[macro_export] macro_rules! ecfg {
+    ($base:ident, $($valence:expr),+ $(,)?) => {
+        ElectronCFG { base: Some(ChemElem::$base), valence: &[$($valence),+] }
+    };
+    ($($valence:expr),* $(,)?) => { ElectronCFG { base: None, valence: &[$($valence),*] } };
+}
+
+#[macro_export] macro_rules! ssc {
+    ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
+}
+
 #[repr(u8)] #[derive(Debug)] pub enum ElemClass {
     Unknown = 0,
     AlkaliMetals,
