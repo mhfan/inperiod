@@ -164,21 +164,30 @@ fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
     let td_selector = Selector::parse("td")?;
     let mut am_all = vec![""; inperiod::ChemElem::MAX as usize];
 
-    let document = Html::parse_document(&reqwest_get(
-        "https://ciaaw.org/radioactive-elements.htm")?.text()?);
-    if let Some(table) = document.select(&Selector::parse("tbody")?).next() {
-        let (mut half_life, mut atomic_number) = ("", 0usize);
-        fn parse_half_life(input: &str) -> f32 {
-            input.trim_start_matches(|c: char| !c.is_ascii_digit())
+    fn half_life_lt(a: &str, b: &str) -> bool {
+        fn parse_hl_number(s: &str) -> f32 {
+            s.trim_start_matches(|c: char| !c.is_ascii_digit())
                 .split_once(['(', ' ']).and_then(|(x, _)|
                     x.trim_start().parse::<f32>().ok()).unwrap_or(0.)
         }
 
+        let Some((an, au)) = a.trim_end().rsplit_once(' ') else { return false };
+        let Some((bn, bu)) = b.trim_end().rsplit_once(' ') else { return false };
+        if au == bu { parse_hl_number(an) < parse_hl_number(bn) } else {
+            const HLUNITS: [&str; 8] = ["ms", "s", "min", "h", "d", "a", "Ka", "Ma"];
+            HLUNITS.iter().position(|&x| x == au).unwrap_or(0) <
+            HLUNITS.iter().position(|&x| x == bu).unwrap_or(0)
+        }
+    }
+
+    let document = Html::parse_document(&reqwest_get(
+        "https://ciaaw.org/radioactive-elements.htm")?.text()?);
+    if let Some(table) = document.select(&Selector::parse("tbody")?).next() {
+        let (mut half_life, mut atomic_number) = ("", 0usize);
         for row in table.select(&tr_selector) {
             let cells = row.select(&td_selector).collect::<Vec<_>>();
             if  cells.len() < 5 {   if cells.len() < 2 { continue }
-                let hl2 = parse_half_life(cells[1].text().next().unwrap_or(""));
-                if parse_half_life(half_life) < hl2 {
+                if half_life_lt(half_life,  cells[1].text().next().unwrap_or("")) {
                     am_all[atomic_number] = cells[0].text().next().unwrap_or("");
                     //println!("{}: {} *", atomic_number, am_all[atomic_number]);
                 }   continue
