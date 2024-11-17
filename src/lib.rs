@@ -593,7 +593,7 @@ const ELEM_CH: [char; ChemElem::MAX as usize] = [ ' ', // placeholder
 
 /// https://github.com/mozillazg/python-pinyin
 const ELEM_PY: [&str; ChemElem::MAX as usize] = [ "", // placeholder
-    "qīng", "hài", "lǐ", "pī", "péng", "tàn", "dàn", "yǎng", "fú", "nǎi",
+    "qīng", "hài", "lǐ", "pí", "péng", "tàn", "dàn", "yǎng", "fú", "nǎi",
     "nà", "měi", "lǚ", "guī", "lín", "liú", "lǜ", "yà", "jiǎ", "gài",
     "kàng", "tài", "fán", "gè", "měng", "tiě", "gǔ", "niè", "tóng", "xīn",
     "jiā", "zhě", "shēn", "xī", "xiù", "kè", "rú", "sī", "yǐ", "gào",
@@ -602,7 +602,7 @@ const ELEM_PY: [&str; ChemElem::MAX as usize] = [ "", // placeholder
     "pǒ", "shān", "yǒu", "gá", "tè", "dī", "huǒ", "ěr", "diū", "yì",
     "lǔ", "hā", "tǎn", "wū", "lái", "é", "yī", "bó", "jīn", "gǒng",
     "tā", "qiān", "bì", "pō", "ài", "dōng", "fāng", "léi", "ā", "tǔ",
-    "pú", "yóu", "ná", "bū", "méi", "jū", "péi", "kāi", "āi", "fèi",
+    "pú", "yóu", "ná", "bù", "méi", "jū", "péi", "kāi", "āi", "fèi",
     "mén", "nuò", "láo", "lú", "dù", "xǐ", "bō", "hēi", "mài", "dá",
     "lún", "gē", "nǐ", "fū", "mò", "lì", "tián", "ào",
 ];
