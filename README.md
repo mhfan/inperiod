@@ -42,9 +42,9 @@ cd dist && cargo r --features desktop
 
 Note: Recommended to print as PDF on Chrome browser.
 
-![Elements Periodic Table](https://github.com/user-attachments/assets/89435148-8b88-4308-a61b-90b1ad04b2ab)
-![Show electron configuration diagram](https://github.com/user-attachments/assets/ddbb6ddc-dcc6-4cdb-b07d-a8b6fac10937)
-![Show crystal structure](https://github.com/user-attachments/assets/5ae493e0-a247-4860-a9c1-521f94077e7d)
+![Elements Periodic Table](https://github.com/user-attachments/assets/34632195-1344-4377-a02e-d654e88a0afb)
+![Show electron configuration diagram](https://github.com/user-attachments/assets/e6a46fba-04cf-4275-b1e0-db78aecf307d)
+![Show crystal structure](https://github.com/user-attachments/assets/32518da9-e1b5-4314-95bc-cffa43ec6fc4)
 
 ## References
 

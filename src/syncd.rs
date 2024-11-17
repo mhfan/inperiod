@@ -11,7 +11,7 @@ use reqwest::blocking::get as reqwest_get;  // TODO: reqwest::get(url).await?.te
 use scraper::{Html, Selector};
 
 fn main() -> Result<(), Box<dyn Error>> {   // cargo r --bin syncd -F syncdep
-    //parse_electronegativity()?; // use data from pubchem
+    //parse_electronegativity()?; // use the data from pubchem instead
     parse_nist_asd()?;
     parse_oxstates()?;
     parse_pubchem()?;
@@ -128,7 +128,7 @@ fn parse_nist_asd() -> Result<(), Box<dyn Error>> {
     let mut reader = csv::ReaderBuilder::new()
         .flexible(true).from_reader(content.as_bytes());
     for result in reader.records() {
-        let record = result?;   // XXX: extract and store data of all levels?
+        let record = result?;   // TODO: extract and store data of all levels?
         if  record.get(1).is_none_or(|x| !x.ends_with(" I\"")) { continue }
 
         let fields = record.iter().map(|x|
@@ -149,6 +149,8 @@ fn parse_nist_asd() -> Result<(), Box<dyn Error>> {
                 &state[..1], s1.replace('*', "°"), if s1.len() == 1 { " " } else { "" }))?;
         } else { eprintln!("{an}: {state:?} ?") }   // 106 ~ 108
     }
+
+    // XXX: show predication for 106~118? https://en.wikipedia.org/wiki/Term_symbol
     //fil2.write_all(b"            106 => (\"5\", \"D\" , \"0\"),\n")?;
     //fil2.write_all(b"            107 => (\"6\", \"S\" , \"5/2\"),\n")?;
     //fil2.write_all(b"            108 => (\"5\", \"D\" , \"4\"),\n")?;
@@ -158,7 +160,7 @@ fn parse_nist_asd() -> Result<(), Box<dyn Error>> {
     fil2.flush();   file.flush()?;  Ok(())
 }
 
-/// https://ciaaw.org/atomic-weights.htm
+/// XXX: https://ciaaw.org/atomic-weights.htm
 fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
     let tr_selector = Selector::parse("tr")?;
     let td_selector = Selector::parse("td")?;
@@ -210,15 +212,15 @@ fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
 
     if let Some(table) = document.select(&Selector::parse("table")?).next() {
         for row in table.select(&tr_selector) {
-            let cells: Vec<_> = row.select(&td_selector).collect();
+            let cells = row.select(&td_selector).collect::<Vec<_>>();
             if  cells.len() < 4 { continue }
 
-            let an = cells[0].text().next().unwrap_or("").trim().parse::<usize>()?;
-            let atomic_weight  = cells[3].text().next().unwrap_or("").trim();
+            let atomic_weight = cells[3].text().next().unwrap_or("").trim();
             if let Some((value, uncerntainty)) = atomic_weight.split_once('±') {
                 file.write_fmt(format_args!("    Abridged {{ value: {:6}, uncertainty: {} }},\n",
                     value.trim_end(), uncerntainty.trim_start()))?;
             } else {
+                let an: usize = cells[0].text().next().unwrap_or("").trim().parse()?;
                 file.write_fmt(format_args!("    MassNumber({}),\n", am_all[an].trim()))?;
             }
         }
@@ -288,8 +290,8 @@ fn parse_pubchem() -> Result<(), Box<dyn Error>> {
         file.write_all(b"            _   => return None\n        })\n    }\n\n")?;  Ok(())
     };
 
-    extract_data("AtomicRadius")?;      // u16?
-    //extract_data("IonizationEnergy")?;
+    extract_data("AtomicRadius")?;  // u16?
+    //extract_data("IonizationEnergy")?;    // use NIST/ASD instead
     extract_data("ElectronAffinity")?;
     extract_data("Electronegativity")?;
     extract_data("MeltingPoint")?;

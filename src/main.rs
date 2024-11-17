@@ -40,8 +40,8 @@ fn App() -> Element {
     //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
     div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
-        //style: "transform: scale(0.5); transform-origin: 0 0;",
-        //style: "zoom: 0.5;", // FIXME: malformed in Safari, which works well scaling on <html>
+        //style: "transform: scale(0.5); transform-origin: 0 0;", // use js script in index.html
+        //style: "zoom: 0.5;", // malformed in Safari, which works well scaling on <html>
 
         p { class: "font-bold relative -bottom-4 rotate-180",
             style: "writing-mode: vertical-rl;", "PERIOD" }
@@ -127,7 +127,7 @@ fn App() -> Element {
                         p { class: "content-center rounded-sm bg-transition",
                             "Transition Metals" br{} "过渡金属" }
                         p { class: "content-center rounded-sm bg-non-metal",
-                            "Other nonmetals" br{} "其它非金属" }
+                            "Other nonmetals" br{} "其它非金属" }   // 活泼非金属
 
                         p { class: "content-center rounded-sm bg-poor-metal", "Poor Metals 贫金属" }
                         p { class: "content-center rounded-sm bg-metalloid", "Metalloids 类金属" }
@@ -141,7 +141,7 @@ fn App() -> Element {
             }
         }
         div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;",
-        }   // XXX:
+        }   // XXX: show legend for origin/abundance?
 
         for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1
@@ -268,7 +268,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
                 a { class: "absolute font-bold text-lg/6 text-amber-600",
                     href: "https://ciaaw.org/radioactive-elements.htm",
-                    style: "top: -1.5rem; right: 1rem;", "ratioactive" }
+                    style: "top: -1.5rem; right: 1rem;", "radioactive" }
                 div { class: "absolute text-lg leading-tight text-nowrap text-right",
                     style: "right: calc(100% + 0.4rem);",
                     p { a { href: "https://ciaaw.org/atomic-weights.htm",
@@ -277,7 +277,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         "1st ionization energy (eV)" }
                     p { class: "mt-3 mb-5", "symbol" } p { "name" }
                     p { span { class: "text-blue-700", "melting" } "/"
-                        span { class: "text-red-700",  "boiling" } " point (°C)" }
+                        span { class: "text-red-700",  "boiling" } " point (℃)" }
                     p { "*density" } a {
                         href: "https://en.wikipedia.org/wiki/Electron_configuration",
                         "electron configuration" }
@@ -293,7 +293,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                         "electronegativity (pauling)*" }
                     p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", "crystal structure" } }
                     a { href: "https://www.nist.gov/pml/periodic-table-elements",
-                        "ground-state level" }
+                        "ground-state level" } // "term symbol"
                     p { span { class: "text-purple-700 font-bold",
                         a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
                             "atomic radius" } } " (pm)*" }
@@ -303,7 +303,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             div { class: "flex",
                 div { class: "grow",
                     p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
-                        if elem.is_ratioactive() { span { class: "ml-1 text-center grow", "☢️" } }
+                        if elem.is_radioactive() { span { class: "ml-1 text-center grow", "☢️" } }
                     }
                     p { class: "flex text-base/5", {
                         elem.ionization_energy().map_or_else(|| "-".to_string(),
@@ -368,7 +368,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                                 89..=103|2|10|18|36|54|71|86|118 =>
                                     "right: calc(100% + 0.4rem); bottom: 0px;",
                                 _ => "left: calc(100% + 0.4rem);", }),
-                            //figcaption {} // XXX: title/desc
+                            //figcaption {} // TODO: title/desc
                             img { class: "w-full", src: format!("crystal-s/{file}"), }
                         } }
                     ) }
@@ -521,9 +521,6 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
     } }
 }
 
-#[component] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
-} }
-
 /// https://physics.nist.gov/cuu/Constants/index.html
 #[component] fn PhysConsts() -> Element { rsx! {
         p { class: "flex text-lg/6 justify-between px-1",
@@ -600,9 +597,12 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 p { "speed of light in vacuum" } span { class: "text-xl leading-none", "𝑐" }
                 p { "299 792 458 m/s" }
 
-                p { class: "col-span-3", "STP: 𝑇 = 273.15 K, 𝑝 = 101.325 kPa" }
+                p { class: "col-span-3", "STP: 𝑇 = 273.15 K (0 ℃), 𝑝 = 101.325 kPa" }
             }
         }
+} }
+
+#[component] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
 } }
 
 /* for fullstack web renderer

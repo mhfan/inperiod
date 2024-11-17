@@ -8,29 +8,28 @@
 //! module/crate level documentation
 // src/lib.rs (default library entry point)
 
-/*  https://github.com/lmmentel/mendeleev
+/*  https://en.wikipedia.org/wiki/Periodic_table
     https://www.webelements.com/periodicity/contents/
     https://en.wikipedia.org/wiki/Category:Chemical_element_data_pages
+    https://en.wikipedia.org/wiki/List_of_data_references_for_chemical_elements
     https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
     https://pubchem.ncbi.nlm.nih.gov/periodic-table/
     https://www.nist.gov/pml/periodic-table-elements
     https://ciaaw.org/atomic-weights.htm
+    https://github.com/lmmentel/mendeleev
     https://github.com/baotlake/periodic-table-pro
     https://github.com/Bowserinator/Periodic-Table-JSON
     https://periodictable.com/Properties/A/HumanAbundance.html
 
     https://commons.wikimedia.org/wiki/File:元素周期表.png
     https://commons.wikimedia.org/wiki/File:Periodic_table_large.svg
-    https://www.futurity.org/periodic-table-new-elements-1087782-2/
-    https://www.vertex42.com/Files/pdfs/2/periodic-table_color.pdf
     https://www.vertex42.com/ExcelTemplates/periodic-table-of-elements.html
     https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
     https://iupac.org/what-we-do/periodic-table-of-elements/, https://svs.gsfc.nasa.gov/13873/
-    https://commons.wikimedia.org/wiki/File:Periodic_Table_-_Atomic_Properties_of_the_Elements.png
     https://commons.wikimedia.org/wiki/File:Periodic_Table_of_the_elements.jpg
     https://commons.wikimedia.org/wiki/File:Periodic_table_detailed_enwp.svg
-    https://elements.wlonk.com/index.htm, https://ptable.com
-    https://en.wikipedia.org/wiki/Periodic_table */
+    https://www.futurity.org/periodic-table-new-elements-1087782-2/
+    https://elements.wlonk.com/index.htm, https://ptable.com */
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)] pub enum ChemElem { // #[non_exhaustive]
@@ -249,10 +248,10 @@ impl ChemElem {
     /// https://en.wikipedia.org/wiki/Periodic_table#Classification_of_elements
     pub const fn category(&self) -> ElemClass {
         match self.atomic_number() {
-            1|6|7|8|15|16|34 => ElemClass::OtherNonmetals,
+            1|6|7|8|15|16|34 => ElemClass::OtherNonmetals,  // reactive nonmetals
             5|14|32|33|51|52 => ElemClass::Metalloids,  // semi-metals
+            //109..=118 if !matches!(self.atomic_number(), 112|114) => ElemClass::Unknown,
             13|31|49|50|81..=84|113..117 => ElemClass::PoorMetals,  // post-transition metals
-            //109..=118 if self.atomic_number() != 112 => ElemClass::Unknown("Unknown"),
 
             // Rare earth metals  (Lanthanoids plus Sc and Y)
             57..=70  => ElemClass::Lanthanoids,     // Lanthanides (include Lu)
@@ -275,13 +274,20 @@ impl ChemElem {
     }
 
     pub const fn block(&self) -> u8 {
-        match self.group() { 1|2 => b's', 3..=12 => b'd', 13..=18 => b'p', _ => b'f', }
+        match self.group() { 1|2 => b's', 3..=12 => b'd',
+            18 if self.atomic_number() == 2 => b's',
+            13..=18 => b'p', _ => b'f',
+        }
     }
 
-    /// https://ciaaw.org/radioactive-elements.htm
-    pub const fn is_ratioactive(&self) -> bool { matches!(self.atomic_number(), 43|61|84..=118) }
+    //pub const fn atomic_mass(&self) -> AtomicWeight { self.atomic_weight() }
 
-    /// XXX: https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)
+    /// https://ciaaw.org/radioactive-elements.htm
+    pub const fn is_radioactive(&self) -> bool { matches!(self.atomic_number(), 43|61|84..=118)
+        //matches!(self.atomic_weight(), AtomicWeight::MassNumber(_))
+    }
+
+    /// TODO: https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)
     //  https://github.com/baotlake/periodic-table-pro/blob/37239360e6f5daa605b3fd947895ed2dfdce0cd7/packages/data/json/crystalStructure.json
     //  https://environmentalchemistry.com/yogi/periodic/crystal.html
     //  https://periodictable.com/Properties/A/CrystalStructure.html
@@ -310,17 +316,29 @@ impl ChemElem {
         })
     }
 
+    /// https://en.wikipedia.org/wiki/Term_symbol
     /// https://www.nist.gov/pml/periodic-table-elements
     /// https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
     pub const fn ground_state(&self) -> Option<(&'static str, &'static str, &'static str)> {
         self.ground_level()
     }
 
+    /* pub const fn term_symbol(&self) -> Option<(&'static str, &'static str, &'static str)> {
+        self.ground_level()
+    } */
+
     /// https://en.wikipedia.org/wiki/Electronegativity     // XXX: other EN scaling?
     /// https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)
     pub const fn en_pauling(&self) -> Option<f32> { self.electronegativity() }
 
-    // TODO: abundance, origin
+    /// https://svs.gsfc.nasa.gov/13873/
+    /// https://royalsocietypublishing.org/doi/10.1098/rsta.2019.0301
+    /// https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
+    pub const fn cosmic_origin(&self) { todo!() }
+
+    /// https://en.wikipedia.org/wiki/Abundance_of_the_chemical_elements
+    /// https://en.wikipedia.org/wiki/Abundances_of_the_elements_(data_page)
+    pub const fn abundance(&self) { todo!() }   // TODO:
 }
 
 pub mod ciaaw;
@@ -460,7 +478,7 @@ impl fmt::Display for Subshell {
         write!(f, "{}{}", self.level, self.orbital as char)?;
         if 1 < self.ecount {
             let mut ecount = self.ecount as usize;
-            if 9 <  ecount {     // XXX: max two digits
+            if 9 <  ecount {     // max two digits
                 write!(f, "{}", UNICODE_SUPERS[ecount / 10])?;
                 ecount %= 10;
             }   write!(f, "{}", UNICODE_SUPERS[ecount])?;
@@ -520,6 +538,16 @@ impl From<(u8, u8, u8)> for Subshell {
     ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
 }
 
+#[repr(u8)] #[derive(Debug)] pub enum Cosmological {
+    BigBangFusion = 0,
+    CosmicRayFission,   // 宇宙射线裂变
+    DyingLowMassStars,
+    ExplodingMassiveStars,
+    ExplodingWhiteDwarfs,   // supernovae
+    MergingNeutronStars,
+    HumanSynthesis,     // No stable isotopes
+}
+
 #[repr(u8)] #[derive(Debug)] pub enum ElemClass {
     Unknown = 0,
     AlkaliMetals,
@@ -576,6 +604,7 @@ const ELEM_NAME:   [&str; ChemElem::MAX as usize] = [ "", // placeholder
     "Livermorium", "Tennessine", "Oganesson",
 ];
 
+/// https://en.wikipedia.org/wiki/Chemical_elements_in_East_Asian_languages
 const ELEM_CH: [char; ChemElem::MAX as usize] = [ ' ', // placeholder
     '氢', '氦', '锂', '铍', '硼', '碳', '氮', '氧', '氟', '氖',
     '钠', '镁', '铝', '硅', '磷', '硫', '氯', '氩', '钾', '钙',
@@ -606,39 +635,6 @@ const ELEM_PY: [&str; ChemElem::MAX as usize] = [ "", // placeholder
     "mén", "nuò", "láo", "lú", "dù", "xǐ", "bō", "hēi", "mài", "dá",
     "lún", "gē", "nǐ", "fū", "mò", "lì", "tián", "ào",
 ];
-
-//#[derive(PartialEq, Clone, Props)] // Owned props must implement `PartialEq`!
-/* #[allow(unused)] pub struct ElemProps {
-     group: u8,  // max: 18 (column)
-    period: u8,  // max:  7 (row)
-
-    block: u8,   // s, f, d, p
-    //  metals (alkali, alkali-earth, lanthanoids, actinoids, transition, poor/other),
-    //  metalloids/semi-metals and nonmetals (other, halogens, noble-gases)
-    class: u8,
-
-    ordinal: u8, // max: 118
-    mass: f32,   // weight
-    radioactive: bool,
-
-    symbol: [u8; 2],
-    name_ch: char,  //pinying: String, // https://github.com/mozillazg/rust-pinyin
-    name: [u8; 24], //String,
-
-    //  shell capacity: 4 * n^2, subshell capacity: 4 * (l + 1) - 2
-    //  orbital: s/p/d/f/g/h/i (l: 0 ~ 6)
-     config_e: [u8;  8], // enengy level
-    oxidation: [i8; 10], // valence
-
-    ionisation: f32, electroneg: f32, e_affinity: f32,
-    density: f32, ground_s: String, radius: f32, m_v: bool, // metallic/covalent
-    crystal_s: u8, melting: f32, boiling: f32, phase: u8,
-
-    //discoverer: String, year: u16, //origin: u8,
-    //  The Big-Bang, Dying low-mass stars, Exploding massive stars, Cosmic ray fission,
-    //  White dwarf supernovae, Merging neutron stars, Radioactive decay, synthetic/human-made
-    //abundance: f32,  // universe/galaxy, solar, crust, ocean, human body
-} */
 
 #[cfg(test)] mod tests {    use super::*;
     #[test] fn electron() {
