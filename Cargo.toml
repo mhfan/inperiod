@@ -2,13 +2,13 @@
 [package]
 edition = "2021"
 name = "inperiod"
-version = "0.1.1"
+version = "0.1.2"
 license = "MIT OR Apache-2.0"
 authors = ["MeiHui FAN <mhfan@ustc.edu>"]
 homepage = "https://mhfan.github.io/inperiod"
-categories  = ["Web programming", "WebAssembly"]
+categories  = ["science", "web-programming", "wasm"]
 description = "Modern fancy interactive online periodic table of chemistry elements"
-keywords = ["periodic", "periodic table", "elements", "chemistry elements", "dioxus"]
+keywords = ["periodic", "periodic-table", "elements", "chemistry-elements", "dioxus"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

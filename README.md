@@ -1,4 +1,9 @@
 
+![Build status](https://github.com/mhfan/inperiod/actions/workflows/publish.yml/badge.svg)
+[![Crates.io](https://img.shields.io/crates/v/inperiod.svg)](https://crates.io/crates/inperiod)
+[![dependency status](https://deps.rs/repo/github/mhfan/inperiod/status.svg)](https://deps.rs/repo/github/mhfan/inperiod)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 There are plenty of periodic tables available online,
 including [web pages](https://ptable.com),
 [spreadsheet](https://www.vertex42.com/ExcelTemplates/periodic-table-of-elements.htm),
@@ -8,7 +13,7 @@ including [web pages](https://ptable.com),
 and even those can be purchased from various e-commerce platforms,
 but none of them fully meet my expectations.
 
-I wanted a periodic table that could comprehensively showcase all aspects of the periodic
+What I want is a periodic table that could comprehensively showcase all aspects of the periodic
 trends of chemical elements, provide rich and layered information, synchronize with the latest
 authoritative data in real-time, and include interactive features as a WebAPP or native/mobile
 APP. Moreover, it had to feature Chinese names and pinyin and be printable on A4/A3 paper for
@@ -17,7 +22,11 @@ Thus, this project was born.
 
 <https://mhfan.github.io/inperiod>
 
-Additionally, this project also target to provide a set of API in Rust for accessing
+![Elements Periodic Table](https://github.com/user-attachments/assets/34632195-1344-4377-a02e-d654e88a0afb)
+![Show electron configuration diagram](https://github.com/user-attachments/assets/e6a46fba-04cf-4275-b1e0-db78aecf307d)
+![Show crystal structure](https://github.com/user-attachments/assets/32518da9-e1b5-4314-95bc-cffa43ec6fc4)
+
+Additionally, this project also targets to provide a set of API in Rust for accessing
 all kinds of information and data about the elements.
 
 ## Instructions
@@ -41,10 +50,6 @@ cd dist && cargo r --features desktop
 ```
 
 Note: Recommended to print as PDF on Chrome browser.
-
-![Elements Periodic Table](https://github.com/user-attachments/assets/34632195-1344-4377-a02e-d654e88a0afb)
-![Show electron configuration diagram](https://github.com/user-attachments/assets/e6a46fba-04cf-4275-b1e0-db78aecf307d)
-![Show crystal structure](https://github.com/user-attachments/assets/32518da9-e1b5-4314-95bc-cffa43ec6fc4)
 
 ## References
 
