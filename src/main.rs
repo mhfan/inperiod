@@ -214,16 +214,15 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
     let elem = ChemElem::from(ordinal);
     let mut over_ecfg = use_signal(|| false);
-    let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-    let simplify_long_ecfg = || match ordinal {
+    let revised_ecfg = match ordinal {
         //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
         81..=86   => format!("[Hg] 6p{}", UNICODE_SUPERS[ordinal as usize -  80]),
         113..=118 => format!("[Cn] 7p{}", UNICODE_SUPERS[ordinal as usize - 112]),
         _ => elem.electron_configuration().to_string()
     };
 
-    let get_bg_color = || match elem.category() {
+    let bg_color = match elem.category() {
         AlkaliMetals        => "bg-alkali",
         AlkalineEarthMetals => "bg-alkaline",
         TransitionMetals    => "bg-transition",
@@ -237,183 +236,183 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
         Unknown             => "bg-unknown",
     };
 
-    let draw_metal_bound = || match ordinal {
+    let metal_bound = match ordinal {
         1 => "shadow-black-b", 118 => "shadow-black-l",
         2 => "shadow-[0_2px_#fca5a5]", // indicate He is of s-block, shadow-red-300
         5|14|33|52|85 => "shadow-black-bl", _ => "",
     };
 
-    let color_for_symbol = || match ordinal {
+    let color_symbol = match ordinal {
         1|2|7..=10|17|18|36|54|86 => "text-gas",
         43|61|96..=118 => "text-synthetic",
         35|80 => "text-liquid", _ => "",
     };
 
-    /* let need_highlight = move || {
+    /* let highlight = {
         let sel = use_context::<Signal<Selection>>()();
-        match sel.r#type {
+        if match sel.r#type {
             SelType::Period => sel.val == elem.period(),
             SelType::Group  => sel.val == elem.group(),
             SelType::Block  => sel.val == elem.block(),
             SelType::Class  => sel.val == elem.category(),
             _ => false,
-        }
+        } { "outline-green-800 outline-2 outline" } else { "" }
     }; */
 
-    rsx! { //shadow-border-1 shadow-indigo-300 // size: 152x198
-        div { class: format!("flex flex-col rounded-sm p-1 border border-indigo-300
-            hover:shadow-orange-600 hover:shadow-spread-2 relative {} {}",
-            //if need_highlight() { "outline-green-800 outline-2 outline" } else { "" },
-            get_bg_color(), draw_metal_bound()), if annote { div { //class: "pointer-events-none",
-                //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
-                a { class: "absolute font-bold text-lg/6 text-amber-600",
-                    href: "https://ciaaw.org/radioactive-elements.htm",
-                    style: "top: -1.5rem; right: 1rem;", "radioactive" }
-                div { class: "absolute text-lg leading-tight text-nowrap text-right",
-                    style: "right: calc(100% + 0.4rem);",
-                    p { a { href: "https://ciaaw.org/atomic-weights.htm",
-                        "*standard atomic weight/mass" } }
-                    a { href: "https://www.nist.gov/pml/periodic-table-elements",
-                        "1st ionization energy (eV)" }
-                    p { class: "mt-3 mb-5", "symbol" } p { "name" }
-                    p { span { class: "text-blue-700", "melting" } "/"
-                        span { class: "text-red-700",  "boiling" } " point (℃)" }
-                    p { "*density" } a {
-                        href: "https://en.wikipedia.org/wiki/Electron_configuration",
-                        "electron configuration" }
-                }
-                div { class: "absolute text-lg leading-tight text-nowrap",
-                    style: "left: calc(100% + 0.4rem);",
-                    p { class: "mt-1", "atomic number" }
-                    p { "electron affinity" }
-                    p { class: "my-1", "main "
-                a { href: "https://en.wikipedia.org/wiki/Oxidation_state", "oxidation states" } }
-                    p { "Chinese name with pinyin" }
-                    a { href: "https://en.wikipedia.org/wiki/Electronegativity",
-                        "electronegativity (pauling)*" }
-                    p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", "crystal structure" } }
-                    a { href: "https://www.nist.gov/pml/periodic-table-elements",
-                        "ground-state level" } // "term symbol"
-                    p { span { class: "text-purple-700 font-bold",
-                        a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
-                            "atomic radius" } } " (pm)*" }
-                }
-            } }
+    let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-            div { class: "flex",
-                div { class: "grow",
-                    p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
-                        if elem.is_radioactive() { span { class: "ml-1 text-center grow", "☢️" } }
-                    }
-                    p { class: "flex text-base/5", {
-                        elem.ionization_energy().map_or_else(|| "-".to_string(),
-                            |ie| format!("{:.3}", ie.0).trim_end_matches('0')
-                                .trim_end_matches('.').to_owned()) }
-                        span { class: "ml-2 text-center grow", {
-                            elem.electron_affinity().map_or_else(|| " ".to_string(),
-                                |ea| ea.to_string())
-                        } }
-                    }
-                }
-                span { class: "text-2xl font-bold ml-1", "{ordinal}" }
+    rsx! { div { //shadow-border-1 shadow-indigo-300 // size: 152x198
+        class: "flex flex-col relative rounded-sm p-1 border border-indigo-300
+            hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
+        if annote {
+            //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
+            a { class: "absolute font-bold text-lg/6 text-amber-600",
+                href: "https://ciaaw.org/radioactive-elements.htm",
+                style: "top: -1.5rem; right: 1rem;", "radioactive" }
+            div { class: "absolute text-lg leading-tight text-nowrap text-right",
+                style: "right: calc(100% + 0.4rem);",
+                p { a { href: "https://ciaaw.org/atomic-weights.htm",
+                    "*standard atomic weight/mass" } }
+                a { href: "https://www.nist.gov/pml/periodic-table-elements",
+                    "1st ionization energy (eV)" }
+                p { class: "mt-3 mb-5", "symbol" } p { "name" }
+                p { span { class: "text-blue-700", "melting" } "/"
+                    span { class: "text-red-700",  "boiling" } " point (℃)" }
+                p { "*density" } a {
+                    href: "https://en.wikipedia.org/wiki/Electron_configuration",
+                    "electron configuration" }
             }
-            div { class: "flex-col grow",
-                div { class: "flex",
-                    span { class: format!("self-center text-5xl grow ml-1 {}",
-                        color_for_symbol()), { elem.symbol() } }
-                    div { class: "flex flex-col mr-1",
-                        p { class: "text-center leading-tight", { elem.name_py() } }
-                        a { href: format!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
-                            class: "text-right text-3xl", { elem.name_ch().to_string() } }
-                    }
-                    div { class: "text-right ml-1 relative",
-                        div { class: "absolute w-full h-full group font-bold leading-tight",
-                            for os in os_main.iter().rev() { pre { { format!("{}{os}",
-                                match *os { x if 0 < x => "+", 0 => " ", _ => "" })
-                            } } }
-                            if os_main.len() < os_all.len() { div { class:
-                                "absolute hidden left-full -top-2 ml-1.5 p-1 text-lg/5 rounded
-                                border border-orange-600 bg-indigo-50 group-hover:block z-10",
-                                for os in os_all.iter().rev() { pre { class:
-                                    if os_main.contains(os) { "font-extrabold" } else { "" },
-                        { format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" }) }
-                                } }
-                            } }
-                        }   pre { class: "invisible", "  " }
-                    }
-                }
-                p { a { href: format!("https://en.wikipedia.org/wiki/{name}"),
-                        class: "text-lg/6", { name } }
-                    span { class: "ml-2 font-bold", { match ordinal {
-                        42|59 => "*".to_string(), // name is too long
-                        _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
-                    } } }
-                }
-
-                p { class: "flex text-base/5 relative",
-                    span { class: "text-blue-700 font-bold", {
-                        elem.melting_point().map_or_else(|| "-".to_string(),
-                            |mp| format!("{}", (mp - 273.15 + 0.5) as i32))
-                    } } "/"
-                    span { class: "text-red-700",  {
-                        elem.boiling_point().map_or_else(|| "-".to_string(),
-                            |bp| format!("{}", (bp - 273.15 + 0.5) as i32))
-                    } }
-                    { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
-                        |(cs, file)| rsx! {
-                        span { class: "pl-2 grow peer", { cs.to_string() } }
-                        figure { class: "absolute w-[10rem] max-w-none border rounded
-                                border-orange-600 bg-white hidden peer-hover:block z-10",
-                            style: format!("{}", match ordinal {
-                                89..=103|2|10|18|36|54|71|86|118 =>
-                                    "right: calc(100% + 0.4rem); bottom: 0px;",
-                                _ => "left: calc(100% + 0.4rem);", }),
-                            //figcaption {} // TODO: title/desc
-                            img { class: "w-full", src: format!("crystal-s/{file}"), }
-                        } }
-                    ) }
-                }
-                p { class: "flex text-base/5", {
-                    elem.density().map_or_else(|| "-".to_string(), |den| format!("{:.4}", den)
-                        .trim_end_matches('0').trim_end_matches('.').to_string()) }
-                    span { class: "ml-2 font-bold text-purple-700", {
-                        elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string())
-                    } }
-                    span { class: "ml-2 font-bold", {
-                        elem.ground_state().map_or_else(|| rsx! { "-" },
-                            |(s1, s2, s3)| rsx! { if 1 < s2.len() {
-                                sup  { {s1} } { s2.chars().next().unwrap().to_string() }
-                                span { style: "position: relative; top: -0.1em;", "°" }
-                                sub  { style: "left: -0.6em;", {s3} }
-                            } else { sup { {s1} } {s2} sub { {s3} } } })
-                    } }
-                }
-                p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
-                    onmouseout:  move |_| over_ecfg.set(false),
-                    onmouseover: move |_| over_ecfg.set(true), { simplify_long_ecfg() }
-                    if *over_ecfg.read() { figure {
-                        class: "absolute w-[40rem] max-w-none border rounded
-                            border-orange-600 bg-white group-hover:block z-10",
-                        style: format!("{}", match ordinal {
-                            2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
-                            57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
-                            _ => if ordinal == 71  ||
-                                    ordinal == 103 || matches!(elem.group(), 15..=19) {
-                                        "right: calc(100% + 0.125rem); bottom: -0.2em;"
-                            } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
-                        }), ShowEcfg { ordinal } //figcaption {}
-                    } }
-
-                    if matches!(ordinal, 42|59) {
-                        span { class: "ml-2 font-bold grow text-right", {
-                            elem.en_pauling().map(|en| en.to_string())
-                        } }
-                    }
-                }
-                // TODO: show origin/source and abundance according to selection
+            div { class: "absolute text-lg leading-tight text-nowrap",
+                style: "left: calc(100% + 0.4rem);",
+                p { class: "mt-1", "atomic number" }
+                p { "electron affinity" }
+                p { class: "my-1", "main "
+            a { href: "https://en.wikipedia.org/wiki/Oxidation_state", "oxidation states" } }
+                p { "Chinese name with pinyin" }
+                a { href: "https://en.wikipedia.org/wiki/Electronegativity",
+                    "electronegativity (pauling)*" }
+                p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", "crystal structure" } }
+                a { href: "https://www.nist.gov/pml/periodic-table-elements",
+                    "ground-state level" } // "term symbol"
+                p { span { class: "text-purple-700 font-bold",
+                    a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
+                        "atomic radius" } } " (pm)*" }
             }
         }
-    }
+
+        div { class: "flex",
+            div { class: "grow",
+                p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
+                    if elem.is_radioactive() { span { class: "ml-1 text-center grow", "☢️" } }
+                }
+                p { class: "flex text-base/5", {
+                    elem.ionization_energy().map_or_else(|| "-".to_string(),
+                        |ie| format!("{:.3}", ie.0).trim_end_matches('0')
+                            .trim_end_matches('.').to_owned()) }
+                    span { class: "ml-2 text-center grow", {
+                        elem.electron_affinity().map_or_else(|| " ".to_string(),
+                            |ea| ea.to_string())
+                    } }
+                }
+            }
+            span { class: "text-2xl font-bold ml-1", "{ordinal}" }
+        }
+
+        div { class: "flex-col grow",
+            div { class: "flex",
+                span { class: "self-center text-5xl grow ml-1 {color_symbol}", { elem.symbol() } }
+                div { class: "flex flex-col mr-1",
+                    p { class: "text-center leading-tight", { elem.name_py() } }
+                    a { href: format!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
+                        class: "text-right text-3xl", { elem.name_ch().to_string() } }
+                }
+                div { class: "text-right ml-1 relative",
+                    div { class: "absolute w-full h-full group font-bold leading-tight",
+                        for os in os_main.iter().rev() { pre { { format!("{}{os}",
+                            match *os { x if 0 < x => "+", 0 => " ", _ => "" })
+                        } } }
+                        if os_main.len() < os_all.len() { div { class: "absolute hidden
+                            left-full -top-2 ml-1.5 p-1 text-lg/5 font-normal rounded
+                            border border-orange-600 bg-indigo-50 group-hover:block z-10",
+                            for os in os_all.iter().rev() { pre { class:
+                                if os_main.contains(os) { "font-extrabold" } else { "" },
+                    { format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" }) }
+                            } }
+                        } }
+                    }   pre { class: "invisible", "  " }
+                }
+            }
+            p { a { href: format!("https://en.wikipedia.org/wiki/{name}"),
+                    class: "text-lg/6", { name } }
+                span { class: "ml-2 font-bold", { match ordinal {
+                    42|59 => "*".to_string(), // name is too long
+                    _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
+                } } }
+            }
+
+            p { class: "flex text-base/5 relative",
+                span { class: "text-blue-700 font-bold", {
+                    elem.melting_point().map_or_else(|| "-".to_string(),
+                        |mp| format!("{}", (mp - 273.15 + 0.5) as i32))
+                } } "/"
+                span { class: "text-red-700",  {
+                    elem.boiling_point().map_or_else(|| "-".to_string(),
+                        |bp| format!("{}", (bp - 273.15 + 0.5) as i32))
+                } }
+                { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
+                    |(cs, file)| rsx! {
+                    span { class: "pl-2 grow peer", { cs.to_string() } }
+                    figure { class: "absolute w-[10rem] max-w-none border rounded
+                            border-orange-600 bg-white hidden peer-hover:block z-10",
+                        style: format!("{}", match ordinal {
+                            89..=103|2|10|18|36|54|71|86|118 =>
+                                "right: calc(100% + 0.4rem); bottom: 0px;",
+                            _ => "left: calc(100% + 0.4rem);", }),
+                        //figcaption {} // TODO: title/desc
+                        img { class: "w-full", src: format!("crystal-s/{file}"), }
+                    } }
+                ) }
+            }
+            p { class: "flex text-base/5", {
+                elem.density().map_or_else(|| "-".to_string(), |den| format!("{:.4}", den)
+                    .trim_end_matches('0').trim_end_matches('.').to_string()) }
+                span { class: "ml-2 font-bold text-purple-700", {
+                    elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string())
+                } }
+                span { class: "ml-2 font-bold", {
+                    elem.ground_state().map_or_else(|| rsx! { "-" },
+                        |(s1, s2, s3)| rsx! { if 1 < s2.len() {
+                            sup  { {s1} } { s2.chars().next().unwrap().to_string() }
+                            span { style: "position: relative; top: -0.1em;", "°" }
+                            sub  { style: "left: -0.6em;", {s3} }
+                        } else { sup { {s1} } {s2} sub { {s3} } } })
+                } }
+            }
+            p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
+                onmouseout:  move |_| over_ecfg.set(false),
+                onmouseover: move |_| over_ecfg.set(true), { revised_ecfg }
+                if *over_ecfg.read() { figure {
+                    class: "absolute w-[40rem] max-w-none border rounded
+                        border-orange-600 bg-white group-hover:block z-10",
+                    style: format!("{}", match ordinal {
+                        2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
+                        57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
+                        _ => if ordinal == 71  ||
+                                ordinal == 103 || matches!(elem.group(), 15..=19) {
+                                    "right: calc(100% + 0.125rem); bottom: -0.2em;"
+                        } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
+                    }), ShowEcfg { ordinal } //figcaption {}
+                } }
+
+                if matches!(ordinal, 42|59) {
+                    span { class: "ml-2 font-bold grow text-right", {
+                        elem.en_pauling().map(|en| en.to_string())
+                    } }
+                }
+            }
+            // TODO: show origin/source and abundance according to selection
+        }
+    } }
 }
 
 #[component] fn ShowEcfg(ordinal: u8) -> Element {

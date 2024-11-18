@@ -13,15 +13,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /*  npm install -D tailwindcss; npm install tw-elements
     sh -c "[ ! -d node_modules ] && npm i; npm run build_css"
 
-    process::Command::new("npm").args(["run", "build_css"]).status().unwrap();
+    process::Command::new("npm").args(["run", "build_css"]).status()?;
 
     npx tailwindcss init  # generate a mininum tailwind.config.js
-    npx tailwindcss -m -i tailwind_base.css -o dist/tailwind.css #-c tailwind.config.js #-w */
+    npx tailwindcss -m -i tailwind_base.css -o assets/tailwind.css #-c tailwind.config.js #-w */
 
     let minify = if let Ok("release") =
         std::env::var("PROFILE").as_deref() { "-m" } else { "" };
     process::Command::new("npx").args(["tailwindcss", minify, //"-c", twcfg,
-        "-i", twcss, "-o", "dist/tailwind.css"]).status()?;
+        "-i", twcss, "-o", "assets/tailwind.css"]).status()?;
     Ok(())
 }
 

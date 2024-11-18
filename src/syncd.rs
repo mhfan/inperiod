@@ -5,7 +5,6 @@
  * Copyright (c) 2024 M.H.Fan, All rights reserved.             *
  ****************************************************************/
 
-#![allow(non_snake_case)] #![allow(unused)]
 use std::{error::Error, fs::{self, File}, io::Write, path::PathBuf};
 use reqwest::blocking::get as reqwest_get;  // TODO: reqwest::get(url).await?.text().await?;
 use scraper::{Html, Selector};
@@ -231,7 +230,7 @@ fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
 }
 
 /// https://pubchem.ncbi.nlm.nih.gov/periodic-table/
-fn parse_pubchem() -> Result<(), Box<dyn Error>> {
+#[allow(non_snake_case)] fn parse_pubchem() -> Result<(), Box<dyn Error>> {
     use serde::Deserialize;
     #[derive(Deserialize)] struct AllElem { Table: Table, }
     #[derive(Deserialize)] struct Table { Columns: Columns, Row: Vec<Row>, }
