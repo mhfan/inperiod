@@ -464,10 +464,10 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             }
             text { x: "598", y:  "76", "5f" }
             text { x: "598", y: "140", "4f" }
-            text { y: "24", "letter-spacing": "-2",
-                tspan { x: "110", "ℓ = 1" }
-                tspan { x: "256", "ℓ = 2" }
-                tspan { x: "464", "ℓ = 3" }
+            text { y: "24", "letter-spacing": "-1",
+                tspan { x: "120", "ℓ = 1" }
+                tspan { x: "266", "ℓ = 2" }
+                tspan { x: "474", "ℓ = 3" }
             }
         }
         g { stroke: "gray", "stroke-dasharray": "4 4", "stroke-opacity": "0.5",

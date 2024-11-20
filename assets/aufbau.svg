@@ -71,7 +71,7 @@
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
     <use href="#orbit" y="256" opacity="0.2"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="32" >1s</text>
         <text y="64" >2s</text>
         <text y="96" >3s</text>
@@ -90,7 +90,7 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="64" >2p</text>
         <text y="96" >3p</text>
         <text y="128">4p</text>
@@ -107,7 +107,7 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224" opacity="0.1"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="96" >3d</text>
         <text y="128">4d</text>
         <text y="160">5d</text>
@@ -122,7 +122,7 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192" opacity="0.1"/>
     <use href="#orbit" y="224" opacity="0.1"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="128">4f</text>
         <text y="160">5f</text>
         <text y="192" opacity="0.1">6f</text>
@@ -135,7 +135,7 @@
     <use href="#orbit" y="160"/>
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="160">5g</text>
         <text y="192">6g</text>
         <text y="224">7g</text>
@@ -146,7 +146,7 @@
 <g transform="translate(400,11)" fill="gray" opacity="0.1">
     <use href="#orbit" y="192"/>
     <use href="#orbit" y="224"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="192">6h</text>
         <text y="224">7h</text>
         <text y="256">h<tspan dy="-6" font-size="10">22</tspan></text>
@@ -155,7 +155,7 @@
 
 <g transform="translate(464,11)" fill="gray" opacity="0.1">
     <use href="#orbit" y="224"/>
-    <g transform="translate(-10,6)" fill="black">
+    <g transform="translate(-8,5)" fill="black">
         <text y="224">7i</text>
         <text y="256">i<tspan dy="-6" font-size="10">26</tspan></text>
     </g>
