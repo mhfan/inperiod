@@ -583,7 +583,8 @@ impl ChemElem {
         })
     }
 
-    pub const fn electron_configuration(&self) -> &ElectronCFG {
+    pub const fn electron_configuration(&self) -> &ElectronCFG { &Self::ECFG[*self as usize] }
+
 const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [ ecfg!(),
     ecfg![ssc!(1, b's',  1)],
     ecfg![ssc!(1, b's',  2)],
@@ -704,7 +705,6 @@ const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [ ecfg!(),
     ecfg![Rn, ssc!(5, b'f', 14), ssc!(6, b'd', 10), ssc!(7, b's',  2), ssc!(7, b'p',  5)],
     ecfg![Rn, ssc!(5, b'f', 14), ssc!(6, b'd', 10), ssc!(7, b's',  2), ssc!(7, b'p',  6)],
 ];
-        &ECFG[*self as usize]
-    }
+
 }
 

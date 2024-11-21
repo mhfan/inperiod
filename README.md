@@ -49,6 +49,8 @@ dx serve --platform desktop #rm -rf dist
 cd dist && cargo r --features desktop
 ```
 
+Open the browser to <http://localhost:8080/inperiod>
+
 Note: Recommended to print as PDF on Chrome browser.
 
 ## References

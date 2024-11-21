@@ -170,9 +170,9 @@ impl Iterator for ElemIter {      type Item = ChemElem;
 }
 
 impl ChemElem {
-    pub const fn name   (&self) -> &'static str { ELEM_NAME  [*self as usize] }
-    pub const fn symbol (&self) -> &'static str { ELEM_SYMBOL[*self as usize] }
-    pub const fn name_py(&self) -> &'static str { ELEM_PY[*self as usize] }
+    pub const fn name   (&self) -> &str { ELEM_NAME  [*self as usize] }
+    pub const fn symbol (&self) -> &str { ELEM_SYMBOL[*self as usize] }
+    pub const fn name_py(&self) -> &str { ELEM_PY[*self as usize] }
     pub const fn name_ch(&self) -> char         { ELEM_CH[*self as usize] } // XXX: &str or String?
     pub const fn atomic_number(&self) -> u8 { *self as _ }
     pub const fn iter() -> ElemIter { ElemIter::new() }
@@ -237,12 +237,11 @@ impl ChemElem {
         }
     }
 
-    pub const fn group_to_name(group: u8) -> &'static str {
-        assert!(0 < group && group < 19);
+    pub const fn group_name(&self) -> &str {
         const GROUP_SYMBOL: [&str; 19] = [ "", // placeholder
             "IA", "IIA", "IIIB", "IVB", "VB", "VIB", "VIIB", "VIIIB", "VIIIB", "VIIIB",
             "IB", "IIB", "IIIA", "IVA", "VA", "VIA", "VIIA", "VIIIA", ];
-        GROUP_SYMBOL[group as usize]
+        GROUP_SYMBOL[self.group() as usize]
     }
 
     /// https://en.wikipedia.org/wiki/Periodic_table#Classification_of_elements
@@ -280,7 +279,7 @@ impl ChemElem {
         }
     }
 
-    //pub const fn atomic_mass(&self) -> AtomicWeight { self.atomic_weight() }
+    //#[inline] pub const fn atomic_mass(&self) -> AtomicWeight { self.atomic_weight() }
 
     /// https://ciaaw.org/radioactive-elements.htm
     pub const fn is_radioactive(&self) -> bool { matches!(self.atomic_number(), 43|61|84..=118)
@@ -291,7 +290,7 @@ impl ChemElem {
     //  https://github.com/baotlake/periodic-table-pro/blob/37239360e6f5daa605b3fd947895ed2dfdce0cd7/packages/data/json/crystalStructure.json
     //  https://environmentalchemistry.com/yogi/periodic/crystal.html
     //  https://periodictable.com/Properties/A/CrystalStructure.html
-    pub const fn crystal_structure(&self) -> Option<(&'static str, &'static str)> {
+    pub const fn crystal_structure(&self) -> Option<(&str, &str)> {
         /*return Some(match self.atomic_number() {
             1|6|7|12|30|34|43|44|48|52|71|75|76 => ("hex", "Hexagonal.svg"), // HCP
             _ => return None, // ("-", "")
@@ -319,13 +318,8 @@ impl ChemElem {
     /// https://en.wikipedia.org/wiki/Term_symbol
     /// https://www.nist.gov/pml/periodic-table-elements
     /// https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
-    pub const fn ground_state(&self) -> Option<(&'static str, &'static str, &'static str)> {
-        self.ground_level()
-    }
-
-    /* pub const fn term_symbol(&self) -> Option<(&'static str, &'static str, &'static str)> {
-        self.ground_level()
-    } */
+    pub const fn ground_state(&self) -> Option<(&str, &str, &str)> { self.ground_level() }
+    //pub const fn  term_symbol(&self) -> Option<(&str, &str, &str)> { self.ground_level() }
 
     /// https://en.wikipedia.org/wiki/Electronegativity     // XXX: other EN scaling?
     /// https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)
