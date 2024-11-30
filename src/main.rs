@@ -216,10 +216,15 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
     let mut over_ecfg = use_signal(|| false);
 
     let revised_ecfg = match ordinal {
-        //format!("{}{}", prefix, ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
+        //format!("{prefix}{}", ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
         81..=86   => format!("[Hg] 6p{}", UNICODE_SUPERS[ordinal as usize -  80]),
         113..=118 => format!("[Cn] 7p{}", UNICODE_SUPERS[ordinal as usize - 112]),
-        _ => elem.electron_configuration().to_string()
+
+        _ => {  let ecfg = elem.electron_configuration();
+            if ordinal < 11 { ecfg.expand().map(|x|
+                x.to_string()).collect::<Vec<_>>().join(" ")
+            } else { ecfg.to_string() }
+        }
     };
 
     let bg_color = match elem.category() {
