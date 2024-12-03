@@ -8,6 +8,8 @@
 //! module/crate level documentation
 // src/lib.rs (default library entry point)
 
+pub mod l10n;
+
 /*  https://en.wikipedia.org/wiki/Periodic_table
     https://www.webelements.com/periodicity/contents/
     https://en.wikipedia.org/wiki/Category:Chemical_element_data_pages

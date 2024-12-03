@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>{app_title}</title>
   <meta charset="UTF-8" />
-  <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--meta content="text/html; charset=utf-8" http-equiv="Content-Type" /-->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>{app_title}</title>
+  <base href="/{base_path}/"/>
+  <link rel='icon' href='ptable.svg'/>
+
   <style> @media print {
       @page { size: A4 landscape; margin: 0; }  /* 设置页面的方向为横向并清除默认页边距 */
       body { width: 297mm; margin: auto; }      /* 设置主体样式以适应横向打印 */
       .non-printable { display: none; }         /* 隐藏非打印元素 */
   } </style>
-  <base href="/{base_path}/"/>
-  <link rel='icon' href='ptable.svg'/>
+
   {style_include}{script_include}
+
   <script type="module">
     import init from "/{base_path}/assets/dioxus/{app_name}.js";
     init("/{base_path}/assets/dioxus/{app_name}_bg.wasm").then(wasm => {
@@ -20,6 +24,7 @@
     });
   </script>
 </head>
+
 <body id="main"> <!--div id="main"></div-->
   <script>
     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);

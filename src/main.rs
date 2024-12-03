@@ -2,7 +2,6 @@
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
 //use dioxus_logger::tracing;
-//use dioxus_sdk::{i18n::*, translate}; // TODO:
 
 // Urls are relative to your Cargo.toml file
 //const _TAILWIND_CSS: &str = manganis::mg!(file("assets/tailwind.css"));
@@ -32,27 +31,43 @@ fn App() -> Element {
     }
 }
 
-//#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
+use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS, l10n::Localization};
+macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 //#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
+//#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
 
-#[component] fn PeriodicTable() -> Element { rsx! {     // scale-50 origin-top-left h-[128rem]
+#[component] fn PeriodicTable() -> Element {
+    use_context_provider(|| Signal::new(Localization::new()));
+    let mut lang = use_context::<Signal<Localization>>();
     //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
     //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
-    div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem]
-        grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] p-6 gap-0.5 relative",
+
+    rsx! { div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem] p-6 gap-0.5 relative
+        grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto]", // scale-50 origin-top-left h-[128rem]
         //style: "transform: scale(0.5); transform-origin: 0 0;", // use js script in index.html
         //style: "zoom: 0.5;", // malformed in Safari, which works well scaling on <html>
 
-        p { class: "font-bold relative -bottom-4 rotate-180",
-            style: "writing-mode: vertical-rl;", "PERIOD" }
+        p { class: "font-bold relative -bottom-4", style: "writing-mode: vertical-rl;",
+            {tr!(lang, "PERIOD")}
+        }
         div { class: "self-end text-center font-bold",
-            p { class: "leading-none", "GROUP" } p { class: "text-lg/6", "IA - 1" } }
-        p { class: "col-[span_16_/_span_16] text-center font-bold text-5xl",
-            a { href: "https://github.com/mhfan/inperiod", "Periodic Table" } " of the Elements" }
+            p { class: "leading-none", {tr!(lang, "GROUP")} }
+            p { class: "text-lg/6", "IA - 1" }
+        }
+        p { class: "relative col-[span_16_/_span_16] text-center font-bold text-5xl",
+            a { href: "https://github.com/mhfan/inperiod",
+                {tr!(lang, "Periodic Table of the Elements")}
+            }
+            select { name: "lang-sel", //id: "lang-sel",
+                onchange: move |e| lang.write().set_lang(e.value()),
+                class: "absolute top-2 left-0 text-2xl text-center font-normal non-printable",
+                option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
+            }
+        }
         p { class: "self-end text-center font-bold text-lg", "VIIIA - 18" }
         p { class: "font-bold leading-none relative -bottom-4 content-center ml-2",
-            style: "writing-mode: vertical-rl;", "E-shell" br{} "E-max" }
-
+            style: "writing-mode: vertical-rl;", {tr!(lang, "E-shell")} br{} {tr!(lang, "E-max")}
+        }
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
             for i in 1..=7 { p {
                 /*onmouseout:  move |_|  group_sel.write().r#type = SelType::None,
@@ -96,10 +111,11 @@ fn App() -> Element {
             { format!("{}B - {i}", ROMAN_NUM[i]) }
         } }
         /* for i in 8..=10 { p { class: "self-end text-center text-lg font-bold
-            shadow-[0_2px] shadow-indigo-300", { format!("VIIIB - {i}") }
+            shadow-[0_2px] shadow-indigo-300", "VIIIB - {i}" }
         } } */
-        p { class: "self-end text-center text-lg font-bold
-            col-span-3 shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10" } // border-b-2
+        p { class: "self-end text-center text-lg font-bold col-span-3
+            shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10"
+        }   // border-b-2
         p { class: "self-end text-center text-lg font-bold",  "IB - 11" }
         p { class: "self-end text-center text-lg font-bold", "IIB - 12" }
 
@@ -107,33 +123,38 @@ fn App() -> Element {
             div { class: "flex self-end mx-auto",
                 div { class: "text-lg/6",
                     div { class: "flex flex-col font-bold mb-4",
-                        p { class: "self-start mb-1 px-1 border-b border-black", "Phase at STP" }
-                        p { span { class: "text-liquid", "Liquid" }
-                            span { class: "mx-4 text-gas", "Gas" } span { "Solid" }
-                            span { class: "ml-4 text-synthetic", "Synthetic" }
+                        p { class: "self-start mb-1 px-1 border-b border-black",
+                            {tr!(lang, "Phase at STP")}
+                        }
+                        p { span { class: "text-liquid", {tr!(lang, "Liquid")} }
+                            span { class: "mx-4 text-gas", {tr!(lang, "Gas")} }
+                            span { {tr!(lang, "Solid")} }
+                            span { class: "ml-4 text-synthetic", {tr!(lang, "Synthetic")} }
                         }
                     }
-
-                    p { class: "font-bold px-1", "Categories"}
+                    p { class: "font-bold px-1", {tr!(lang, "Categories")} }
                     div { class: "grid grid-cols-2 grid-rows-5 text-center",
                         p { class: "content-center rounded-sm bg-alkali", "Alkali Metals 碱金属" }
                         p { class: "content-center rounded-sm bg-noble-gas px-1",
-                            "Noble Gases 稀有气体" }
-
+                            "Noble Gases 稀有气体"
+                        }
                         p { class: "content-center rounded-sm bg-alkaline",
-                            "Alkaline Earth Metals" br{} "碱土金属" }
+                            "Alkaline Earth Metals" br{} "碱土金属"
+                        }
                         p { class: "content-center rounded-sm bg-halogen", "Halogens 卤素" }
 
                         p { class: "content-center rounded-sm bg-transition",
-                            "Transition Metals" br{} "过渡金属" }
+                            "Transition Metals" br{} "过渡金属"
+                        }
                         p { class: "content-center rounded-sm bg-non-metal",
-                            "Other nonmetals" br{} "其它非金属" }   // 活泼非金属
-
+                            "Other nonmetals" br{} "其它非金属"
+                        }   // 活泼非金属
                         p { class: "content-center rounded-sm bg-poor-metal", "Poor Metals 贫金属" }
                         p { class: "content-center rounded-sm bg-metalloid", "Metalloids 类金属" }
 
                         p { class: "content-center rounded-sm bg-lanthanide",
-                            "Rare Earth Metals*" br{} "稀土金属" }
+                            "Rare Earth Metals*" br{} "稀土金属"
+                        }
                         p { class: "content-center rounded-sm bg-unknown", "Unknown 未知" }
                     }
                 }
@@ -144,44 +165,51 @@ fn App() -> Element {
         }   // XXX: show legend for origin/abundance?
 
         for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1
-            shadow-border-1 shadow-indigo-300 bg-lanthanide",
-            span { class: "self-end font-bold", "71" }
-            p { class: "text-center m-auto",
-                b { "57 ~ 70" } br{} "Lanthanoids" br{} "(镧系)" }
+        div { class: "flex flex-col text-2xl rounded-sm p-1 bg-lanthanide
+            shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "71" }
+            p { class: "text-center m-auto", b { "57 ~ 70" } br{} "Lanthanoids" br{} "(镧系)" }
         }
         for i in 72..=88 { ElemTile { ordinal: i, annote: false } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1
-            shadow-border-1 shadow-indigo-300 bg-actinide",
-            span { class: "self-end font-bold", "103" }
+        div { class: "flex flex-col text-2xl rounded-sm p-1 bg-actinide
+            shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "103" }
             p { class: "text-center m-auto", b { "89 ~ 102" } br{} "Actinoids" br{} "(锕系)" }
         }
         for i in 104..=118 { ElemTile { ordinal: i, annote: false } }
 
         div { class: "empty row-span-4" }
         div { class: "text-center text-lg/6 rounded-sm col-span-2  bg-red-100 self-start",
-            b { "s" } "-block (plus " b { "He" } ")" }
+            b { "s" } {tr!(lang, "-block")} " (" {tr!(lang, "plus")} b { " He" } ")"
+        }
         div { class: "text-center text-lg/6 rounded-sm col-span-10 bg-blue-100 border-x mb-6",
-            b { "d" } "-block (exclude " i { "Lan/Act" } " series)" }
+            b { "d" } {tr!(lang, "-block")} " (" {tr!(lang, "exclude")}
+            i { " Lan/Act " } {tr!(lang, "series")} ")"
+        }
         div { class: "text-center text-lg/6 rounded-sm col-span-6  bg-green-100 self-start",
-            b { "p" } "-block (exclude " i { "He" } ")" }
-        div { class: "empty" }
+            b { "p" } {tr!(lang, "-block")} " (" {tr!(lang, "exclude")} i { " He" } ")"
+        }   div { class: "empty" }
 
-        div { class: "flex flex-col col-span-3 row-span-2",
-            p { class: "text-lg font-bold leading-none pb-1", "Notes:" }
+        div { class: "flex flex-col col-span-3 row-span-2 mr-2",
+            p { class: "text-lg font-bold leading-none pb-1", {tr!(lang, "Notes:")} }
             ul { class: "list-disc",
-                li { "Standard relative atomic mass/weight based on " i { "¹²C" } } // Ar°(E)
-                li { i { "[ ]" } " indicate mass number of most stable isotope" }
-                li { "Density units are " i { "g/cm3" } " for solids and " i { "g/L" }
-                    " for liquid" br{} " or " i { "kg/m3" } " at 0° Celsius for gases" }
-                //li { "Common oxidation states highlight in " b { "bold" } }
-                li { "* mark means electronegativity is in the bottom-right" }
-                li { "Rare earth metals include: " i { "Lanthanoids (La ~ Lu), Sc and Y" } }
-                li { "Atomic radius is " i { "van der Waals radii" } }
+                li { {tr!(lang, "Standard atomic mass (A")} sub { "r" }
+                    i { {tr!(lang, "°, in Dalton or ")} }
+                    span { class: "text-xl leading-none", "𝓂" sub { "μ" } }
+                    {tr!(lang, ") is the weighted arithmetic mean of the relative isotopic masses of all isotopes of an element, weighted by their abundance on Earth")}
+                }
+                li { i { "[ ]" } {tr!(lang, " indicate mass number of most stable isotope")} }
+                li { {tr!(lang, "Density units are ")} i { "g/cm3" } {tr!(lang, " for solids and ")}
+                    i { "g/L" } {tr!(lang, " for liquid")} br{} {tr!(lang, " or ")} i { "kg/m3" }
+                    {tr!(lang, " at 0° Celsius for gases")}
+                }
+                li { {tr!(lang, "* mark means the electronegativity is in the bottom-right")} }
+                li { {tr!(lang, "Rare earth metals include: ")}
+                    i { {tr!(lang, "Lanthanoids (La ~ Lu), Sc and Y")} }
+                }
+                li { {tr!(lang, "Atomic radius is ")} i { {tr!(lang, "van der Waals radii")} } }
                 //li { i { "§" } " indicates crystal structure is unusual" }
                 // or may require explanation
             }
-            p { class: "text-lg font-bold mt-auto", "References:" }
+            p { class: "text-lg font-bold mt-auto", {tr!(lang, "References:")} }
             p { a { href: "https://iupac.org/what-we-do/periodic-table-of-elements/", "IUPAC" } ", "
                 a { href: "https://www.nist.gov/pml/periodic-table-elements", "Nist.gov" } ", "
                 a { href: "https://pubchem.ncbi.nlm.nih.gov/periodic-table/", "PubChem" } ", "
@@ -195,23 +223,27 @@ fn App() -> Element {
         }
 
         for i in 57..= 71 { ElemTile { ordinal: i, annote: false } }
-        p { style: "writing-mode: vertical-rl;",
-            class: "text-center text-lg font-bold rotate-180", "Lanthanides" }
+        p { class: "text-center text-lg font-bold rotate-180",
+            style: "writing-mode: vertical-rl;", "Lanthanides"
+        }
         for i in 89..=103 { ElemTile { ordinal: i, annote: false } }
-        p { style: "writing-mode: vertical-rl;",
-            class: "text-center text-lg font-bold rotate-180", "Actinides" }
-
-        div { class: "col-span-3", p { class: "mt-2", "© 2024 "
-            a { href: "https://github.com/mhfan", "M.H.Fan" } ", All rights reserved." } }
+        p { class: "text-center text-lg font-bold rotate-180",
+            style: "writing-mode: vertical-rl;", "Actinides"
+        }
+        p { class: "col-span-3 mt-2", {tr!(lang, " All rights reserved.")} " © 2024 "
+            a { href: "https://github.com/mhfan", "M.H.Fan" }
+        }
         div { class: "self-start rounded-sm text-center text-lg/6
-            col-[span_14_/_span_14] bg-yellow-100", b { "f" } "-block" }
+            col-[span_14_/_span_14] bg-yellow-100", b { "f" } {tr!(lang, "-block")}
+        }
         div { class: "self-start rounded-sm border-l bg-blue-100",
-            p { class: "invisible", "d-block" } } div { class: "empty" }
-    }
-} }
+            p { class: "invisible", "d-block" }
+        }   div { class: "empty" }
+    } }
+}
 
-use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
+    let lang = use_context::<Signal<Localization>>();
     let elem = ChemElem::from(ordinal);
     let mut over_ecfg = use_signal(|| false);
 
@@ -271,37 +303,50 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
         if annote {
             //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
-            a { class: "absolute font-bold text-lg/6 text-amber-600",
+            a { class: "absolute font-bold text-lg/6 text-amber-600 self-center",
                 href: "https://ciaaw.org/radioactive-elements.htm",
-                style: "top: -1.5rem; right: 1rem;", "radioactive" }
+                style: "top: -1.5rem;", {tr!(lang, "radioactive")}
+            }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
                 style: "right: calc(100% + 0.4rem);",
                 p { a { href: "https://ciaaw.org/atomic-weights.htm",
-                    "*standard atomic weight/mass" } }
+                    {tr!(lang, "*atomic weight")}
+                } }
                 a { href: "https://www.nist.gov/pml/periodic-table-elements",
-                    "1st ionization energy (eV)" }
-                p { class: "mt-3 mb-5", "symbol" } p { "name" }
-                p { span { class: "text-blue-700", "melting" } "/"
-                    span { class: "text-red-700",  "boiling" } " point (℃)" }
-                p { "*density" } a {
-                    href: "https://en.wikipedia.org/wiki/Electron_configuration",
-                    "electron configuration" }
+                    {tr!(lang, "1st ionization energy")} " (eV)"
+                }
+                p { class: "mt-3 mb-5", {tr!(lang, "symbol")} } p { {tr!(lang, "name")} }
+                p { span { class: "text-blue-700", {tr!(lang, "melting")} } "/"
+                    span { class: "text-red-700",  {tr!(lang, "boiling")} }
+                    {tr!(lang, " point")} " (℃)"
+                }
+                p { {tr!(lang, "*density")} }
+                a { href: "https://en.wikipedia.org/wiki/Electron_configuration",
+                    {tr!(lang, "electron configuration")}
+                }
             }
             div { class: "absolute text-lg leading-tight text-nowrap",
                 style: "left: calc(100% + 0.4rem);",
-                p { class: "mt-1", "atomic number" }
-                p { "electron affinity" }
-                p { class: "my-1", "main "
-            a { href: "https://en.wikipedia.org/wiki/Oxidation_state", "oxidation states" } }
-                p { "Chinese name with pinyin" }
+                p { class: "mt-1", {tr!(lang, "atomic number")} }
+                p { {tr!(lang, "electron affinity")} }
+                a { class: "my-1",
+                    href: "https://en.wikipedia.org/wiki/Oxidation_state",
+                    {tr!(lang, "main oxidation states")}
+                }
+                p { {tr!(lang, "Chinese name with pinyin")} }
                 a { href: "https://en.wikipedia.org/wiki/Electronegativity",
-                    "electronegativity (pauling)*" }
-                p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", "crystal structure" } }
+                    {tr!(lang, "electronegativity")} " (pauling)*"
+                }
+                p { a { href: "https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)", {tr!(lang, "crystal structure")}
+                } }
                 a { href: "https://www.nist.gov/pml/periodic-table-elements",
-                    "ground-state level" } // "term symbol"
+                    {tr!(lang, "ground-state level")} // "term symbol"?
+                }
                 p { span { class: "text-purple-700 font-bold",
                     a { href: "https://en.wikipedia.org/wiki/Atomic_radius",
-                        "atomic radius" } } " (pm)*" }
+                        {tr!(lang, "atomic radius")}
+                    }
+                } " (pm)*" }
             }
         }
 
@@ -310,14 +355,14 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
                     if elem.is_radioactive() { span { class: "ml-1 text-center grow", "☢️" } }
                 }
-                p { class: "flex text-base/5", {
-                    elem.ionization_energy().map_or_else(|| "-".to_string(),
+                p { class: "flex text-base/5",
+                    { elem.ionization_energy().map_or_else(|| "-".to_string(),
                         |ie| format!("{:.3}", ie.0).trim_end_matches('0')
                             .trim_end_matches('.').to_owned()) }
-                    span { class: "ml-2 text-center grow", {
-                        elem.electron_affinity().map_or_else(|| " ".to_string(),
-                            |ea| ea.to_string())
-                    } }
+                    span { class: "ml-2 text-center grow",
+                        { elem.electron_affinity().map_or_else(|| " ".to_string(),
+                            |ea| ea.to_string()) }
+                    }
                 }
             }
             span { class: "text-2xl font-bold ml-1", "{ordinal}" }
@@ -329,7 +374,8 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                 div { class: "flex flex-col mr-1",
                     p { class: "text-center leading-tight", { elem.name_py() } }
                     a { href: format!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
-                        class: "text-right text-3xl", { elem.name_ch().to_string() } }
+                        class: "text-right text-3xl", { elem.name_ch().to_string() }
+                    }
                 }
                 div { class: "text-right ml-1 relative",
                     div { class: "absolute w-full h-full group font-bold leading-tight",
@@ -347,8 +393,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     }   pre { class: "invisible", "  " }
                 }
             }
-            p { a { href: format!("https://en.wikipedia.org/wiki/{name}"),
-                    class: "text-lg/6", { name } }
+            p { a { href: "https://en.wikipedia.org/wiki/{name}", class: "text-lg/6", { name } }
                 span { class: "ml-2 font-bold", { match ordinal {
                     42|59 => "*".to_string(), // name is too long
                     _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
@@ -356,14 +401,14 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
             }
 
             p { class: "flex text-base/5 relative",
-                span { class: "text-blue-700 font-bold", {
-                    elem.melting_point().map_or_else(|| "-".to_string(),
-                        |mp| format!("{}", (mp - 273.15 + 0.5) as i32))
-                } } "/"
-                span { class: "text-red-700",  {
-                    elem.boiling_point().map_or_else(|| "-".to_string(),
-                        |bp| format!("{}", (bp - 273.15 + 0.5) as i32))
-                } }
+                span { class: "text-blue-700 font-bold",
+                    { elem.melting_point().map_or_else(|| "-".to_string(),
+                        |mp| format!("{}", (mp - 273.15 + 0.5) as i32)) }
+                } "/"
+                span { class: "text-red-700",
+                    { elem.boiling_point().map_or_else(|| "-".to_string(),
+                        |bp| format!("{}", (bp - 273.15 + 0.5) as i32)) }
+                }
                 { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
                     |(cs, file)| rsx! {
                     span { class: "pl-2 grow peer", { cs.to_string() } }
@@ -374,24 +419,24 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                                 "right: calc(100% + 0.4rem); bottom: 0px;",
                             _ => "left: calc(100% + 0.4rem);", }),
                         //figcaption {} // TODO: title/desc
-                        img { class: "w-full", src: format!("crystal-s/{file}"), }
-                    } }
-                ) }
+                        img { class: "w-full", src: "crystal-s/{file}", }
+                    }
+                }) }
             }
-            p { class: "flex text-base/5", {
-                elem.density().map_or_else(|| "-".to_string(), |den| format!("{:.4}", den)
+            p { class: "flex text-base/5",
+                { elem.density().map_or_else(|| "-".to_string(), |den| format!("{den:.4}")
                     .trim_end_matches('0').trim_end_matches('.').to_string()) }
-                span { class: "ml-2 font-bold text-purple-700", {
-                    elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string())
-                } }
-                span { class: "ml-2 font-bold", {
-                    elem.ground_state().map_or_else(|| rsx! { "-" },
+                span { class: "ml-2 font-bold text-purple-700",
+                    { elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string()) }
+                }
+                span { class: "ml-2 font-bold",
+                    { elem.ground_state().map_or_else(|| rsx! { "-" },
                         |(s1, s2, s3)| rsx! { if 1 < s2.len() {
                             sup  { {s1} } { s2.chars().next().unwrap().to_string() }
                             span { style: "position: relative; top: -0.1em;", "°" }
                             sub  { style: "left: -0.6em;", {s3} }
-                        } else { sup { {s1} } {s2} sub { {s3} } } })
-                } }
+                        } else { sup { {s1} } {s2} sub { {s3} } } }) }
+                }
             }
             p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
                 onmouseout:  move |_| over_ecfg.set(false),
@@ -409,11 +454,9 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                     }), ShowEcfg { ordinal } //figcaption {}
                 } }
 
-                if matches!(ordinal, 42|59) {
-                    span { class: "ml-2 font-bold grow text-right", {
-                        elem.en_pauling().map(|en| en.to_string())
-                    } }
-                }
+                if matches!(ordinal, 42|59) { span { class: "ml-2 font-bold grow text-right",
+                    { elem.en_pauling().map(|en| en.to_string()) }
+                } }
             }
             // TODO: show origin/source and abundance according to selection
         }
@@ -422,13 +465,13 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 
 #[component] fn ShowEcfg(ordinal: u8) -> Element {
     let elem = ChemElem::from(ordinal);
+    let lang = use_context::<Signal<Localization>>();
     let ecfg = elem.electron_configuration().expand();
 
     rsx! { svg { width: "640", height: "512", xmlns: "http://www.w3.org/2000/svg",
-        "font-size": "small", "font-weight": "normal",
-        title { "Electron shell/orbital configuration" }
+        "font-size": "small", "font-weight": "normal", //title { title }
 
-        g { text { x: "200", y: "500", "Electron shell/orbital configuration" }
+        g { text { x: "200", y: "500", {tr!(lang, "Electron shell/orbital configuration")} }
             text { x: "560", y: "464", "font-size": "48", { elem.symbol() } }
 
             path { stroke: "gray", "stroke-opacity": "0.3", d:
@@ -436,7 +479,7 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
                      m 0,64 h 588 m 0,64 h-588 m 0,64 h 588 m 0,64 h-588 ",
             }
             text { x: "20", y: "400", transform: "rotate(-90 20,400)",
-                "Energy increase (not to scale)"
+                {tr!(lang, "Energy increase (not to scale)")}
             }
             path { "stroke-linecap": "round", "stroke-linejoin": "round", fill: "gray",
                 "stroke-width": "2", stroke: "gray", d: "M15,96 l-4,12 h8 Z v88",
@@ -526,80 +569,87 @@ use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS};
 }
 
 /// https://physics.nist.gov/cuu/Constants/index.html
-#[component] fn PhysConsts() -> Element { rsx! {
+#[component] fn PhysConsts() -> Element {
+    let lang = use_context::<Signal<Localization>>();
+    rsx! {
         p { class: "flex text-lg/6 justify-between px-1",
-            span { class: "font-bold", "Common physical constants" }
-            span { "Source: " a { href: "https://physics.nist.gov/constants",
-                "physics.nist.gov" } " (2022)"
+            span { class: "font-bold", {tr!(lang, "Common physical constants")} }
+            span { {tr!(lang, "Source: ")}
+                a { href: "https://physics.nist.gov/constants", "physics.nist.gov" } " (2022)"
             }
         }
         div { class: "grid grid-cols-[repeat(2,auto)]
             border-black border divide-black divide-x",
             div { class: "grid grid-cols-[repeat(3,auto)] gap-x-3 px-2",
-                p { "electron mass" }
+                p { {tr!(lang, "electron mass")} }
                 span { class: "text-xl leading-none -top-2",
                     "𝓂" sub { class: "text-lg leading-none", "𝑒" } }
                 p { "9.109 383 7139(28) × 10⁻³¹ kg" }
 
-                p { "atomic mass unit " span { class: "text-xl leading-none", "𝓂" } "(¹²C)/12" }
+                p { {tr!(lang, "atomic mass unit")}
+                    span { class: "text-xl leading-none", " 𝓂" } "(¹²C)/12"
+                }
                 span { class: "text-xl leading-none", "𝓂" sub { "μ" } }
                 p { "1.660 539 068 92(52) × 10⁻²⁷ kg" }
 
-                p { "fine-structure const. "
-                    span { class: "text-xl leading-none", "𝑒" } "²/4π𝜖₀ℏ𝑐" } // 𝜋ε
+                p { {tr!(lang, "fine-structure const.")}
+                    span { class: "text-xl leading-none", " 𝑒" } "²/4π𝜖₀ℏ𝑐" } // 𝜋ε
                 span { class: "text-xl leading-none", "𝛼" } // α
                 p { "7.297 352 5643(11) × 10⁻³ (~1/137)" }
 
-                p { "Newtonian const. of gravitation" } span { "𝐺" }
+                p { {tr!(lang, "Newtonian const. of gravitation")} } span { "𝐺" }
                 p { "6.674 30(15) × 10⁻¹¹ m³ kg⁻¹ s⁻²" }
 
-                p { "Rydberg constant" } span { "𝑅" sub { "∞" } }
+                p { {tr!(lang, "Rydberg constant")} } span { "𝑅" sub { "∞" } }
                 p { "10 973 731.568 157(12) [m⁻¹]" }
 
-                p { "classical electron radius " span { class: "text-lg leading-none", "𝛼²𝑎₀" } }
+                p { {tr!(lang, "classical electron radius")}
+                    span { class: "text-lg leading-none", " 𝛼²𝑎₀" }
+                }
                 span { class: "text-lg leading-none", "𝑟" sub { "𝑒" } }
                 p { "2.817 940 3205(13) × 10⁻¹⁵ m" }
 
-                p { "molar  volume of ideal gas 𝑅𝑇/𝑝" } span { "𝑉" sub { "m" } }
-                p { "22.413 969 54... × 10⁻³ m³/mol" }
+                p { {tr!(lang, "molar volume of ideal gas")} " 𝑅𝑇/𝑝" }
+                span { "𝑉" sub { "m" } } p { "22.413 969 54... × 10⁻³ m³/mol" }
 
-                p { "first radiation constant 2π"
+                p { {tr!(lang, "first radiation constant")} " 2π"
                     span { class: "text-xl leading-none", "ℎ" } "𝑐²" }
                 span { i { class: "text-lg leading-none", "c" } "₁" }
                 p { "3.741 771 852... × 10⁻¹⁶ [W m²]" }
 
-                p { "second radiation constant "
-                    span { class: "text-xl leading-none", "ℎ" } "𝑐/𝑘" }
+                p { {tr!(lang, "second radiation constant")}
+                    span { class: "text-xl leading-none", " ℎ" } "𝑐/𝑘" }
                 span { i { class: "text-lg leading-none", "c" } "₂" }
                 p { "1.438 776 877... × 10⁻² [m K]" }
 
-                p { "¹³³Cs hyperfine transition freq." } span { "∆ν" sub { "Cs" } }
-                p { "9 192 631 770 Hz" }
+                p { "¹³³Cs " {tr!(lang, "hyperfine transition freq.")} }
+                span { "∆ν" sub { "Cs" } } p { "9 192 631 770 Hz" }
             }
             div { class: "grid grid-cols-[repeat(3,auto)] gap-x-3 px-2",
-                p { "Avogadro constant" } span { "𝑁" sub { "A" } }
-                p { "6.022 140 76 × 10²³ mol⁻¹" }
+                p { {tr!(lang, "Avogadro constant")} }
+                span { "𝑁" sub { "A" } } p { "6.022 140 76 × 10²³ mol⁻¹" }
 
-                p { "Planck constant" } span { class: "text-2xl leading-none", "ℎ" }
-                p { "6.626 070 15 × 10⁻³⁴ J/Hz" }
+                p { {tr!(lang, "Planck constant")} }
+                span { class: "text-2xl leading-none", "ℎ" } p { "6.626 070 15 × 10⁻³⁴ J/Hz" }
                 p { class: "text-center", span { class: "text-2xl leading-none", "ℎ" } "/2π" }
                 span { class: "text-lg leading-tight", "ℏ" } // ħ
                 p { "1.054 571 817... × 10⁻³⁴ J s" }
 
-                p { "Boltzmann constant" } span { class: "text-xl leading-tight", "𝑘" }
+                p { {tr!(lang, "Boltzmann constant")} }
+                span { class: "text-xl leading-tight", "𝑘" }
                 p { "1.380 649 00 × 10⁻²³ J/K" }
 
-                p { "Faraday constant 𝑁" sub { "A" } "𝑒" } span { "𝐹" }
+                p { {tr!(lang, "Faraday constant")} " 𝑁" sub { "A" } "𝑒" } span { "𝐹" }
                 p { "96 485.332 12... C/mol" }
 
-                p { "molar gas constant 𝑁" sub { "A" } "𝑘" } span { "𝑅" }
+                p { {tr!(lang, "molar gas constant")} " 𝑁" sub { "A" } "𝑘" } span { "𝑅" }
                 p { "8.314 462 618... J mol⁻¹ K⁻¹" }
 
-                p { "elementary charge (eV)" } span { class: "text-xl leading-none", "𝑒" }
-                p { "1.602 176 634 × 10⁻¹⁹ C (J)" }
+                p { {tr!(lang, "elementary charge")} " (eV)" }
+                span { class: "text-xl leading-none", "𝑒" } p { "1.602 176 634 × 10⁻¹⁹ C (J)" }
 
-                p { "speed of light in vacuum" } span { class: "text-xl leading-none", "𝑐" }
-                p { "299 792 458 m/s" }
+                p { {tr!(lang, "speed of light in vacuum")} }
+                span { class: "text-xl leading-none", "𝑐" } p { "299 792 458 m/s" }
 
                 p { class: "col-span-3", "STP: 𝑇 = 273.15 K (0 ℃), 𝑝 = 101.325 kPa" }
             }
