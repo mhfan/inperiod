@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 //use dioxus_logger::tracing;
 
-// Urls are relative to your Cargo.toml file
+// URLs are relative to your Cargo.toml file
 //const _TAILWIND_CSS: &str = manganis::mg!(file("assets/tailwind.css"));
 
 fn main() {
@@ -36,7 +36,7 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 //#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
 //#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
 
-#[component] fn PeriodicTable() -> Element {
+fn PeriodicTable() -> Element {
     use_context_provider(|| Signal::new(Localization::new()));
     let mut lang = use_context::<Signal<Localization>>();
     //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
@@ -58,9 +58,9 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
             a { href: "https://github.com/mhfan/inperiod",
                 {tr!(lang, "Periodic Table of the Elements")}
             }
-            select { name: "lang-sel", //id: "lang-sel",
+            select { class: "absolute top-2 left-0 text-2xl text-center font-normal
+                non-printable text-red-600", name: "lang-sel", //id: "lang-sel",
                 onchange: move |e| lang.write().set_lang(e.value()),
-                class: "absolute top-2 left-0 text-2xl text-center font-normal non-printable",
                 option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
             }
         }
@@ -81,6 +81,9 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
         div { class: "relative col-span-6",
             // https://www.nagwa.com/en/explainers/809139094679/
             img { class: "absolute h-[150%]", src: "aufbau.svg" }
+            //div { class: "absolute h-[150%]", AufbauPrincipal {} }
+            p { class: "absolute bottom-[-5rem] right-1",
+                {tr!(lang, "metal - nonmetal dividing line")} }
         }
 
         for i in 13..=17 { p { class: "self-end text-center text-lg font-bold",
@@ -274,7 +277,8 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
     };
 
     let metal_bound = match ordinal {
-        1 => "shadow-black-b", 118 => "shadow-black-l",
+        1 => "shadow-black-b", 118 => "shadow-black-l", 4 => "shadow-[0_-2px_black]",
+        21|39 => "shadow-spread-2 shadow-amber-300", // rare earth metals indication
         2 => "shadow-[0_2px_#fca5a5]", // indicate He is of s-block, shadow-red-300
         5|14|33|52|85 => "shadow-black-bl", _ => "",
     };
@@ -298,9 +302,11 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
-    rsx! { div { //shadow-border-1 shadow-indigo-300 // size: 152x198
+    rsx! { div { //shadow-border-1 shadow-indigo-300    // size: 152x198
         class: "flex flex-col relative rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
+        //style: "background: linear-gradient(180deg, red 30%, blue 30%);", // XXX: for origin
+        //style: "background: conic-gradient(red 30deg, blue 30deg);",
         if annote {
             //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
             a { class: "absolute font-bold text-lg/6 text-amber-600 self-center",
@@ -395,7 +401,7 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
             }
             p { a { href: "https://en.wikipedia.org/wiki/{name}", class: "text-lg/6", { name } }
                 span { class: "ml-2 font-bold", { match ordinal {
-                    42|59 => "*".to_string(), // name is too long
+                    42|59 => "*".to_string(), // name is too long, move to bottom-right
                     _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
                 } } }
             }
@@ -414,11 +420,11 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
                     span { class: "pl-2 grow peer", { cs.to_string() } }
                     figure { class: "absolute w-[10rem] max-w-none border rounded
                             border-orange-600 bg-white hidden peer-hover:block z-10",
-                        style: format!("{}", match ordinal {
+                        style: { match ordinal {
                             89..=103|2|10|18|36|54|71|86|118 =>
                                 "right: calc(100% + 0.4rem); bottom: 0px;",
-                            _ => "left: calc(100% + 0.4rem);", }),
-                        //figcaption {} // TODO: title/desc
+                            _ => "left: calc(100% + 0.4rem);",
+                        } }, //figcaption {} // TODO: title/desc
                         img { class: "w-full", src: "crystal-s/{file}", }
                     }
                 }) }
@@ -444,14 +450,14 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
                 if *over_ecfg.read() { figure {
                     class: "absolute w-[40rem] max-w-none border rounded
                         border-orange-600 bg-white group-hover:block z-10",
-                    style: format!("{}", match ordinal {
+                    style: { match ordinal {
                         2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
                         57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
                         _ => if ordinal == 71  ||
                                 ordinal == 103 || matches!(elem.group(), 15..=19) {
                                     "right: calc(100% + 0.125rem); bottom: -0.2em;"
                         } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
-                    }), ShowEcfg { ordinal } //figcaption {}
+                    } }, ShowEcfg { ordinal } //figcaption {}
                 } }
 
                 if matches!(ordinal, 42|59) { span { class: "ml-2 font-bold grow text-right",
@@ -569,7 +575,7 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 }
 
 /// https://physics.nist.gov/cuu/Constants/index.html
-#[component] fn PhysConsts() -> Element {
+fn PhysConsts() -> Element {
     let lang = use_context::<Signal<Localization>>();
     rsx! {
         p { class: "flex text-lg/6 justify-between px-1",
@@ -656,7 +662,157 @@ macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
         }
 } }
 
-#[component] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
+/* fn AufbauPrincipal() -> Element {
+    // XXX: embedded for translation, expected to work on Dioxus v0.6
+    let lang = use_context::<Signal<Localization>>();
+    rsx! { svg { width: "500", height: "300", xmlns: "http://www.w3.org/2000/svg",
+        "font-size": "small", "font-family": "sans", //title { {title} }
+
+        text { transform: "translate(16,16)",
+            tspan { x: "0", y:  "32", "1 K" tspan { dy: "-6", "font-size": "10", "2"  } }
+            tspan { x: "0", y:  "64", "2 L" tspan { dy: "-6", "font-size": "10", "8"  } }
+            tspan { x: "0", y:  "96", "3 M" tspan { dy: "-6", "font-size": "10", "18" } }
+            tspan { x: "0", y: "128", "4 N" tspan { dy: "-6", "font-size": "10", "32" } }
+            tspan { x: "0", y: "160", "5 O" tspan { dy: "-6", "font-size": "10", "32" } }
+            tspan { x: "0", y: "192", "6 P" tspan { dy: "-6", "font-size": "10", "18" } }
+            tspan { x: "0", y: "224", "7 Q" tspan { dy: "-6", "font-size": "10", "8"  } }
+        }
+        text { transform: "translate(22,274) rotate(-90)", fill: "blue",
+            "letter-spacing": "-1", "n ="
+        }
+        path { transform: "translate(16,27)", stroke: "gray", "stroke-width": "0.2",
+            d: "M0,32 h152 M0,64 h216 M0,96 h280 M0,128h280 M0,160h280 M0,192h216 M0,224h152"
+        }
+        text { transform: "translate(2,18)", "letter-spacing": "-1",
+            tspan { x:  "64", "ℓ = 0" }
+            tspan { x: "128", "ℓ = 1" }
+            tspan { x: "192", "ℓ = 2" }
+            tspan { x: "256", "ℓ = 3" }
+            tspan { x: "320", opacity: "0.2", "ℓ = 4" }
+            tspan { x: "384", opacity: "0.2", "ℓ = 5" }
+            tspan { x: "448", opacity: "0.2", "ℓ = 6" }
+        }
+        text { x: "92", y: "296", {tr!(lang, "Aufbau Principle")}
+            " (" {tr!(lang, "Madelung rule")} ")" }
+        text { x: "180", y: "52", fill: "blue", "font-size": "8",
+            tspan { "n: " {tr!(lang, "Principle quantum number")} }
+            tspan { x: "180", dy: "16", "ℓ: " {tr!(lang, "Azimuthal quantum number")} }
+        }
+
+        defs {
+            ellipse { rx: "16", ry: "12", stroke: "black", "stroke-width": "0.5", id: "orbit" }
+            marker { "refX": "8", "refY": "8", "viewBox": "0 0 16 16", fill: "red", id: "arrow",
+                "markerWidth": "10", "markerHeight": "10", orient: "auto-start-reverse",
+                path { d: "M0,2 L16,8 L0,14 L6,8 z" } // A marker to be used as an arrowhead
+            }
+            path { transform: "translate(48,51)  rotate(-26.5)", d: "M8,8 h48",  id: "orbit_s" }
+            path { transform: "translate(48,115) rotate(-26.5)", d: "M8,8 h120", id: "orbit_p" }
+            path { transform: "translate(48,179) rotate(-26.5)", d: "M8,8 h192", id: "orbit_d" }
+            path { transform: "translate(48,243) rotate(-26.5)", d: "M8,8 h264", id: "orbit_f" }
+        }
+        g { "marker-start": "url(#arrow)", stroke: "red",
+            r#use { href: "#orbit_s" } r#use { href: "#orbit_s", y: "32" }
+            r#use { href: "#orbit_p" } r#use { href: "#orbit_p", y: "32" }
+            r#use { href: "#orbit_d" } r#use { href: "#orbit_d", y: "32" }
+            r#use { href: "#orbit_f" } //r#use { href: "#orbit_f", y: "32" }
+            r#use { href: "#orbit_d", y: "64", x: "64" }
+        }
+        g { transform: "translate( 80,11)", fill: "pink",
+            r#use { href: "#orbit", y:  "32" }
+            r#use { href: "#orbit", y:  "64" }
+            r#use { href: "#orbit", y:  "96" }
+            r#use { href: "#orbit", y: "128" }
+            r#use { href: "#orbit", y: "160" }
+            r#use { href: "#orbit", y: "192" }
+            r#use { href: "#orbit", y: "224" }
+            r#use { href: "#orbit", y: "256", opacity: "0.2" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y:  "32", "1s" }
+                text { y:  "64", "2s" }
+                text { y:  "96", "3s" }
+                text { y: "128", "4s" }
+                text { y: "160", "5s" }
+                text { y: "192", "6s" }
+                text { y: "224", "7s" }
+                text { y: "256", "s" tspan { dy: "-6", "font-size": "10", "2" } }
+            }
+        }
+        g { transform: "translate(144,11)", fill: "lightgreen",
+            r#use { href: "#orbit", y:  "64" }
+            r#use { href: "#orbit", y:  "96" }
+            r#use { href: "#orbit", y: "128" }
+            r#use { href: "#orbit", y: "160" }
+            r#use { href: "#orbit", y: "192" }
+            r#use { href: "#orbit", y: "224" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y:  "64", "2p" }
+                text { y:  "96", "3p" }
+                text { y: "128", "4p" }
+                text { y: "160", "5p" }
+                text { y: "192", "6p" }
+                text { y: "224", "7p" }
+                text { y: "256", "p" tspan { dy: "-6", "font-size": "10", "6" } }
+            }
+        }
+        g { transform: "translate(208,11)", fill: "lightblue",
+            r#use { href: "#orbit", y:  "96" }
+            r#use { href: "#orbit", y: "128" }
+            r#use { href: "#orbit", y: "160" }
+            r#use { href: "#orbit", y: "192" }
+            r#use { href: "#orbit", y: "224", opacity: "0.2", }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y:  "96", "3d" }
+                text { y: "128", "4d" }
+                text { y: "160", "5d" }
+                text { y: "192", "6d" }
+                text { y: "224", opacity: "0.2", "7d" }
+                text { y: "256", "d" tspan { dy: "-6", "font-size": "10", "10" } }
+            }
+        }
+        g { transform: "translate(272,11)", fill: "orange",
+            r#use { href: "#orbit", y: "128" }
+            r#use { href: "#orbit", y: "160" }
+            r#use { href: "#orbit", y: "192", opacity: "0.2", }
+            r#use { href: "#orbit", y: "224", opacity: "0.2" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y: "128", "4f" }
+                text { y: "160", "5f" }
+                text { y: "192", opacity: "0.2", "6f" }
+                text { y: "224", opacity: "0.2", "7f" }
+                text { y: "256", "f" tspan { dy: "-6", "font-size": "10", "14" } }
+            }
+        }
+        g { transform: "translate(336,11)", fill: "gray", opacity: "0.2",
+            r#use { href: "#orbit", "y": "160" }
+            r#use { href: "#orbit", "y": "192" }
+            r#use { href: "#orbit", "y": "224" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y: "160", "5g" }
+                text { y: "192", "6g" }
+                text { y: "224", "7g" }
+                text { y: "256", "g" tspan { dy: "-6", "font-size": "10", "18" } }
+            }
+        }
+        g { transform: "translate(400,11)", fill: "gray", opacity: "0.2",
+            r#use { href: "#orbit", y: "192" }
+            r#use { href: "#orbit", y: "224" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y: "192", "6h" }
+                text { y: "224", "7h" }
+                text { y: "256", "h" tspan { dy: "-6", "font-size": "10", "22" } }
+            }
+        }
+        g { transform: "translate(464,11)", fill: "gray", opacity: "0.2",
+            r#use { href: "#orbit", y: "224" }
+            g { transform: "translate(-8,5)", fill: "black",
+                text { y: "224", "7i" }
+                text { y: "256", "i" tspan { dy: "-6", "font-size": "10", "26" } }
+            }
+        }
+    } }
+} */
+
+#[allow(unused)] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
 } }
 
 /* for fullstack web renderer

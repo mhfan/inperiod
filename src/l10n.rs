@@ -43,6 +43,7 @@ impl Localization {
     "series"  => "系列",
     "E-max"   => "满电子数",
     "E-shell" => "电子壳层",
+    "metal - nonmetal dividing line" => "金属 - 非金属分隔线",
 
     "Phase at STP" => "物态 (STP)",
     "Liquid" => "液体",

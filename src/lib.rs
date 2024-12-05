@@ -216,15 +216,15 @@ impl ChemElem {
     /// https://en.wikipedia.org/wiki/Group_(periodic_table)#List_of_group_names
     pub const fn group(&self) -> u8 {   // XXX: cache/save it for frequent access?
         match self.atomic_number() {
-            1| 3|11|19|37|55|87  => 1,  // Alkali metals
-               4|12|20|38|56|88  => 2,  // Alkaline earth metals
-                    21|39|71|103 => 3,  // Transition metals (group 3~12)
-                    22|40|72|104 => 4,
-                    23|41|73|105 => 5,
-                    24|42|74|106 => 6,
-                    25|43|75|107 => 7,
-                    26|44|76|108 => 8,
-                    27|45|77|109 => 9,
+            1| 3|11|19|37|55| 87 =>  1, // Alkali metals
+               4|12|20|38|56| 88 =>  2, // Alkaline earth metals
+                    21|39|71|103 =>  3, // Transition metals (group 3~12)
+                    22|40|72|104 =>  4,
+                    23|41|73|105 =>  5,
+                    24|42|74|106 =>  6,
+                    25|43|75|107 =>  7,
+                    26|44|76|108 =>  8,
+                    27|45|77|109 =>  9,
                     28|46|78|110 => 10,
                     29|47|79|111 => 11, // Coinage metals
                     30|48|80|112 => 12,
@@ -234,7 +234,7 @@ impl ChemElem {
                8|16|34|52|84|116 => 16, // Chalcogens
                9|17|35|53|85|117 => 17, // Halogens
             2|10|18|36|54|86|118 => 18, // Noble gases
-                57..=70|89..=102 => 19, // f-group/block (Lanthanides and Actinides)
+              57..=70 | 89..=102 => 19, // f-group/block (Lanthanides and Actinides)
             _ => unreachable!(),
         }
     }
@@ -514,7 +514,7 @@ impl From<(u8, u8, u8)> for Subshell {
     fn from(val: (u8, u8, u8)) -> Self { Self { level: val.0, orbital: val.1, ecount: val.2 } }
 }
 
-/// Electron subshell type, based on the azimuthal quantum number ℓ
+/// Electron subshell type, based on the azimuthal quantum number ℓ (0..=n-1)
 #[repr(u8)] pub enum OrbitalType {
     /** ℓ = 0, historical name "Sharp" */       S = b's',
     /** ℓ = 1, historical name "Principal" */   P = b'p',
@@ -534,17 +534,17 @@ impl From<(u8, u8, u8)> for Subshell {
     ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
 }
 
-#[repr(u8)] #[derive(Debug)] pub enum Cosmological {
-    BigBangFusion = 0,
-    CosmicRayFission,   // 宇宙射线裂变
-    DyingLowMassStars,
-    ExplodingMassiveStars,
-    ExplodingWhiteDwarfs,   // supernovae
-    MergingNeutronStars,
-    HumanSynthesis,     // No stable isotopes
+#[derive(Debug)] #[repr(u8)] pub enum Cosmological {
+    BigBangFusion           = b'b',
+    CosmicRayFission        = b'j', // 宇宙射线裂变
+    DyingLowMassStars       = b'y',
+    ExplodingMassiveStars   = b'g',
+    ExplodingWhiteDwarfs    = b'c', // supernovae
+    MergingNeutronStars     = b'o',
+    HumanSynthesis          = b'z', // No stable isotopes
 }
 
-#[repr(u8)] #[derive(Debug)] pub enum ElemClass {
+#[derive(Debug)] #[repr(u8)] pub enum ElemClass {
     Unknown = 0,
     AlkaliMetals,
     AlkalineEarthMetals,
