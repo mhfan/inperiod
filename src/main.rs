@@ -31,7 +31,7 @@ fn App() -> Element {
     }
 }
 
-use inperiod::{ChemElem, ElemClass::*, ROMAN_NUM, UNICODE_SUPERS, l10n::Localization};
+use inperiod::{l10n::Localization, ChemElem, ElemClass::*, ROMAN_NUM};
 macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 //#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
 //#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
@@ -246,9 +246,10 @@ fn PeriodicTable() -> Element {
 }
 
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
-    let lang = use_context::<Signal<Localization>>();
     let elem = ChemElem::from(ordinal);
     let mut over_ecfg = use_signal(|| false);
+    let lang = use_context::<Signal<Localization>>();
+    let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
     let revised_ecfg = match ordinal {
         //format!("{prefix}{}", ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
@@ -263,6 +264,7 @@ fn PeriodicTable() -> Element {
     };
 
     let bg_color = match elem.category() {
+        Unknown             => "bg-unknown",
         AlkaliMetals        => "bg-alkali",
         AlkalineEarthMetals => "bg-alkaline",
         TransitionMetals    => "bg-transition",
@@ -273,12 +275,11 @@ fn PeriodicTable() -> Element {
         NobleGases          => "bg-noble-gas",
         Lanthanoids         => "bg-lanthanide",
         Actinoids           => "bg-actinide",
-        Unknown             => "bg-unknown",
     };
 
     let metal_bound = match ordinal {
         1 => "shadow-black-b", 118 => "shadow-black-l", 4 => "shadow-[0_-2px_black]",
-        21|39 => "shadow-spread-2 shadow-amber-300", // rare earth metals indication
+        21|39|71 => "shadow-spread-2 shadow-amber-300", // rare earth metals indication
         2 => "shadow-[0_2px_#fca5a5]", // indicate He is of s-block, shadow-red-300
         5|14|33|52|85 => "shadow-black-bl", _ => "",
     };
@@ -300,20 +301,35 @@ fn PeriodicTable() -> Element {
         } { "outline-green-800 outline-2 outline" } else { "" }
     }; */
 
-    let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
+    use inperiod::{UNICODE_SUPERS, CosmicOrigin::{self, *}};
+    let origin_color = |x: CosmicOrigin| match x {
+        BigBangFusion => "#e2e8f0",
+
+        CosmicRayFission => "#d6d3d1",
+        RadioactiveDecay => "#fce7f3",
+
+        DyingLowMassStars       => "#a5f3fc",
+        ExplodingMassiveStars   => "#ddd6fe",
+        WhiteDwarfSupernovae    => "#fecdd3",
+        MergingNeutronStars     => "#d9f99d",
+
+        HumanSynthesis => "#fafafa",
+    };
 
     rsx! { div { //shadow-border-1 shadow-indigo-300    // size: 152x198
         class: "flex flex-col relative rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
-        //style: "background: linear-gradient(180deg, red 30%, blue 30%);", // XXX: for origin
-        //style: "background: conic-gradient(red 30deg, blue 30deg);",
-        if annote {
-            //onmouseover: move |evt| evt.stop_propagation(), // XXX: not work for :hover
+        style: if false { format!("background: conic-gradient({});", {  let mut sum = 0;
+            elem.cosmic_origin().iter().map(|&(co, ratio)| { let start = sum; sum += ratio;
+                format!("{} {start}% {sum}%", origin_color(co.into()))
+            }).collect::<Vec<_>>().join(", ")
+        })}, if annote {
             a { class: "absolute font-bold text-lg/6 text-amber-600 self-center",
                 href: "https://ciaaw.org/radioactive-elements.htm",
                 style: "top: -1.5rem;", {tr!(lang, "radioactive")}
             }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
+                onmouseover: |evt| evt.stop_propagation(), // XXX: not work for :hover
                 style: "right: calc(100% + 0.4rem);",
                 p { a { href: "https://ciaaw.org/atomic-weights.htm",
                     {tr!(lang, "*atomic weight")}

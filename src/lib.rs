@@ -8,8 +8,6 @@
 //! module/crate level documentation
 // src/lib.rs (default library entry point)
 
-pub mod l10n;
-
 /*  https://en.wikipedia.org/wiki/Periodic_table
     https://www.webelements.com/periodicity/contents/
     https://en.wikipedia.org/wiki/Category:Chemical_element_data_pages
@@ -327,17 +325,15 @@ impl ChemElem {
     /// https://en.wikipedia.org/wiki/Electronegativities_of_the_elements_(data_page)
     pub const fn en_pauling(&self) -> Option<f32> { self.electronegativity() }
 
-    /// https://svs.gsfc.nasa.gov/13873/
-    /// https://royalsocietypublishing.org/doi/10.1098/rsta.2019.0301
-    /// https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
-    pub const fn cosmic_origin(&self) { todo!() }
-
     /// https://en.wikipedia.org/wiki/Abundance_of_the_chemical_elements
     /// https://en.wikipedia.org/wiki/Abundances_of_the_elements_(data_page)
     pub const fn abundance(&self) { todo!() }   // TODO:
 }
 
+pub mod l10n;
+
 pub mod ciaaw;
+pub mod origin;
 pub mod ostates;
 pub mod pubchem;    //include!(concat!(env!("OUT_DIR"), "/pubchem.rs"));
 pub mod nist_asd;
@@ -534,14 +530,19 @@ impl From<(u8, u8, u8)> for Subshell {
     ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
 }
 
-#[derive(Debug)] #[repr(u8)] pub enum Cosmological {
+#[derive(Debug)] #[repr(u8)] pub enum CosmicOrigin {    // Cosmological
     BigBangFusion           = b'b',
-    CosmicRayFission        = b'j', // 宇宙射线裂变
+    CosmicRayFission        = b'j', // Collisions, 宇宙射线裂变
     DyingLowMassStars       = b'y',
-    ExplodingMassiveStars   = b'g',
-    ExplodingWhiteDwarfs    = b'c', // supernovae
+    ExplodingMassiveStars   = b'g', // Supernovae
+    WhiteDwarfSupernovae    = b'c', // ExplodingWhiteDwarfs
     MergingNeutronStars     = b'o',
+    RadioactiveDecay        = b'r', // XXX:
     HumanSynthesis          = b'z', // No stable isotopes
+}
+
+impl From<u8> for CosmicOrigin {
+    fn from(val: u8) -> Self { unsafe { std::mem::transmute(val) } }
 }
 
 #[derive(Debug)] #[repr(u8)] pub enum ElemClass {
