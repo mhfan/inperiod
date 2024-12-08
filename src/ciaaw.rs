@@ -4,7 +4,7 @@
 use super::{ChemElem, AtomicWeight::{self, *}};
 
 impl ChemElem {
-    pub const fn atomic_weight(&self) -> &AtomicWeight { &MASS[*self as usize] }
+    pub const fn atomic_weight(&self) -> &AtomicWeight { &MASS[self.atomic_number() as usize] }
 }
 
 const MASS: [AtomicWeight; ChemElem::MAX as usize] = [ MassNumber(0),

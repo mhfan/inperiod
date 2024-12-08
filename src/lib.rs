@@ -31,31 +31,33 @@
     https://www.futurity.org/periodic-table-new-elements-1087782-2/
     https://elements.wlonk.com/index.htm, https://ptable.com */
 
+//pub struct ChemElem { an: AtomicNumber, group: u8 }
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)] pub enum ChemElem { // #[non_exhaustive]
     /** Hydrogen      */ H = 1,
     /** Helium        */ He,
     /** Lithium       */ Li,
     /** Beryllium     */ Be,
-    /** Boron         */ B,
-    /** Carbon        */ C,
-    /** Nitrogen      */ N,
-    /** Oxygen        */ O,
-    /** Fluorine      */ F,
+    /** Boron         */  B,
+    /** Carbon        */  C,
+    /** Nitrogen      */  N,
+    /** Oxygen        */  O,
+    /** Fluorine      */  F,
     /** Neon          */ Ne,
     /** Sodium        */ Na,
     /** Magnesium     */ Mg,
     /** Aluminum      */ Al,
     /** Silicon       */ Si,
-    /** Phosphorus    */ P,
-    /** Sulfur        */ S,
+    /** Phosphorus    */  P,
+    /** Sulfur        */  S,
     /** Chlorine      */ Cl,
     /** Argon         */ Ar,
-    /** Potassium     */ K,
+    /** Potassium     */  K,
     /** Calcium       */ Ca,
     /** Scandium      */ Sc,
     /** Titanium      */ Ti,
-    /** Vanadium      */ V,
+    /** Vanadium      */  V,
     /** Chromium      */ Cr,
     /** Manganese     */ Mn,
     /** Iron          */ Fe,
@@ -71,7 +73,7 @@
     /** Krypton       */ Kr,
     /** Rubidium      */ Rb,
     /** Strontium     */ Sr,
-    /** Yttrium       */ Y,
+    /** Yttrium       */  Y,
     /** Zirconium     */ Zr,
     /** Niobium       */ Nb,
     /** Molybdenum    */ Mo,
@@ -85,7 +87,7 @@
     /** Tin           */ Sn,
     /** Antimony      */ Sb,
     /** Tellurium     */ Te,
-    /** Iodine        */ I,
+    /** Iodine        */  I,
     /** Xenon         */ Xe,
     /** Cesium        */ Cs,
     /** Barium        */ Ba,
@@ -106,7 +108,7 @@
     /** Lutetium      */ Lu,
     /** Hafnium       */ Hf,
     /** Tantalum      */ Ta,
-    /** Tungsten      */ W,
+    /** Tungsten      */  W,
     /** Rhenium       */ Re,
     /** Osmium        */ Os,
     /** Iridium       */ Ir,
@@ -124,7 +126,7 @@
     /** Actinium      */ Ac,
     /** Thorium       */ Th,
     /** Protactinium  */ Pa,
-    /** Uranium       */ U,
+    /** Uranium       */  U,
     /** Neptunium     */ Np,
     /** Plutonium     */ Pu,
     /** Americium     */ Am,
@@ -170,10 +172,11 @@ impl Iterator for ElemIter {      type Item = ChemElem;
 }
 
 impl ChemElem {
-    pub const fn name   (&self) -> &str { ELEM_NAME  [*self as usize] }
-    pub const fn symbol (&self) -> &str { ELEM_SYMBOL[*self as usize] }
-    pub const fn name_py(&self) -> &str { ELEM_PY[*self as usize] }
-    pub const fn name_ch(&self) -> char         { ELEM_CH[*self as usize] } // XXX: &str or String?
+    pub fn symbol(&self) -> String { format!("{:?}", *self) }
+    pub const fn name   (&self) -> &str { ELEM_NAME  [self.atomic_number() as usize] }
+    //pub const fn symbol (&self) -> &str { ELEM_SYMBOL[self.atomic_number() as usize] }
+    pub const fn name_py(&self) -> &str { ELEM_PY[self.atomic_number() as usize] }
+    pub const fn name_ch(&self) -> char { ELEM_CH[self.atomic_number() as usize] } // XXX: &str?
     pub const fn atomic_number(&self) -> u8 { *self as _ }
     pub const fn iter() -> ElemIter { ElemIter::new() }
     pub fn list() -> Vec<ChemElem> { ChemElem::iter().collect() }
@@ -205,7 +208,10 @@ impl ChemElem {
                     return Some((x as u8).into());
                 }
             }
-            ELEM_SYMBOL.iter().position(|&x| x == s).map(|x| (x as u8).into())
+            for elem in ChemElem::iter() {
+                if s == format!("{:?}", elem) { return Some(elem) }
+            }   None
+            //ELEM_SYMBOL.iter().position(|&x| x == s).map(|x| (x as u8).into())
         } else {
             ELEM_NAME  .iter().position(|&x| x == s).map(|x| (x as u8).into())
         }
@@ -286,31 +292,41 @@ impl ChemElem {
         //matches!(self.atomic_weight(), AtomicWeight::MassNumber(_))
     }
 
-    /// TODO: https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)
+    /// XXX: https://en.wikipedia.org/wiki/Periodic_table_(crystal_structure)
     //  https://github.com/baotlake/periodic-table-pro/blob/37239360e6f5daa605b3fd947895ed2dfdce0cd7/packages/data/json/crystalStructure.json
     //  https://environmentalchemistry.com/yogi/periodic/crystal.html
     //  https://periodictable.com/Properties/A/CrystalStructure.html
     pub const fn crystal_structure(&self) -> Option<(&str, &str)> {
         /*return Some(match self.atomic_number() {
-            1|6|7|12|30|34|43|44|48|52|71|75|76 => ("hex", "Hexagonal.svg"), // HCP
+            1|2|6|7|12|30|34|43|44|48|52|67|68|69|71|75|76|
+                103|104|107|108|112|113 => ("HCP", "Hexagonal_close_packed"), // 六方密堆积
+            3|4|11|19..=26|37..=42|55..=66|70|72|73|74|81|87|88|90..=95|
+                105|106|110|111  => ("BCC", "Cubic-body-centered"), // 体心立方晶系
+            10|13|14|18|27|28|29|32|36|45|46|47|54|77|78|79|82|89|
+                96..=102|109|118 => ("FCC", "Cubic-face-centered"), // 面心立方晶系
+            15|17|31|33|35|53 => ("BCO", "Orthorhombic"),   // 正交晶系 (斜方)
+            5|51|80|83|84 => ("rhom", "Rhombohedral"),      // 三方晶系 (菱方)
+            49|50 => ("tetra", "Body-centered_tetragonal"), // 体心四方
+            8|9 => ("cubic", "Cubic"),      // 立方晶系 (等轴)
+            16 => ("mono", "Monoclinic"),   // 单斜晶系
             _ => return None, // ("-", "")
         });
 
         #[allow(unreachable_code)] */Some(match self.atomic_number() {
-            1|6|7|57..=61|95..=98 => ("hex", "Hexagonal.svg"),       // 六方晶系, 双六方密堆积 (DHCP)
+            1|6|7| 57..=61|95..=98 => ("hex", "Hexagonal"),      // 六方晶系, 双六方密堆积 (DHCP)
             2|4|12|21|22|27|30|39|40|43|44|48|64..=69|71|72|75|76|81|
-                103|104|107|108|112|113 => ("HCP", "Hexagonal_close_packed.svg"), // 六方密堆积
+                103|104|107|108|112|113 => ("HCP", "Hexagonal_close_packed"), // 六方密堆积
             3|11|15|19|23..=26 |37|41|42|55|56|63| 73 |
-                74| 87 |88|105|106|110|111 => ("BCC", "Cubic-body-centered.svg"), // 体心立方晶系
-            5|33|51|62|80|83| 34|52 => ("rhom", "Rhombohedral.svg"), // 三方晶系 (菱方)
-            8|9| 84 => ("cubic", "Cubic.svg"),  // 立方晶系 (等轴)
+                74| 87 |88|105|106|110|111 => ("BCC", "Cubic-body-centered"), // 体心立方晶系
             10|13|18|20|28|29|36|38|45..=47|54|70|77..=79| 82 |85|86|89|
-                90|99..=102|109|114| 118  => ("FCC", "Cubic-face-centered.svg"),  // 面心立方晶系
-            14|32 => ("DC",  "Diamond_cubic_crystal_structure.svg"), // 金刚石 (钻石) 结构
-            16|17|31|35|92|93 => ("BCO", "Orthorhombic.svg"),        // 正交晶系 (斜方)
-            53 => ("FCO",  "Face-centered_orthorhombic.svg"),        // 面心正交晶系
-            49| 50 |91 => ("tetra", "Body-centered_tetragonal.svg"), // 体心四方
-            94 => ("mono", "Monoclinic.svg"),   // 单斜晶系
+                90|99..=102|109|114| 118  => ("FCC", "Cubic-face-centered"),  // 面心立方晶系
+            5|33|51|62|80|83| 34|52 => ("rhom", "Rhombohedral"), // 三方晶系 (菱方)
+            14|32 => ("DC",  "Diamond_cubic_crystal_structure"), // 金刚石 (钻石) 结构
+            16|17|31|35|92|93 => ("BCO", "Orthorhombic"),        // 正交晶系 (斜方)
+            53 => ("FCO",  "Face-centered_orthorhombic"),        // 面心正交晶系
+            49| 50 |91 => ("tetra", "Body-centered_tetragonal"), // 体心四方
+            8|9| 84 => ("cubic", "Cubic"),  // 立方晶系 (等轴)
+            94 => ("mono", "Monoclinic"),   // 单斜晶系
             _ => return None, // ("-", "")
         })
     }
@@ -559,21 +575,6 @@ impl From<u8> for CosmicOrigin {
     Actinoids,
 }
 
-const ELEM_SYMBOL: [&str; ChemElem::MAX as usize] = [ "", // placeholder
-     "H", "He", "Li", "Be",  "B",  "C",  "N",  "O",  "F", "Ne",
-    "Na", "Mg", "Al", "Si",  "P",  "S", "Cl", "Ar",  "K", "Ca",
-    "Sc", "Ti",  "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
-    "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr",  "Y", "Zr",
-    "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn",
-    "Sb", "Te",  "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
-    "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
-    "Lu", "Hf", "Ta",  "W", "Re", "Os", "Ir", "Pt", "Au", "Hg",
-    "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th",
-    "Pa",  "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm",
-    "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
-    "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og",
-];
-
 const ELEM_NAME:   [&str; ChemElem::MAX as usize] = [ "", // placeholder
     "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron",
     "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon",
@@ -618,7 +619,7 @@ const ELEM_CH: [char; ChemElem::MAX as usize] = [ ' ', // placeholder
 ];
 
 /// https://github.com/mozillazg/python-pinyin
-const ELEM_PY: [&str; ChemElem::MAX as usize] = [ "", // placeholder
+const ELEM_PY: [&str; ChemElem::MAX as usize] = [  "", // placeholder
     "qīng", "hài", "lǐ", "pí", "péng", "tàn", "dàn", "yǎng", "fú", "nǎi",
     "nà", "měi", "lǚ", "guī", "lín", "liú", "lǜ", "yà", "jiǎ", "gài",
     "kàng", "tài", "fán", "gè", "měng", "tiě", "gǔ", "niè", "tóng", "xīn",

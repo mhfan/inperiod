@@ -583,7 +583,9 @@ impl ChemElem {
         })
     }
 
-    pub const fn electron_configuration(&self) -> &ElectronCFG { &Self::ECFG[*self as usize] }
+    pub const fn electron_configuration(&self) -> &ElectronCFG {
+        &Self::ECFG[self.atomic_number() as usize]
+    }
 
 const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [ ecfg!(),
     ecfg![ssc!(1, b's',  1)],

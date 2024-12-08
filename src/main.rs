@@ -329,7 +329,7 @@ fn PeriodicTable() -> Element {
                 style: "top: -1.5rem;", {tr!(lang, "radioactive")}
             }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
-                onmouseover: |evt| evt.stop_propagation(), // XXX: not work for :hover
+                onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
                 style: "right: calc(100% + 0.4rem);",
                 p { a { href: "https://ciaaw.org/atomic-weights.htm",
                     {tr!(lang, "*atomic weight")}
@@ -434,14 +434,17 @@ fn PeriodicTable() -> Element {
                 { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
                     |(cs, file)| rsx! {
                     span { class: "pl-2 grow peer", { cs.to_string() } }
-                    figure { class: "absolute w-[10rem] max-w-none border rounded
+                    figure { class: "absolute w-[20rem] max-w-none border rounded
                             border-orange-600 bg-white hidden peer-hover:block z-10",
                         style: { match ordinal {
-                            89..=103|2|10|18|36|54|71|86|118 =>
-                                "right: calc(100% + 0.4rem); bottom: 0px;",
-                            _ => "left: calc(100% + 0.4rem);",
-                        } }, //figcaption {} // TODO: title/desc
-                        img { class: "w-full", src: "crystal-s/{file}", }
+                            2 =>    "right: calc(100% + 0.4rem); top: 0px;",
+                            _ => if ordinal == 71  ||
+                                    ordinal == 103 || matches!(elem.group(), 17..=19) {
+                                    "right: calc(100% + 0.4rem); bottom: 0px;"
+                            } else { "left: calc(100% + 0.4rem);" }
+                        } }, figcaption { class: "text-center text-lg text-blue-600 font-bold",
+                            { tr!(lang, file.replace(['-', '_'], " ").as_str()) } }
+                        img { class: "w-full", src: "crystal-s/{file}.svg", }
                     }
                 }) }
             }
@@ -473,7 +476,7 @@ fn PeriodicTable() -> Element {
                                 ordinal == 103 || matches!(elem.group(), 15..=19) {
                                     "right: calc(100% + 0.125rem); bottom: -0.2em;"
                         } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
-                    } }, ShowEcfg { ordinal } //figcaption {}
+                    } }, ShowEcfg { ordinal }
                 } }
 
                 if matches!(ordinal, 42|59) { span { class: "ml-2 font-bold grow text-right",

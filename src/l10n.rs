@@ -21,7 +21,7 @@ macro_rules! hashmap_init {
 }
 
 impl Localization {
-    pub fn translate(&self, id: &'static str) -> &str {
+    pub fn translate<'a, 'b>(&self, id: &'a str) -> &'b str where 'a:'b {
         if let Some(lidx) = self.lidx {
             self.data[lidx as usize].get(id).copied().unwrap_or(id)
         } else { id }
@@ -50,7 +50,28 @@ impl Localization {
     "Gas"    => "气体",
     "Solid"  => "固体",
     "Synthetic"  => "人工合成",
+
     "Categories" => "类别/分组",
+    "Alkali Metals" => "碱金属",
+    "Alkaline Earth Metals" => "碱土金属",
+    "Rare Earth Metals*" => "稀土金属*",
+    "Transition Metals"  => "过渡金属",
+    "Other nonmetals" => "其它非金属",
+    "Noble Gases" => "稀有气体",
+    "Poor Metals" => "贫金属",
+    "Metalloids"  => "类金属",
+    "Halogens" => "卤素",
+    "Unknown"  => "未知",
+
+    "Cosmic Origin" => "宇宙起源",
+    "Big Bang Fusion" => "大爆炸聚变",
+    "Cosmic Ray Fission" => "宇宙射线裂变",
+    "Dying Low-mass Stars" => "小质量恒星死亡",
+    "Exploding Massive Stars" => "大质量恒星爆发",
+    "White Dwarf Supernovae"  => "白矮星超新星",
+    "Merging NeutronStars" => "中子星合并",
+    "Radioactive Decay" => "放射性衰变",
+    "Human Synthesis" => "人工合成 (无稳定同位素)",
 
     "Common physical constants" => "常用物理常数",
     "Source: " => "来源: ",
@@ -118,6 +139,18 @@ impl Localization {
     "Madelung rule" => "马德兰规则",
     "Principle quantum number" => "主量子数",
     "Azimuthal quantum number" => "角量子数",
+
+    "Hexagonal" => "六方晶系", //双六方密堆积 (DHCP)
+    "Hexagonal close packed" => "六方密堆积",
+    "Cubic body centered" => "体心立方晶系",
+    "Cubic face centered" => "面心立方晶系",
+    "Rhombohedral" => "三方晶系 (菱方)",
+    "Diamond cubic crystal structure" => "金刚石 (钻石) 结构",
+    "Orthorhombic" => "正交晶系 (斜方)",
+    "Face centered orthorhombic" => "面心正交晶系",
+    "Body centered tetragonal" => "体心四方",
+    "Cubic" => "立方晶系 (等轴)",
+    "Monoclinic" => "单斜晶系",
 );
 
         Self { data: vec![zh_CN], lidx: None }

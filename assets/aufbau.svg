@@ -26,7 +26,7 @@
     <tspan x="448" opacity="0.2">ℓ = 6</tspan>
 </text>
 
-<text x="92" y="296">Aufbau Principle (Madelung rule)</text>
+<text x="92" y="296" font-weight="bold">Aufbau Principle (Madelung rule)</text>
 <text x="180" y="52"  font-size="8" fill="blue">
     <tspan>n: Principle quantum number</tspan>
     <tspan x="180" dy="16">ℓ: Azimuthal quantum number</tspan>

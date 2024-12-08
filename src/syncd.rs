@@ -206,7 +206,7 @@ async fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
     let mut file = File::create(PathBuf::from("src").join("ciaaw.rs"))?;
     file.write_all(HEADER)?;    file.write_all(b"impl ChemElem {\n")?;
     file.write_all(b"    pub const fn atomic_weight(&self) -> &AtomicWeight {")?;
-    file.write_all(b" &MASS[*self as usize] }\n}\n\n")?;
+    file.write_all(b" &MASS[self.atomic_number() as usize] }\n}\n\n")?;
 
     file.write_all(b"use super::{ChemElem, AtomicWeight::{self, *}};\n\n")?;
     file.write_all(b"const MASS: [AtomicWeight; ChemElem::MAX as usize] = [ MassNumber(0),\n")?;
@@ -256,7 +256,7 @@ async fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
 
     /* if let Some(pos) = column.iter().position(|x| x == "AtomicMass") {
         file.write_all(b"    pub const fn atomic_mass(&self) -> f64 {")?;
-        file.write_all(b" Self::MASS[*self as usize] }\n\n")?;
+        file.write_all(b" Self::MASS[self.atomic_number() as usize] }\n\n")?;
 
         file.write_all(b"const MASS: [f64; ChemElem::MAX as usize] = [ 0.,\n")?;
         for row in elem_all.Table.Row.iter() {  let s = &row.Cell[pos];
@@ -300,7 +300,7 @@ async fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
     // https://en.wikipedia.org/wiki/Electron_configurations_of_the_elements_(data_page)
     if let Some(pos) = column.iter().position(|x| x == "ElectronConfiguration") {
         file.write_all(b"    pub const fn electron_configuration(&self) -> &ElectronCFG {")?;
-        file.write_all(b" &Self::ECFG[*self as usize] }\n\n")?;
+        file.write_all(b"\n        &Self::ECFG[self.atomic_number() as usize]\n    }\n\n")?;
         file.write_all(b"const ECFG: [ElectronCFG; ChemElem::MAX as usize] = [ ecfg!(),\n")?;
 
         for row in elem_all.Table.Row.iter() {
@@ -339,7 +339,7 @@ fn parse_origin() -> Result<(), Box<dyn Error>> {
     let mut file = File::create(PathBuf::from("src").join("origin.rs"))?;
     file.write_all(HEADER)?;    file.write_all(b"impl ChemElem {\n")?;
     file.write_all(b"    pub const fn cosmic_origin(&self) -> &[(u8, u8)] {")?;
-    file.write_all(b" ORIGIN[*self as usize] }\n}\n\n")?;
+    file.write_all(b" ORIGIN[self.atomic_number() as usize] }\n}\n\n")?;
 
     file.write_all(b"use super::ChemElem;\n\n")?;
     file.write_all(b"const ORIGIN: [&[(u8, u8)]; ChemElem::MAX as usize] = [ &[],\n")?;
