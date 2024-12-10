@@ -39,14 +39,15 @@ all kinds of information and data about the elements.
 npx tailwindcss -i tailwind_base.css -o assets/tailwind.css --watch
 ```
 
-Launch the Dioxus Web/Desktop app:
+Launch the Dioxus Web/Desktop/Mobile app:
 
 ```bash
-dx serve #--verbose
-dx serve --platform web
+dx serve --platform web #--verbose
 
 dx serve --platform desktop #rm -rf dist
-cd dist && cargo r --features desktop
+#cd dist && cargo r -F desktop
+
+dx serve --platform android #ios
 ```
 
 Open the browser to <http://localhost:8080/inperiod>

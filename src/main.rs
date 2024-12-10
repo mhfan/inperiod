@@ -1,32 +1,25 @@
 
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
-//use dioxus_logger::tracing;
-
-// URLs are relative to your Cargo.toml file
-//const _TAILWIND_CSS: &str = manganis::mg!(file("assets/tailwind.css"));
 
 fn main() {
-    //dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
-    //tracing::info!("starting app");
-
-    #[cfg(not(feature = "desktop"))] launch(App);
-    #[cfg(feature = "desktop")] LaunchBuilder::desktop().with_cfg(dioxus::desktop::Config::new()
-        .with_window(dioxus::desktop::WindowBuilder::new().with_title(env!("CARGO_PKG_NAME")))
-        //.with_custom_head("<script  src='https://cdn.tailwindcss.com'/>".into())
-        .with_custom_head("<link rel='stylesheet' href='tailwind.css'/>".into())
-        .with_custom_index(include_str!("../index.html").replace(r"{base_path}", ".")
-            .replace(r"{style_include}{script_include}", "").into())
-        //.with_icon("assets/ptable.svg".into())    // FIXME:
+    #[cfg(not(feature = "desktop"))] dioxus::launch(App);
+    #[cfg(feature = "desktop")] use dioxus::desktop::{self, WindowBuilder, LogicalSize};
+    #[cfg(feature = "desktop")] LaunchBuilder::desktop().with_cfg(desktop::Config::new()
+        .with_window(WindowBuilder::new().with_title(env!("CARGO_PKG_NAME"))
+            .with_max_inner_size(LogicalSize::new(1448, 996)))
+        .with_custom_index(include_str!("../index.html").replace(r"{base_path}", "."))
+        //.with_icon("assets/ptable.svg") // XXX: desktop::tao::window::Icon::from_rgba(...)?
     ).launch(App);
 }
 
 fn App() -> Element {
     rsx! {  //Router::<Route> {}
-        //#[cfg(not(profile = "release"))]
-        //script { src: "https://cdn.tailwindcss.com" }
-        //link { rel: "stylesheet",
-        //    href: "https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" }
+        // XXX: asset!("...") does not work for desktop when web.app.base_path is set
+        document::Link { rel: "icon",       href: "assets/ptable.svg" }
+        document::Link { rel: "stylesheet", href: "assets/tailwind.css" }
+        //document::Stylesheet { href: asset!("assets/tailwind.css") }
+        //document::Script { src: "https://cdn.tailwindcss.com" }
         PeriodicTable {}
     }
 }
@@ -80,8 +73,8 @@ fn PeriodicTable() -> Element {
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
         ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
         div { class: "relative col-span-6", // https://www.nagwa.com/en/explainers/809139094679/
-            img { class: "absolute h-[150%]", src: "aufbau.svg" }
-            //div { class: "absolute h-[150%]", AufbauPrincipal {} }
+            //img { class: "absolute h-[150%]", src: "assets/aufbau.svg" }
+            div { class: "absolute h-[150%]", AufbauPrincipal {} }
         }
 
         for i in 13..=17 { p { class: "self-end text-center text-lg font-bold",
@@ -167,7 +160,7 @@ fn PeriodicTable() -> Element {
             }
         }
         div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;",
-        }   // XXX: show legend for origin/abundance?
+        }   // XXX: show legend for abundance?
 
         for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_lan}
@@ -332,7 +325,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                 href: "https://ciaaw.org/radioactive-elements.htm", {tr!(lang, "radioactive")}
             }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
-                onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
+                //onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
                 style: "right: calc(100% + 0.4rem);",
                 p { a { href: "https://ciaaw.org/atomic-weights.htm",
                     {tr!(lang, "*atomic weight")}
@@ -446,7 +439,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                             } else { "left: calc(100% + 0.4rem);" }
                         } }, figcaption { class: "text-center text-lg text-blue-600 font-bold",
                             { tr!(lang, file.replace(['-', '_'], " ").as_str()) }
-                        } img { class: "w-full", src: "crystal-s/{file}.svg", }
+                        } img { class: "w-full", src: "assets/crystal-s/{file}.svg" }
                     }
                 }) }
             }
@@ -684,8 +677,7 @@ fn PhysConsts() -> Element {
         }
 } }
 
-/* fn AufbauPrincipal() -> Element {
-    // XXX: embedded for translation, expected to work on Dioxus v0.6
+fn AufbauPrincipal() -> Element {
     let lang = use_context::<Signal<Localization>>();
     rsx! { svg { width: "500", height: "300", xmlns: "http://www.w3.org/2000/svg",
         "font-size": "small", "font-family": "sans", //title { {title} }
@@ -715,7 +707,8 @@ fn PhysConsts() -> Element {
             tspan { x: "448", opacity: "0.2", "ℓ = 6" }
         }
         text { x: "92", y: "296", "font-weight": "bold",
-            {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")" }
+            {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")"
+        }
         text { x: "180", y: "52", fill: "blue", "font-size": "8",
             tspan { "n: " {tr!(lang, "Principle quantum number")} }
             tspan { x: "180", dy: "16", "ℓ: " {tr!(lang, "Azimuthal quantum number")} }
@@ -832,7 +825,7 @@ fn PhysConsts() -> Element {
             }
         }
     } }
-} */
+}
 
 #[allow(unused)] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
 } }

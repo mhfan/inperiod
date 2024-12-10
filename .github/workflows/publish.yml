@@ -34,15 +34,16 @@ jobs:
       #      ~/.npm
       #    key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - uses: cargo-bins/cargo-binstall@main
       - name: Install Dioxus and TailwindCSS
         run: |
-            cargo install dioxus-cli
+            cargo binstall dioxus-cli
             npm -g install -D tailwindcss
 
       - name: Build Project
         run: | #cargo r --bin syncd -F syncdep
             npx tailwindcss -m -i tailwind_base.css -o assets/tailwind.css
-            dx build --release
+            dx build --platform web -r
             cargo t
 
       #- name: Setup GitHub Pages
@@ -50,7 +51,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: target/dx/inperiod/release/web/public
 
   deploy:
     #if: github.ref == 'refs/heads/master'
