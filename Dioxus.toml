@@ -1,16 +1,22 @@
 
-# cargo install dioxus-cli # --git https://github.com/Dioxuslabs/cli
+# cargo binstall dioxus-cli # dx new foo
+# https://github.com/DioxusLabs/dioxus/blob/main/packages/cli/assets/dioxus.toml
 
 [application]
-name = "inperiod"   # App (Project) Name
-out_dir = "dist"    # `build` & `serve` dist path
-asset_dir = "assets"	# resource (assets) file folder
+name = "inperiod"   # App (Project) name
 
-# Dioxus App Default Platform: web, desktop, fullstack
-default_platform = "web"
+# you can also use `dx serve/build --platform XXX` to use other platform
+default_platform = "web"    # value: web | desktop | mobile
+
+#asset_dir = "assets"       # resource (static) file folder
+#out_dir = "dist"    # Web `build` & `serve` dist path
+#hot_reload = true   # hot reload by default
+
+[web.wasm_opt]
+level = "4"     # The level wasm-opt should target. z is the smallest. 4 is the fastest.
 
 [web.app]
-title = "Elements Periodic Table"   # HTML title tag content
+#title = "Elements Periodic Table"   # HTML title tag content
 base_path = "inperiod" # "/"
 #index_on_404 = true
 
@@ -20,9 +26,9 @@ reload_html = true  # when watcher trigger, regenerate the `index.html`
 # which files or dirs will be watcher monitoring
 watch_path = ["src", "assets", "index.html", "tailwind_base.css", "tailwind.config.js"]
 
-[web.resource]	# include `assets` in web platform
-style = ["tailwind.css"]    # CSS style file
-script = []	# Javascript code file
+#[web.resource]	# include `assets` in web platform, DEPRECATED
+#style = ["assets/tailwind.css"]    # CSS style file
+#script = []	# Javascript code file
 
 [web.resource.dev]
 script = []	# Javascript code file, serve: [dev-server] only
@@ -30,4 +36,16 @@ script = []	# Javascript code file, serve: [dev-server] only
 
 [bundle]
 icon = ["assets/ptable.svg"]
+
+identifier = "io.github.mhfan"
+publisher = "MeiHui FAN"
+resources = ["public/*"]
+category = "Utility"
+
+copyright = "All rights reserved. © 2024 M.H.Fan"
+short_description = "Modern fancy interactive online periodic table of chemistry elements"
+
+#long_description = """
+#An amazing dioxus application.
+#"""
 

@@ -1,33 +1,36 @@
 
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
-//use dioxus_logger::tracing;
-
-// URLs are relative to your Cargo.toml file
-//const _TAILWIND_CSS: &str = manganis::mg!(file("assets/tailwind.css"));
 
 fn main() {
-    //dioxus_logger::init(tracing::Level::INFO).expect("failed to init logger");
-    //tracing::info!("starting app");
+    //dioxus::logger::initialize_default(); //tracing::info!("initialized");
+    #[cfg(not(feature = "desktop"))]  dioxus::launch(App);
 
-    #[cfg(not(feature = "desktop"))] launch(App);
-    #[cfg(feature = "desktop")] LaunchBuilder::desktop().with_cfg(dioxus::desktop::Config::new()
-        .with_window(dioxus::desktop::WindowBuilder::new().with_title(env!("CARGO_PKG_NAME")))
-        //.with_custom_head("<script  src='https://cdn.tailwindcss.com'/>".into())
-        .with_custom_head("<link rel='stylesheet' href='tailwind.css'/>".into())
-        .with_custom_index(include_str!("../index.html").replace(r"{base_path}", ".")
-            .replace(r"{style_include}{script_include}", "").into())
-        //.with_icon("assets/ptable.svg".into())    // FIXME:
-    ).launch(App);
+    #[cfg(feature = "desktop")] { use dioxus::desktop::{self, WindowBuilder, LogicalSize};
+    LaunchBuilder::desktop().with_cfg(desktop::Config::new()
+        .with_window(WindowBuilder::new().with_title(env!("CARGO_PKG_NAME"))
+            .with_inner_size(LogicalSize::new(1448, 996)))
+        .with_custom_index(include_str!("../index.html").replace(r"{base_path}", "."))
+        //.with_icon("assets/ptable.svg") // XXX: desktop::tao::window::Icon::from_rgba(...)?
+    ).launch(App) };
 }
 
 fn App() -> Element {
+    let print_style = r"@media print {
+  @page { size: A4 landscape; margin: 0; }  /* 设置页面的方向为横向并清除默认页边距 */
+  body { width: 297mm; margin: auto; }      /* 设置主体样式以适应横向打印 */
+  .non-printable { display: none; }         /* 隐藏非打印元素 */
+}";
+
+    use dioxus::document::{Link, Title, Style/*, Script, Meta*/};
     rsx! {  //Router::<Route> {}
-        //#[cfg(not(profile = "release"))]
-        //script { src: "https://cdn.tailwindcss.com" }
-        //link { rel: "stylesheet",
-        //    href: "https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" }
-        PeriodicTable {}
+        Title { "Elements Periodic Table" }
+        // XXX: asset!("...") does not work for desktop when web.app.base_path is set
+        Link { rel: "icon",       href: "assets/ptable.svg" }
+        Link { rel: "stylesheet", href: "assets/tailwind.css" }
+        //Stylesheet { href: asset!("assets/tailwind.css") }
+        //Script { src: "https://cdn.tailwindcss.com" }
+        Style { {print_style} }     PeriodicTable {}
     }
 }
 
@@ -76,14 +79,14 @@ fn PeriodicTable() -> Element {
                     r#type: SelType::Period, val: i, }, */"{i}"
             } }
         }
+
         ElemTile { ordinal: 1,  annote: false }
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
         ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
         div { class: "relative col-span-6", // https://www.nagwa.com/en/explainers/809139094679/
-            img { class: "absolute h-[150%]", src: "aufbau.svg" }
-            //div { class: "absolute h-[150%]", AufbauPrincipal {} }
+            //img { class: "absolute h-[150%]", src: "assets/aufbau.svg" }
+            div { class: "absolute h-[150%]", AufbauPrincipal {} }
         }
-
         for i in 13..=17 { p { class: "self-end text-center text-lg font-bold",
             { format!("{}A - {i}", ROMAN_NUM[i - 10]) }
         } } ElemTile { ordinal: 2, annote: false }
@@ -94,13 +97,16 @@ fn PeriodicTable() -> Element {
             div { class: "content-center pl-1", p {  "8 L" } p {  "2 K" } }
             div { class: "content-center pl-1", p {  "8 M" } p {  "8 L" } p {  "2 K" } }
             div { class: "content-center pl-1",
-                      p {  "8 N" } p { "18 M" } p {  "8 L" } p {  "2 K" } }
+                    p {  "8 N" } p { "18 M" }   p {  "8 L" } p {  "2 K" }
+            }
             div { class: "content-center pl-1", p {  "8 O" } p { "18 N" }
-                      p { "18 M" } p {  "8 L" } p {  "2 K" } }
+                    p { "18 M" } p {  "8 L" }   p {  "2 K" }
+            }
             div { class: "content-center pl-1", p {  "8 P" } p { "18 O" }
-                      p { "32 N" } p { "18 M" } p {  "8 L" } p {  "2 K" } }
+                    p { "32 N" } p { "18 M" }   p {  "8 L" } p {  "2 K" }
+            }
             div { class: "content-center pl-1", p {  "8 Q" } p { "18 P" }
-                      p { "32 O" } p { "32 N" } p { "18 M" } p {  "8 L" } p {  "2 K" }
+                    p { "32 O" } p { "32 N" }   p { "18 M" } p {  "8 L" } p {  "2 K" }
             }
         }
 
@@ -135,20 +141,18 @@ fn PeriodicTable() -> Element {
                     }
                     select { class: "text-xl font-bold px-1 focus:outline-none",
                         onchange: move |evt| *coloring.write() = match evt.value().as_str() {
-                            "0" => Coloring::Class, "1" => Coloring::Origin,
-                            _ => unreachable!(),
+                            "0" => Coloring::Class, "1" => Coloring::Origin, _ => unreachable!(),
                         }, name: "coloring-sel",
                         option { value: "0", {tr!(lang, "Categories")} }
                         option { value: "1", {tr!(lang, "Cosmic origin")} }
                     }
                     div { class: "grid grid-cols-2 grid-rows-5 text-center w-[23rem] h-[15rem]",
-                        { use ElemClass::*; match *coloring.read() {
+                        {use ElemClass::*; match *coloring.read() {
                             Coloring::Class  => rsx! { for item in [AlkaliMetals, NobleGases,
                                 AlkalineEarthMetals, Halogens, TransitionMetals, OtherNonmetals,
-                                PoorMetals, Metalloids, Lanthanoids, Actinoids].map(|x|
-                                    COLORING_CLASSES[x as usize]) { p {
-                                class: format!("content-center rounded-sm {}", item.0),
-                                    {tr!(lang, item.1)}
+                                PoorMetals, Metalloids, Lanthanoids, Actinoids]
+                                .map(|x| COLORING_CLASSES[x as usize]) { p {
+                    class: format!("content-center rounded-sm {}", item.0), {tr!(lang, item.1)}
                                 } }
                             },
                             Coloring::Origin => rsx! { for item in COLORING_ORIGINS {
@@ -157,7 +161,7 @@ fn PeriodicTable() -> Element {
                                     {tr!(lang, item.1)}
                                 }
                             } }
-                        } }
+                        }}
                     }
                 }
                 div { class: "self-end ml-6 text-lg/6", PhysConsts {} }
@@ -167,19 +171,17 @@ fn PeriodicTable() -> Element {
             }
         }
         div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;",
-        }   // XXX: show legend for origin/abundance?
+        }   // XXX: show legend for abundance?
 
         for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_lan}
             shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "71" }
             p { class: "text-center m-auto", b { "57 ~ 70" } br{} {tr!(lang, "Lanthanoids")} }
-        }
-        for i in 72..=88 { ElemTile { ordinal: i, annote: false } }
+        }   for i in 72..=88   { ElemTile { ordinal: i, annote: false } }
         div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_act}
             shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "103" }
             p { class: "text-center m-auto", b { "89 ~ 102" } br{} {tr!(lang, "Actinoids")} }
-        }
-        for i in 104..=118 { ElemTile { ordinal: i, annote: false } }
+        }   for i in 104..=118 { ElemTile { ordinal: i, annote: false } }
 
         div { class: "empty row-span-4" }
         div { class: "text-center text-lg/6 rounded-sm col-span-2  bg-red-100 self-start",
@@ -199,12 +201,14 @@ fn PeriodicTable() -> Element {
                 li { {tr!(lang, "Standard atomic mass (A")} sub { "r" }
                     i { {tr!(lang, "°, in Dalton or ")} }
                     span { class: "text-xl leading-none", "𝓂" sub { "μ" } }
-                    {tr!(lang, ") is the weighted arithmetic mean of the relative isotopic masses of all isotopes of an element, weighted by their abundance on Earth")}
+                     {tr!(lang, ") is the weighted arithmetic mean of the relative isotopic \
+masses of all isotopes of an element, weighted by their abundance on Earth")}
                 }
                 li { i { "[ ]" } {tr!(lang, " indicate mass number of most stable isotope")} }
-                li { {tr!(lang, "Density units are ")} i { "g/cm3" } {tr!(lang, " for solids and ")}
-                    i { "g/L" } {tr!(lang, " for liquid")} br{} {tr!(lang, " or ")} i { "kg/m3" }
-                    {tr!(lang, " at 0° Celsius for gases")}
+                li { {tr!(lang, "Density units are ")} i { "g/cm3" }
+                     {tr!(lang, " for solids and ")} i { "g/L" }
+                     {tr!(lang, " for liquid")} br{} {tr!(lang, " or ")} i { "kg/m3" }
+                     {tr!(lang, " at 0° Celsius for gases")}
                 }
                 li { {tr!(lang, "* mark means the electronegativity is in the bottom-right")} }
                 li { {tr!(lang, "Rare earth metals include: ")}
@@ -228,8 +232,7 @@ fn PeriodicTable() -> Element {
         }
 
         for i in 57..= 71 { ElemTile { ordinal: i, annote: false } }
-        p { class: "text-center text-lg font-bold", style: wm_vert, {tr!(lang, "Lanthanides")}
-        }
+        p { class: "text-center text-lg font-bold", style: wm_vert, {tr!(lang, "Lanthanides")} }
         for i in 89..=103 { ElemTile { ordinal: i, annote: false } }
         p { class: "text-center text-lg font-bold", style: wm_vert, {tr!(lang, "Actinides")} }
         p { class: "col-span-3 mt-2", {tr!(lang, " All rights reserved.")} " © 2024 "
@@ -332,7 +335,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                 href: "https://ciaaw.org/radioactive-elements.htm", {tr!(lang, "radioactive")}
             }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
-                onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
+                //onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
                 style: "right: calc(100% + 0.4rem);",
                 p { a { href: "https://ciaaw.org/atomic-weights.htm",
                     {tr!(lang, "*atomic weight")}
@@ -376,16 +379,16 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
 
         div { class: "flex",
             div { class: "grow",
-                p { class: "flex text-lg/6 font-bold", { elem.atomic_weight().to_string() }
+                p { class: "flex text-lg/6 font-bold", {elem.atomic_weight().to_string()}
                     if elem.is_radioactive() { span { class: "ml-1 text-center grow", "☢️" } }
                 }
                 p { class: "flex text-base/5",
-                    { elem.ionization_energy().map_or_else(|| "-".to_string(),
+                    {elem.ionization_energy().map_or_else(|| "-".to_string(),
                         |ie| format!("{:.3}", ie.0).trim_end_matches('0')
-                            .trim_end_matches('.').to_owned()) }
+                            .trim_end_matches('.').to_owned())}
                     span { class: "ml-2 text-center grow",
-                        { elem.electron_affinity().map_or_else(|| " ".to_string(),
-                            |ea| ea.to_string()) }
+                        {elem.electron_affinity().map_or_else(|| " ".to_string(),
+                            |ea| ea.to_string())}
                     }
                 }
             }
@@ -394,11 +397,11 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
 
         div { class: "flex-col grow",
             div { class: "flex",
-                span { class: "self-center text-5xl grow ml-1 {color_symbol}", { elem.symbol() } }
+                span { class: "self-center text-5xl grow ml-1 {color_symbol}", {elem.symbol()} }
                 div { class: "flex flex-col mr-1",
-                    p { class: "text-center leading-tight", { elem.name_py() } }
+                    p { class: "text-center leading-tight", {elem.name_py()} }
                     a { href: format!("https://zh.wikipedia.org/wiki/{}", elem.name_ch()),
-                        class: "text-right text-3xl", { elem.name_ch().to_string() }
+                        class: "text-right text-3xl", {elem.name_ch().to_string()}
                     }
                 }
                 div { class: "text-right ml-1 relative",
@@ -411,78 +414,78 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                             border border-orange-600 bg-white group-hover:block z-10",
                             for os in os_all.iter().rev() { pre { class:
                                 if os_main.contains(os) { "font-extrabold" } else { "" },
-                    { format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" }) }
+                        {format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" })}
                             } }
                         } }
                     }   pre { class: "invisible", "  " }
                 }
             }
-            p { a { href: "https://en.wikipedia.org/wiki/{name}", class: "text-lg/6", { name } }
-                span { class: "ml-2 font-bold", { match ordinal {
-                    42|59 => "*".to_string(), // name is too long, move to bottom-right
+            p { a { href: "https://en.wikipedia.org/wiki/{name}", class: "text-lg/6", {name} }
+                span { class: "ml-2 font-bold", {match ordinal { 42|59 => "*".to_string(),
                     _ => elem.en_pauling().map_or_else(|| "".to_string(), |en| en.to_string())
-                } } }
+                }} }    // name is too long, move to bottom-right
             }
 
             p { class: "flex text-base/5 relative",
                 span { class: "text-blue-700 font-bold",
-                    { elem.melting_point().map_or_else(|| "-".to_string(),
-                        |mp| format!("{}", (mp - 273.15 + 0.5) as i32)) }
+                    {elem.melting_point().map_or_else(|| "-".to_string(),
+                        |mp| format!("{}", (mp - 273.15 + 0.5) as i32))}
                 } "/"
                 span { class: "text-red-700",
-                    { elem.boiling_point().map_or_else(|| "-".to_string(),
-                        |bp| format!("{}", (bp - 273.15 + 0.5) as i32)) }
+                    {elem.boiling_point().map_or_else(|| "-".to_string(),
+                        |bp| format!("{}", (bp - 273.15 + 0.5) as i32))}
                 }
-                { elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
+                {elem.crystal_structure().map_or_else(|| rsx! { span { class: "ml-2", "-" } },
                     |(cs, file)| rsx! {
-                    span { class: "pl-2 grow peer", { cs.to_string() } }
+                    span { class: "pl-2 grow peer", {cs} }
                     figure { class: "absolute w-[20rem] max-w-none border rounded
-                            border-orange-600 bg-white hidden peer-hover:block z-10",
+                        border-orange-600 bg-white hidden peer-hover:block z-10",
                         style: { match ordinal {
                             2 =>    "right: calc(100% + 0.4rem);",
                             _ => if ordinal == 71  ||
                                     ordinal == 103 || matches!(elem.group(), 17..=19) {
                                     "right: calc(100% + 0.4rem); bottom: 0;"
                             } else { "left: calc(100% + 0.4rem);" }
-                        } }, figcaption { class: "text-center text-lg text-blue-600 font-bold",
-                            { tr!(lang, file.replace(['-', '_'], " ").as_str()) }
-                        } img { class: "w-full", src: "crystal-s/{file}.svg", }
+                        } },
+                        figcaption { class: "text-center text-lg text-blue-600 font-bold",
+                            {tr!(lang, file.replace(['-', '_'], " ").as_str())}
+                        }   img { class: "w-full", src: "assets/crystal-s/{file}.svg" }
                     }
-                }) }
+                })}
             }
             p { class: "flex text-base/5",
-                { elem.density().map_or_else(|| "-".to_string(), |den| format!("{den:.4}")
-                    .trim_end_matches('0').trim_end_matches('.').to_string()) }
+                {elem.density().map_or_else(|| "-".to_string(), |den| format!("{den:.4}")
+                    .trim_end_matches('0').trim_end_matches('.').to_string())}
                 span { class: "ml-2 font-bold text-purple-700",
-                    { elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string()) }
+                    {elem.atomic_radius().map_or_else(|| "-".to_string(), |cr| cr.to_string())}
                 }
                 span { class: "ml-2 font-bold",
-                    { elem.ground_state().map_or_else(|| rsx! { "-" },
+                    {elem.ground_state().map_or_else(|| rsx! { "-" },
                         |(s1, s2, s3)| rsx! { if 1 < s2.len() {
                             sup  { {s1} } { s2.chars().next().unwrap().to_string() }
-                            span { class: "relative top-[-0.2em]", "°" }
-                            sub  { class: "left-[-0.6em]", {s3} }
-                        } else { sup { {s1} } {s2} sub { {s3} } } }) }
+                            span { class: "relative top-[-0.2rem]", "°" }
+                            sub  { class: "left-[-0.6rem]", {s3} }
+                        } else { sup { {s1} } {s2} sub { {s3} } } })}
                 }
             }
             p { class: "flex mt-auto text-nowrap font-bold text-lg/6 group",
                 onmouseout:  move |_| over_ecfg.set(false),
-                onmouseover: move |_| over_ecfg.set(true), { revised_ecfg }
+                onmouseover: move |_| over_ecfg.set(true), {revised_ecfg}
                 if *over_ecfg.read() { figure {
                     class: "absolute w-[40rem] max-w-none border rounded
                         border-orange-600 bg-white group-hover:block z-10",
                     style: { match ordinal {
-                        2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2em;",
-                        57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2em;",
+                        2|7..=10 => "right: calc(100% + 0.125rem);    top: -0.2rem;",
+                        57|89    =>  "left: calc(100% + 0.125rem); bottom: -0.2rem;",
                         _ => if ordinal == 71  ||
                                 ordinal == 103 || matches!(elem.group(), 15..=19) {
-                                    "right: calc(100% + 0.125rem); bottom: -0.2em;"
-                        } else {     "left: calc(100% + 0.125rem);    top: -0.2em;" }
+                                    "right: calc(100% + 0.125rem); bottom: -0.2rem;"
+                        } else {     "left: calc(100% + 0.125rem);    top: -0.2rem;" }
                     } }, ShowEcfg { ordinal }
                 } }
 
                 if matches!(ordinal, 42|59) { span { class: "ml-2 font-bold grow text-right",
-                    { elem.en_pauling().map(|en| en.to_string()) }
+                    {elem.en_pauling().map(|en| en.to_string())}
                 } }
             }
             // TODO: show various abundance according to selection?
@@ -499,8 +502,9 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
         "font-size": "small", "font-weight": "normal", //title { title }
 
         g { text { x: "200", y: "504", "font-weight": "bold",
-                {tr!(lang, "Electron shell/orbital configuration")} }
-            text { x: "560", y: "464", "font-size": "48", { elem.symbol() } }
+                {tr!(lang, "Electron shell/orbital configuration")}
+            }
+            text { x: "560", y: "464", "font-size": "48", {elem.symbol()} }
 
             path { stroke: "gray", "stroke-opacity": "0.3", d:
                     "M32,32 h 588 m 0,64 h-588 m 0,64 h 588 m 0,64 h-588
@@ -556,11 +560,11 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
         }
         g { "stroke-width": "4", "stroke-linecap": "round", "stroke-dasharray": "24 8",
             path { stroke: "red", d:
-                    "M40,20 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24
-                     m 0,64 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24",
+                "M40,20 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24
+                 m 0,64 h 24 m 0,64 h-24 m 0,64 h 24 m 0,64 h-24",
             }
-            path { stroke: "green",
-                d: "M88,44 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88",
+            path { stroke: "green", d:
+                "M88,44 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88 m 0,64 h 88 m 0,64 h-88",
             }
             path { stroke: "blue", d: "M202,58 h 152 m 0,64 h-152 m  0,64 h 152 m 0,64 h-152" }
             path { stroke: "orange", "stroke-dasharray": "24 8", d: "M378,72 h 216 m 0,64 h-216" }
@@ -611,7 +615,8 @@ fn PhysConsts() -> Element {
             div { class: "grid grid-cols-[repeat(3,auto)] gap-x-3 px-2",
                 p { {tr!(lang, "electron mass")} }
                 span { class: "text-xl leading-none -top-2",
-                    "𝓂" sub { class: "text-lg leading-none", "𝑒" } }
+                    "𝓂" sub { class: "text-lg leading-none", "𝑒" }
+                }
                 p { "9.109 383 7139(28) × 10⁻³¹ kg" }
 
                 p { {tr!(lang, "atomic mass unit")}
@@ -621,7 +626,8 @@ fn PhysConsts() -> Element {
                 p { "1.660 539 068 92(52) × 10⁻²⁷ kg" }
 
                 p { {tr!(lang, "fine-structure const.")}
-                    span { class: "text-xl leading-none", " 𝑒" } "²/4π𝜖₀ℏ𝑐" } // 𝜋ε
+                    span { class: "text-xl leading-none", " 𝑒" } "²/4π𝜖₀ℏ𝑐"
+                }   // 𝜋ε
                 span { class: "text-xl leading-none", "𝛼" } // α
                 p { "7.297 352 5643(11) × 10⁻³ (~1/137)" }
 
@@ -641,12 +647,14 @@ fn PhysConsts() -> Element {
                 span { "𝑉" sub { "m" } } p { "22.413 969 54... × 10⁻³ m³/mol" }
 
                 p { {tr!(lang, "first radiation constant")} " 2π"
-                    span { class: "text-xl leading-none", "ℎ" } "𝑐²" }
+                    span { class: "text-xl leading-none", "ℎ" } "𝑐²"
+                }
                 span { i { class: "text-lg leading-none", "c" } "₁" }
                 p { "3.741 771 852... × 10⁻¹⁶ [W m²]" }
 
                 p { {tr!(lang, "second radiation constant")}
-                    span { class: "text-xl leading-none", " ℎ" } "𝑐/𝑘" }
+                    span { class: "text-xl leading-none", " ℎ" } "𝑐/𝑘"
+                }
                 span { i { class: "text-lg leading-none", "c" } "₂" }
                 p { "1.438 776 877... × 10⁻² [m K]" }
 
@@ -684,8 +692,7 @@ fn PhysConsts() -> Element {
         }
 } }
 
-/* fn AufbauPrincipal() -> Element {
-    // XXX: embedded for translation, expected to work on Dioxus v0.6
+fn AufbauPrincipal() -> Element {
     let lang = use_context::<Signal<Localization>>();
     rsx! { svg { width: "500", height: "300", xmlns: "http://www.w3.org/2000/svg",
         "font-size": "small", "font-family": "sans", //title { {title} }
@@ -715,7 +722,8 @@ fn PhysConsts() -> Element {
             tspan { x: "448", opacity: "0.2", "ℓ = 6" }
         }
         text { x: "92", y: "296", "font-weight": "bold",
-            {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")" }
+            {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")"
+        }
         text { x: "180", y: "52", fill: "blue", "font-size": "8",
             tspan { "n: " {tr!(lang, "Principle quantum number")} }
             tspan { x: "180", dy: "16", "ℓ: " {tr!(lang, "Azimuthal quantum number")} }
@@ -832,58 +840,71 @@ fn PhysConsts() -> Element {
             }
         }
     } }
-} */
+}
 
 #[allow(unused)] fn ElemDetail() -> Element { rsx! { // TODO: https://pt.ziziyi.com/
 } }
 
 /* for fullstack web renderer
-#[derive(Clone, Routable, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
-enum Route {
-    #[route("/")] Home {},
+#[derive(Debug, Clone, Routable, PartialEq)] #[rustfmt::skip] enum Route {
+    #[layout(Navbar)] #[route("/")] Home {},
     #[route("/blog/:id")] Blog { id: i32 },
 }
 
-#[component] fn Blog(id: i32) -> Element {
-    rsx! {
-        Link { to: Route::Home {}, "Go to counter" }
-        "Blog post {id}"
-    }
-}
-
-#[component] fn Home() -> Element {
-    let mut count = use_signal(|| 0);
-    let mut text = use_signal(|| String::from("..."));
-
-    rsx! {
-        Link { to: Route::Blog { id: count() }, "Go to blog" }
-        div {
-            h1 { "High-Five counter: {count}" }
-            button { onclick: move |_| count += 1, "Up high!" }
-            button { onclick: move |_| count -= 1, "Down low!" }
-            #[cfg(feature = "server")] button {
-                onclick: move |_| async move {
-                    if let Ok(data) = get_server_data().await {
-                        tracing::info!("Client received: {}", data);
-                        text.set(data.clone());
-                        post_server_data(data).await.unwrap();
-                    }
-                },
-                "Get Server Data"
-            }
-            p { "Server data: {text}"}
+#[component] pub fn Hero() -> Element {
+    rsx! { div { id: "hero",
+        img { src: HEADER_SVG, id: "header" }
+        div { id: "links",
+            a { href: "https://dioxuslabs.com/learn/0.6/", "📚 Learn Dioxus" }
+            a { href: "https://dioxuslabs.com/awesome", "🚀 Awesome Dioxus" }
+            a { href: "https://github.com/dioxus-community/", "📡 Community Libraries" }
+            a { href: "https://github.com/DioxusLabs/sdk", "⚙️ Dioxus Development Kit" }
+            a { href: "https://marketplace.visualstudio.com/items?itemName=DioxusLabs.dioxus",
+                "💫 VSCode Extension" }
+            a { href: "https://discord.gg/XgGxMSkvUM", "👋 Community Discord" }
         }
-    }
+    } }
 }
 
-#[cfg(feature = "server")] #[server(PostServerData)]
-async fn post_server_data(data: String) -> Result<(), ServerFnError> {
-    tracing::info!("Server received: {}", data);
-    Ok(())
+#[component] fn Home() -> Element { rsx! { Hero {} Echo {} } }
+
+#[component] pub fn Blog(id: i32) -> Element {
+    rsx! { div { id: "blog",
+        h1 { "This is blog #{id}!" } // Content
+        p { "In blog #{id}, we show how the Dioxus router works and
+            how URL parameters can be passed as props to our route components." }
+
+        Link { to: Route::Blog { id: id - 1 }, "Previous" } span { " <---> " }
+        Link { to: Route::Blog { id: id + 1 }, "Next" }     // Navigation links
+    } }
 }
 
-#[cfg(feature = "server")] #[server(GetServerData)]
-async fn get_server_data() -> Result<String, ServerFnError> {
-    Ok("Hello from the server!".to_string())
+/// Shared navbar component.
+#[component] fn Navbar() -> Element { rsx! {
+    div { id: "navbar",
+        Link { to: Route::Home {}, "Home" }
+        Link { to: Route::Blog { id: 1 }, "Blog" }
+    }   Outlet::<Route> {}
+} }
+
+/// Echo component that demonstrates fullstack server functions.
+#[component] fn Echo() -> Element {
+    let mut response = use_signal(|| String::new());
+    rsx! { div { id: "echo",
+        h4 { "ServerFn Echo" }
+        input { placeholder: "Type here to echo...",
+            oninput:  move |event| async move {
+                let data = echo_server(event.value()).await.unwrap();
+                response.set(data);
+            },
+        }
+
+        if !response().is_empty() { p { "Server echoed: " i { "{response}" } } }
+    } }
+}
+
+/// Echo the user input on the server.
+#[server(EchoServer)] async fn echo_server(input: String) -> Result<String, ServerFnError> {
+    Ok(input)
 } */
 

@@ -36,17 +36,20 @@ all kinds of information and data about the elements.
 3. Run the following command in the root of the project to start the tailwind CSS compiler:
 
 ```bash
-npx tailwindcss -i tailwind_base.css -o assets/tailwind.css --watch
+npm install tailwindcss -D -g
+
+npx tailwindcss -i tailwind_base.css -o assets/tailwind.css -w #-m
 ```
 
-Launch the Dioxus Web/Desktop app:
+Launch the Dioxus Web/Desktop/Mobile app:
 
 ```bash
-dx serve #--verbose
-dx serve --platform web
+dx serve --platform web #--verbose
 
 dx serve --platform desktop #rm -rf dist
-cd dist && cargo r --features desktop
+#cd dist && cargo r -F desktop
+
+dx serve --platform android #ios
 ```
 
 Open the browser to <http://localhost:8080/inperiod>

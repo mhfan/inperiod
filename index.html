@@ -4,42 +4,39 @@
   <meta charset="UTF-8" />
   <!--meta content="text/html; charset=utf-8" http-equiv="Content-Type" /-->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>{app_title}</title>
-  <base href="/{base_path}/"/>
-  <link rel='icon' href='ptable.svg'/>
-
-  <style> @media print {
-      @page { size: A4 landscape; margin: 0; }  /* 设置页面的方向为横向并清除默认页边距 */
-      body { width: 297mm; margin: auto; }      /* 设置主体样式以适应横向打印 */
-      .non-printable { display: none; }         /* 隐藏非打印元素 */
-  } </style>
-
-  {style_include}{script_include}
-
-  <script type="module">
-    import init from "/{base_path}/assets/dioxus/{app_name}.js";
-    init("/{base_path}/assets/dioxus/{app_name}_bg.wasm").then(wasm => {
-      if (wasm.__wbindgen_start == undefined) { wasm.main(); }
-    });
-  </script>
+  <title>{app_title}</title> <base href="/{base_path}/"/>
 </head>
 
 <body id="main"> <!--div id="main"></div-->
   <script>
-    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-    if (isChrome) { document.body.style.zoom = '0.5'; } else {
-    /* if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) */
-      /* const elem = document.documentElement; <html> */
-      const elem = document.body;
-      const scale = 0.5;
-      const width  = scale * elem.offsetWidth;
-      const height = scale * elem.offsetHeight;
-      elem.style.transform = `scale(${scale})`;
-      elem.style.transformOrigin = '0 0';
-      elem.style.width  = width  + 'px';
-      elem.style.height = height + 'px';
-    }
+const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+if (isChrome) { document.body.style.zoom = '0.5'; } else {
+/* if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) */
+  /* const elem = document.documentElement; <html> */
+  const elem = document.body;
+  const scale = 0.5;
+  const width  = scale * elem.offsetWidth;
+  const height = scale * elem.offsetHeight;
+  elem.style.transform = `scale(${scale})`;
+  elem.style.transformOrigin = '0 0';
+  elem.style.width  = width  + 'px';
+  elem.style.height = height + 'px';
+
+  const style = document.createElement('style');
+  style.innerHTML = `
+select { appearance: none; }
+select:not([size]) { /* https://flowbite.com/docs/forms/select/ */
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right .75rem center;
+  background-repeat: no-repeat;
+  background-size: .75em .75em;
+  padding-right: 2.25rem;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+`;
+  document.head.appendChild(style);
+}
   </script>
 </body>
 </html>

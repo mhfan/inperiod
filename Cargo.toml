@@ -13,27 +13,24 @@ keywords = ["periodic", "periodic-table", "elements", "chemistry-elements", "dio
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.5", features = ["web"], optional = true } # "web", "fullstack", "router"
-#dioxus-sdk = { version = "0.5", features = ["i18n"] }
-#dioxus-logger = "0.5"   # Debug
-#manganis = "0.2"
+dioxus = { version = "0.6", optional = true }   # features = ["fullstack", "router"],
+#dioxus-sdk = { version = "0.6", features = ["i18n"], optional = true }
+#tracing = "0.1"
 
-#mendeleev = "0.8"
-
-reqwest = { version = "0.12", optional = true }  #, features = ["blocking"] #, "json"
+reqwest = { version = "0.12", optional = true } # features = ["blocking"], #, "json"
 tokio = { version = "1.42", features = ["full"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0", optional = true }
-scraper = { version = "0.21", optional = true }
+scraper = { version = "0.22", optional = true }
 csv = { version = "1.3", optional = true }
 
 [features]
 default = []
 syncdep = ["reqwest", "tokio", "serde", "serde_json", "scraper", "csv"]
 
-desktop = ["dioxus/desktop"]
-server  = ["dioxus/axum"]
-web = ["dioxus/web"]
+desktop = ["dioxus", "dioxus/desktop"]
+mobile  = ["dioxus", "dioxus/mobile"]
+web     = ["dioxus", "dioxus/web"]
 
 [[bin]]
 name = "inperiod"
@@ -44,13 +41,6 @@ name = "syncd"
 path = "src/syncd.rs"   # default in src/bin/
 required-features = ["syncdep"]
 
-[profile.dev]
-opt-level = 1
-#incremental = false
-
-#[profile.dev.package."*"]
-#opt-level = 3
-
 [profile.release]
 codegen-units = 1
 strip = true # "debuginfo"
@@ -59,6 +49,22 @@ panic = 'abort'
 lto = true
 #debug = false
 #incremental = false
+
+[profile.dev]
+opt-level = 1
+#incremental = false
+
+#[profile.dev.package."*"]
+#opt-level = 3
+
+[profile.wasm-dev]
+inherits = "dev"
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
 
 [workspace]
 

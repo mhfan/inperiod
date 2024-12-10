@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{rs,html,css}", "./dist/**/*.html"],
+  content: ["./src/main.rs"], //"./src/**/*.{rs,html,css}"
   //mode: "all",
 
   theme: {
@@ -20,10 +20,11 @@ module.exports = {
     //require('@tailwindcss/typography'),
     //require('@tailwindcss/aspect-ratio'),
     //require('@tailwindcss/line-clamp'),
-    //require('tw-elements/plugin.cjs'), // npm install tw-elements
+    //require('tw-elements/plugin.cjs'), // npm install tw-elements -D
   ],
 
   //presets: [ require('@acmecorp/tailwind-base') ],
   // https://github.com/tailwindlabs/tailwindcss/blob/master/stubs/defaultConfig.stub.js
-  // npm install -D tailwindcss // npx tailwindcss init #--full
+  // npm install tailwindcss -D #-g // npx tailwindcss init #--full
+  // npx tailwindcss -i tailwind_base.css -o assets/tailwind.css -w #-m
 }
