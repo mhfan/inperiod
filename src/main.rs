@@ -31,25 +31,26 @@ fn App() -> Element {
     }
 }
 
-use inperiod::{l10n::Localization, ChemElem, ElemClass::*, ROMAN_NUM};
 macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
-//#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
-//#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
 
 fn PeriodicTable() -> Element {
+    use_context_provider(|| Signal::new(Coloring::Class));
     use_context_provider(|| Signal::new(Localization::new()));
+    let mut coloring = use_context::<Signal<Coloring>>();
     let mut lang = use_context::<Signal<Localization>>();
+
     //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
     //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
+    let bg_lan = COLORING_CLASSES[ElemClass::Lanthanoids as usize].0;
+    let bg_act = COLORING_CLASSES[ElemClass::Actinoids   as usize].0;
+    let wm_vert = "writing-mode: vertical-lr;";
 
     rsx! { div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto] w-[181rem] p-6 gap-0.5 relative
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto]", // scale-50 origin-top-left h-[128rem]
         //style: "transform: scale(0.5); transform-origin: 0 0;", // use js script in index.html
         //style: "zoom: 0.5;", // malformed in Safari, which works well scaling on <html>
 
-        p { class: "font-bold relative -bottom-4", style: "writing-mode: vertical-rl;",
-            {tr!(lang, "PERIOD")}
-        }
+        p { class: "font-bold relative -bottom-4", style: wm_vert, {tr!(lang, "PERIOD")} }
         div { class: "self-end text-center font-bold",
             p { class: "leading-none", {tr!(lang, "GROUP")} }
             p { class: "text-lg/6", "IA - 1" }
@@ -59,14 +60,14 @@ fn PeriodicTable() -> Element {
                 {tr!(lang, "Periodic Table of the Elements")}
             }
             select { class: "absolute top-2 left-0 text-2xl text-center font-normal
-                non-printable text-red-600", name: "lang-sel", //id: "lang-sel",
-                onchange: move |e| lang.write().set_lang(e.value()),
+                non-printable focus:outline-none text-red-600", name: "lang-sel",
+                onchange: move |evt| lang.write().set(evt.value()), //id: "lang-sel",
                 option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
             }
         }
         p { class: "self-end text-center font-bold text-lg", "VIIIA - 18" }
         p { class: "font-bold leading-none relative -bottom-4 content-center ml-2",
-            style: "writing-mode: vertical-rl;", {tr!(lang, "E-shell")} br{} {tr!(lang, "E-max")}
+            style: wm_vert, {tr!(lang, "E-shell")} br{} {tr!(lang, "E-max")}
         }
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
             for i in 1..=7 { p {
@@ -78,12 +79,9 @@ fn PeriodicTable() -> Element {
         ElemTile { ordinal: 1,  annote: false }
         p { class: "self-end text-center text-lg font-bold", "IIA - 2" } div { class: "empty" }
         ElemTile { ordinal: 43, annote: true } div { class: "empty col-span-2" }
-        div { class: "relative col-span-6",
-            // https://www.nagwa.com/en/explainers/809139094679/
+        div { class: "relative col-span-6", // https://www.nagwa.com/en/explainers/809139094679/
             img { class: "absolute h-[150%]", src: "aufbau.svg" }
             //div { class: "absolute h-[150%]", AufbauPrincipal {} }
-            p { class: "absolute bottom-[-5rem] right-1",
-                {tr!(lang, "metal - nonmetal dividing line")} }
         }
 
         for i in 13..=17 { p { class: "self-end text-center text-lg font-bold",
@@ -135,47 +133,51 @@ fn PeriodicTable() -> Element {
                             span { class: "ml-4 text-synthetic", {tr!(lang, "Synthetic")} }
                         }
                     }
-                    p { class: "font-bold px-1", {tr!(lang, "Categories")} }
-                    div { class: "grid grid-cols-2 grid-rows-5 text-center",
-                        p { class: "content-center rounded-sm bg-alkali", "Alkali Metals 碱金属" }
-                        p { class: "content-center rounded-sm bg-noble-gas px-1",
-                            "Noble Gases 稀有气体"
-                        }
-                        p { class: "content-center rounded-sm bg-alkaline",
-                            "Alkaline Earth Metals" br{} "碱土金属"
-                        }
-                        p { class: "content-center rounded-sm bg-halogen", "Halogens 卤素" }
-
-                        p { class: "content-center rounded-sm bg-transition",
-                            "Transition Metals" br{} "过渡金属"
-                        }
-                        p { class: "content-center rounded-sm bg-non-metal",
-                            "Other nonmetals" br{} "其它非金属"
-                        }   // 活泼非金属
-                        p { class: "content-center rounded-sm bg-poor-metal", "Poor Metals 贫金属" }
-                        p { class: "content-center rounded-sm bg-metalloid", "Metalloids 类金属" }
-
-                        p { class: "content-center rounded-sm bg-lanthanide",
-                            "Rare Earth Metals*" br{} "稀土金属"
-                        }
-                        p { class: "content-center rounded-sm bg-unknown", "Unknown 未知" }
+                    select { class: "text-xl font-bold px-1 focus:outline-none",
+                        onchange: move |evt| *coloring.write() = match evt.value().as_str() {
+                            "0" => Coloring::Class, "1" => Coloring::Origin,
+                            _ => unreachable!(),
+                        }, name: "coloring-sel",
+                        option { value: "0", {tr!(lang, "Categories")} }
+                        option { value: "1", {tr!(lang, "Cosmic origin")} }
+                    }
+                    div { class: "grid grid-cols-2 grid-rows-5 text-center w-[23rem] h-[15rem]",
+                        { use ElemClass::*; match *coloring.read() {
+                            Coloring::Class  => rsx! { for item in [AlkaliMetals, NobleGases,
+                                AlkalineEarthMetals, Halogens, TransitionMetals, OtherNonmetals,
+                                PoorMetals, Metalloids, Lanthanoids, Actinoids].map(|x|
+                                    COLORING_CLASSES[x as usize]) { p {
+                                class: format!("content-center rounded-sm {}", item.0),
+                                    {tr!(lang, item.1)}
+                                } }
+                            },
+                            Coloring::Origin => rsx! { for item in COLORING_ORIGINS {
+                                p { class: "content-center rounded-sm px-2",
+                                    style: format!("background-color: {};", item.0),
+                                    {tr!(lang, item.1)}
+                                }
+                            } }
+                        } }
                     }
                 }
                 div { class: "self-end ml-6 text-lg/6", PhysConsts {} }
+            }
+            p { class: "absolute right-0 mt-1", style: wm_vert,
+                {tr!(lang, "metal - nonmetal divider")}
             }
         }
         div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;",
         }   // XXX: show legend for origin/abundance?
 
         for i in 13..=56 { ElemTile { ordinal: i, annote: false } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1 bg-lanthanide
+        div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_lan}
             shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "71" }
-            p { class: "text-center m-auto", b { "57 ~ 70" } br{} "Lanthanoids" br{} "(镧系)" }
+            p { class: "text-center m-auto", b { "57 ~ 70" } br{} {tr!(lang, "Lanthanoids")} }
         }
         for i in 72..=88 { ElemTile { ordinal: i, annote: false } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1 bg-actinide
+        div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_act}
             shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "103" }
-            p { class: "text-center m-auto", b { "89 ~ 102" } br{} "Actinoids" br{} "(锕系)" }
+            p { class: "text-center m-auto", b { "89 ~ 102" } br{} {tr!(lang, "Actinoids")} }
         }
         for i in 104..=118 { ElemTile { ordinal: i, annote: false } }
 
@@ -226,13 +228,10 @@ fn PeriodicTable() -> Element {
         }
 
         for i in 57..= 71 { ElemTile { ordinal: i, annote: false } }
-        p { class: "text-center text-lg font-bold rotate-180",
-            style: "writing-mode: vertical-rl;", "Lanthanides"
+        p { class: "text-center text-lg font-bold", style: wm_vert, {tr!(lang, "Lanthanides")}
         }
         for i in 89..=103 { ElemTile { ordinal: i, annote: false } }
-        p { class: "text-center text-lg font-bold rotate-180",
-            style: "writing-mode: vertical-rl;", "Actinides"
-        }
+        p { class: "text-center text-lg font-bold", style: wm_vert, {tr!(lang, "Actinides")} }
         p { class: "col-span-3 mt-2", {tr!(lang, " All rights reserved.")} " © 2024 "
             a { href: "https://github.com/mhfan", "M.H.Fan" }
         }
@@ -245,9 +244,41 @@ fn PeriodicTable() -> Element {
     } }
 }
 
+use inperiod::{ChemElem, ElemClass, CosmicOrigin, l10n::Localization, UNICODE_SUPERS, ROMAN_NUM};
+//#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
+//#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
+enum Coloring { Class, Origin, }
+
+static COLORING_CLASSES: [(&str, &str);    ElemClass::MAX as usize] = [ // strict aligned order
+    ("bg-rose-200",     "Alkali metals"),
+    ("bg-pink-100",     "Alkaline earth metals"),
+    ("bg-slate-200",    "Transition metals"),
+    ("bg-stone-300",    "Poor metals"),
+    ("bg-cyan-200",     "Metalloids"),
+    ("bg-lime-200",     "Other nonmetals"),
+    ("bg-fuchsia-200",  "Halogens"),
+    ("bg-violet-200",   "Noble gases"),
+    ("bg-amber-100",    "Rare earth metals*"), // "Lanthanoids"
+    ("bg-orange-100",   "Actinoids"),
+    ("bg-zinc-50",      "Unknown"),
+];
+
+static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // strict aligned order
+    ("#e2e8f0", "Big Bang fusion"),
+    ("#d6d3d1", "Cosmic ray fission"),
+    ("#a5f3fc", "Dying low-mass stars"),
+    ("#d9f99d", "Merging neutron stars"),
+    ("#ddd6fe", "Exploding massive stars"),
+    ("#fecdd3", "White dwarf supernovae"),
+    ("#fce7f3", "Radioactive decay"),
+    ("#fafafa", "No stable isotopes"),
+];
+
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
     let elem = ChemElem::from(ordinal);
     let mut over_ecfg = use_signal(|| false);
+    let bg_color = COLORING_CLASSES[elem.category() as usize].0;
+    let coloring = use_context::<Signal<Coloring>>();
     let lang = use_context::<Signal<Localization>>();
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
 
@@ -261,20 +292,6 @@ fn PeriodicTable() -> Element {
                 x.to_string()).collect::<Vec<_>>().join(" ")
             } else { ecfg.to_string() }
         }
-    };
-
-    let bg_color = match elem.category() {
-        Unknown             => "bg-unknown",
-        AlkaliMetals        => "bg-alkali",
-        AlkalineEarthMetals => "bg-alkaline",
-        TransitionMetals    => "bg-transition",
-        PoorMetals          => "bg-poor-metal",
-        Metalloids          => "bg-metalloid",
-        OtherNonmetals      => "bg-non-metal",
-        Halogens            => "bg-halogen",
-        NobleGases          => "bg-noble-gas",
-        Lanthanoids         => "bg-lanthanide",
-        Actinoids           => "bg-actinide",
     };
 
     let metal_bound = match ordinal {
@@ -301,32 +318,18 @@ fn PeriodicTable() -> Element {
         } { "outline-green-800 outline-2 outline" } else { "" }
     }; */
 
-    use inperiod::{UNICODE_SUPERS, CosmicOrigin::{self, *}};
-    let origin_color = |x: CosmicOrigin| match x {
-        BigBangFusion => "#e2e8f0",
-
-        CosmicRayFission => "#d6d3d1",
-        RadioactiveDecay => "#fce7f3",
-
-        DyingLowMassStars       => "#a5f3fc",
-        ExplodingMassiveStars   => "#ddd6fe",
-        WhiteDwarfSupernovae    => "#fecdd3",
-        MergingNeutronStars     => "#d9f99d",
-
-        HumanSynthesis => "#fafafa",
-    };
-
     rsx! { div { //shadow-border-1 shadow-indigo-300    // size: 152x198
         class: "flex flex-col relative rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
-        style: if false { format!("background: conic-gradient({});", {  let mut sum = 0;
-            elem.cosmic_origin().iter().map(|&(co, ratio)| { let start = sum; sum += ratio;
-                format!("{} {start}% {sum}%", origin_color(co.into()))
-            }).collect::<Vec<_>>().join(", ")
-        })}, if annote {
-            a { class: "absolute font-bold text-lg/6 text-amber-600 self-center",
-                href: "https://ciaaw.org/radioactive-elements.htm",
-                style: "top: -1.5rem;", {tr!(lang, "radioactive")}
+        style: if matches!(*coloring.read(), Coloring::Origin) {
+            format!("background: conic-gradient({});", {  let mut sum = 0;
+                elem.cosmic_origin().iter().map(|&(co, ratio)| { let start = sum; sum += ratio;
+                    format!("{} {start}% {sum}%", COLORING_ORIGINS[co as usize].0)
+                }).collect::<Vec<_>>().join(", ")
+            })
+        }, if annote {
+            a { class: "absolute top-[-1.5rem] font-bold text-lg/6 text-amber-600 self-center",
+                href: "https://ciaaw.org/radioactive-elements.htm", {tr!(lang, "radioactive")}
             }
             div { class: "absolute text-lg leading-tight text-nowrap text-right",
                 onmouseenter: |evt| evt.stop_propagation(), // XXX: not work for :hover
@@ -351,9 +354,8 @@ fn PeriodicTable() -> Element {
                 style: "left: calc(100% + 0.4rem);",
                 p { class: "mt-1", {tr!(lang, "atomic number")} }
                 p { {tr!(lang, "electron affinity")} }
-                a { class: "my-1",
-                    href: "https://en.wikipedia.org/wiki/Oxidation_state",
-                    {tr!(lang, "main oxidation states")}
+                a { href: "https://en.wikipedia.org/wiki/Oxidation_state",
+                    class: "my-1", {tr!(lang, "main oxidation states")}
                 }
                 p { {tr!(lang, "Chinese name with pinyin")} }
                 a { href: "https://en.wikipedia.org/wiki/Electronegativity",
@@ -406,7 +408,7 @@ fn PeriodicTable() -> Element {
                         } } }
                         if os_main.len() < os_all.len() { div { class: "absolute hidden
                             left-full -top-2 ml-1.5 p-1 text-lg/5 font-normal rounded
-                            border border-orange-600 bg-indigo-50 group-hover:block z-10",
+                            border border-orange-600 bg-white group-hover:block z-10",
                             for os in os_all.iter().rev() { pre { class:
                                 if os_main.contains(os) { "font-extrabold" } else { "" },
                     { format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" }) }
@@ -437,14 +439,14 @@ fn PeriodicTable() -> Element {
                     figure { class: "absolute w-[20rem] max-w-none border rounded
                             border-orange-600 bg-white hidden peer-hover:block z-10",
                         style: { match ordinal {
-                            2 =>    "right: calc(100% + 0.4rem); top: 0px;",
+                            2 =>    "right: calc(100% + 0.4rem);",
                             _ => if ordinal == 71  ||
                                     ordinal == 103 || matches!(elem.group(), 17..=19) {
-                                    "right: calc(100% + 0.4rem); bottom: 0px;"
+                                    "right: calc(100% + 0.4rem); bottom: 0;"
                             } else { "left: calc(100% + 0.4rem);" }
                         } }, figcaption { class: "text-center text-lg text-blue-600 font-bold",
-                            { tr!(lang, file.replace(['-', '_'], " ").as_str()) } }
-                        img { class: "w-full", src: "crystal-s/{file}.svg", }
+                            { tr!(lang, file.replace(['-', '_'], " ").as_str()) }
+                        } img { class: "w-full", src: "crystal-s/{file}.svg", }
                     }
                 }) }
             }
@@ -458,8 +460,8 @@ fn PeriodicTable() -> Element {
                     { elem.ground_state().map_or_else(|| rsx! { "-" },
                         |(s1, s2, s3)| rsx! { if 1 < s2.len() {
                             sup  { {s1} } { s2.chars().next().unwrap().to_string() }
-                            span { style: "position: relative; top: -0.1em;", "°" }
-                            sub  { style: "left: -0.6em;", {s3} }
+                            span { class: "relative top-[-0.2em]", "°" }
+                            sub  { class: "left-[-0.6em]", {s3} }
                         } else { sup { {s1} } {s2} sub { {s3} } } }) }
                 }
             }
@@ -483,7 +485,7 @@ fn PeriodicTable() -> Element {
                     { elem.en_pauling().map(|en| en.to_string()) }
                 } }
             }
-            // TODO: show origin/source and abundance according to selection
+            // TODO: show various abundance according to selection?
         }
     } }
 }
@@ -496,7 +498,8 @@ fn PeriodicTable() -> Element {
     rsx! { svg { width: "640", height: "512", xmlns: "http://www.w3.org/2000/svg",
         "font-size": "small", "font-weight": "normal", //title { title }
 
-        g { text { x: "200", y: "500", {tr!(lang, "Electron shell/orbital configuration")} }
+        g { text { x: "200", y: "504", "font-weight": "bold",
+                {tr!(lang, "Electron shell/orbital configuration")} }
             text { x: "560", y: "464", "font-size": "48", { elem.symbol() } }
 
             path { stroke: "gray", "stroke-opacity": "0.3", d:
@@ -711,8 +714,8 @@ fn PhysConsts() -> Element {
             tspan { x: "384", opacity: "0.2", "ℓ = 5" }
             tspan { x: "448", opacity: "0.2", "ℓ = 6" }
         }
-        text { x: "92", y: "296", {tr!(lang, "Aufbau Principle")}
-            " (" {tr!(lang, "Madelung rule")} ")" }
+        text { x: "92", y: "296", "font-weight": "bold",
+            {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")" }
         text { x: "180", y: "52", fill: "blue", "font-size": "8",
             tspan { "n: " {tr!(lang, "Principle quantum number")} }
             tspan { x: "180", dy: "16", "ℓ: " {tr!(lang, "Azimuthal quantum number")} }

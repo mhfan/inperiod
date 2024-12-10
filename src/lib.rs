@@ -251,22 +251,22 @@ impl ChemElem {
     }
 
     /// https://en.wikipedia.org/wiki/Periodic_table#Classification_of_elements
-    pub const fn category(&self) -> ElemClass {
+    pub const fn category(&self) -> ElemClass {     use ElemClass::*;
         match self.atomic_number() {
-            1|6|7|8|15|16|34 => ElemClass::OtherNonmetals,  // reactive nonmetals
-            5|14|32|33|51|52 => ElemClass::Metalloids,  // semi-metals
-            //109..=118 if !matches!(self.atomic_number(), 112|114) => ElemClass::Unknown,
-            13|31|49|50|81..=84|113..117 => ElemClass::PoorMetals,  // post-transition metals
+            1|6|7|8|15|16|34 => OtherNonmetals,  // reactive nonmetals
+            5|14|32|33|51|52 => Metalloids,  // semi-metals
+            //109..=118 if !matches!(self.atomic_number(), 112|114) => Unknown,
+            13|31|49|50|81..=84|113..117 => PoorMetals,  // post-transition metals
 
             // Rare earth metals  (Lanthanoids plus Sc and Y)
-            57..=70  => ElemClass::Lanthanoids,     // Lanthanides (include Lu)
-            89..=102 => ElemClass::Actinoids,       // Actinides   (include Lr)
+            57..=70  => Lanthanoids,     // Lanthanides (include Lu)
+            89..=102 => Actinoids,       // Actinides   (include Lr)
             _ => match self.group() {
-                1  => ElemClass::AlkaliMetals,
-                2  => ElemClass::AlkalineEarthMetals,
-                17 => ElemClass::Halogens,
-                18 => ElemClass::NobleGases,
-                _  => ElemClass::TransitionMetals,  // 3..=12
+                1  => AlkaliMetals,
+                2  => AlkalineEarthMetals,
+                17 => Halogens,
+                18 => NobleGases,
+                _  => TransitionMetals,  // 3..=12
             }
         }
     }
@@ -546,24 +546,37 @@ impl From<(u8, u8, u8)> for Subshell {
     ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
 }
 
-#[derive(Debug)] #[repr(u8)] pub enum CosmicOrigin {    // Cosmological
-    BigBangFusion           = b'b',
-    CosmicRayFission        = b'j', // Collisions, 宇宙射线裂变
-    DyingLowMassStars       = b'y',
-    ExplodingMassiveStars   = b'g', // Supernovae
-    WhiteDwarfSupernovae    = b'c', // ExplodingWhiteDwarfs
-    MergingNeutronStars     = b'o',
-    RadioactiveDecay        = b'r', // XXX:
-    HumanSynthesis          = b'z', // No stable isotopes
+#[derive(Clone, Copy)] #[repr(u8)] pub enum CosmicOrigin {  // Cosmological
+    BigBangFusion = 0,
+    CosmicRayFission,       // Collisions
+    DyingLowMassStars,
+    MergingNeutronStars,
+    ExplodingMassiveStars,  // Supernovae
+    WhiteDwarfSupernovae,   // ExplodingWhiteDwarfs
+    RadioactiveDecay,
+    HumanSynthesis,         // No stable isotopes
+    MAX
 }
 
-impl From<u8> for CosmicOrigin {
-    fn from(val: u8) -> Self { unsafe { std::mem::transmute(val) } }
+impl CosmicOrigin {
+    //fn from(val: u8) -> Self { unsafe { std::mem::transmute(val) } }
+    const fn from_u8(val: u8) -> Self {  use CosmicOrigin::*;
+        match val {
+            b'b' => BigBangFusion,
+            b'j' => CosmicRayFission,
+            b'y' => DyingLowMassStars,
+            b'o' => MergingNeutronStars,
+            b'g' => ExplodingMassiveStars,
+            b'c' => WhiteDwarfSupernovae,
+            b'r' => RadioactiveDecay,
+            b'z' => HumanSynthesis,
+            _ => unreachable!()
+        }
+    }
 }
 
-#[derive(Debug)] #[repr(u8)] pub enum ElemClass {
-    Unknown = 0,
-    AlkaliMetals,
+#[repr(u8)] pub enum ElemClass {
+    AlkaliMetals = 0,
     AlkalineEarthMetals,
     TransitionMetals,
     PoorMetals,
@@ -573,6 +586,8 @@ impl From<u8> for CosmicOrigin {
     NobleGases,
     Lanthanoids,
     Actinoids,
+    Unknown,
+    MAX
 }
 
 const ELEM_NAME:   [&str; ChemElem::MAX as usize] = [ "", // placeholder

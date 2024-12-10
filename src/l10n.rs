@@ -27,7 +27,9 @@ impl Localization {
         } else { id }
     }
 
-    pub fn set_lang<T: AsRef<str>>(&mut self, lang: T) {
+    //pub fn get(&self) -> &str { match self.lidx { Some(0) => "zh-CN", _ => "en-US" } }
+
+    pub fn set<T: AsRef<str>>(&mut self, lang: T) {
         self.lidx = if "zh-CN" == lang.as_ref() { Some(0) } else { None };
     }
 
@@ -43,7 +45,7 @@ impl Localization {
     "series"  => "系列",
     "E-max"   => "满电子数",
     "E-shell" => "电子壳层",
-    "metal - nonmetal dividing line" => "金属 - 非金属分隔线",
+    "metal - nonmetal divider" => "金属 - 非金属 分隔线",
 
     "Phase at STP" => "物态 (STP)",
     "Liquid" => "液体",
@@ -52,26 +54,31 @@ impl Localization {
     "Synthetic"  => "人工合成",
 
     "Categories" => "类别/分组",
-    "Alkali Metals" => "碱金属",
-    "Alkaline Earth Metals" => "碱土金属",
-    "Rare Earth Metals*" => "稀土金属*",
-    "Transition Metals"  => "过渡金属",
+    "Alkali metals" => "碱金属",
+    "Alkaline earth metals" => "碱土金属",
+    "Rare earth metals*" => "稀土金属*",
+    "Transition metals"  => "过渡金属",
     "Other nonmetals" => "其它非金属",
-    "Noble Gases" => "稀有气体",
-    "Poor Metals" => "贫金属",
+    "Noble gases" => "稀有气体",
+    "Poor metals" => "贫金属",
     "Metalloids"  => "类金属",
+    "Lanthanoids" => "镧系金属",
+    "Lanthanides" => "镧系元素",
+    "Actinides" => "锕系元素",
+    "Actinoids" => "锕系金属",
     "Halogens" => "卤素",
     "Unknown"  => "未知",
 
-    "Cosmic Origin" => "宇宙起源",
-    "Big Bang Fusion" => "大爆炸聚变",
-    "Cosmic Ray Fission" => "宇宙射线裂变",
-    "Dying Low-mass Stars" => "小质量恒星死亡",
-    "Exploding Massive Stars" => "大质量恒星爆发",
-    "White Dwarf Supernovae"  => "白矮星超新星",
-    "Merging NeutronStars" => "中子星合并",
-    "Radioactive Decay" => "放射性衰变",
-    "Human Synthesis" => "人工合成 (无稳定同位素)",
+    "Cosmic origin" => "宇宙起源",
+    "Big Bang fusion" => "大爆炸聚变",
+    "Cosmic ray fission" => "宇宙射线裂变",
+    "Merging neutron stars" => "中子星合并",
+    "Dying low-mass stars"  => "小质量恒星死亡",
+    "Exploding massive stars" => "大质量恒星爆发",
+    "White dwarf supernovae"  => "白矮星超新星",
+    "Human synthesis" => "人工合成",
+    "Radioactive decay"  => "放射性衰变",
+    "No stable isotopes" => "无稳定同位素",
 
     "Common physical constants" => "常用物理常数",
     "Source: " => "来源: ",

@@ -3,17 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-unknown     { @apply bg-zinc-50; }
-.bg-alkali      { @apply bg-rose-200; }
-.bg-alkaline    { @apply bg-pink-100; }
-.bg-transition  { @apply bg-slate-200; }
-.bg-lanthanide  { @apply bg-amber-100; }
-.bg-actinide    { @apply bg-orange-100; }
-.bg-poor-metal  { @apply bg-stone-300; }
-.bg-metalloid   { @apply bg-cyan-200; }
-.bg-non-metal   { @apply bg-lime-200; }
-.bg-halogen     { @apply bg-fuchsia-200; }
-.bg-noble-gas   { @apply bg-violet-200; }
 .text-synthetic { @apply text-gray-500; }
 .text-liquid    { @apply text-blue-700; }
 .text-gas       { @apply text-red-700; }

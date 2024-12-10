@@ -16,6 +16,7 @@ use scraper::{Html, Selector};
     parse_oxstates().await?;
     parse_pubchem().await?;
     parse_ciaaw().await?;
+    //parse_origin();
     Ok(())
 }
 
@@ -338,54 +339,50 @@ fn parse_origin() -> Result<(), Box<dyn Error>> {
 
     let mut file = File::create(PathBuf::from("src").join("origin.rs"))?;
     file.write_all(HEADER)?;    file.write_all(b"impl ChemElem {\n")?;
-    file.write_all(b"    pub const fn cosmic_origin(&self) -> &[(u8, u8)] {")?;
+    file.write_all(b"    pub const fn cosmic_origin(&self) -> &[(CO, u8)] {")?;
     file.write_all(b" ORIGIN[self.atomic_number() as usize] }\n}\n\n")?;
 
-    file.write_all(b"use super::ChemElem;\n\n")?;
-    file.write_all(b"const ORIGIN: [&[(u8, u8)]; ChemElem::MAX as usize] = [ &[],\n")?;
+    file.write_all(b"use super::{ChemElem, CosmicOrigin as CO};\n\n")?;
+    file.write_all(b"const ORIGIN: [&[(CO, u8)]; ChemElem::MAX as usize] = [ &[],\n")?;
 
     for result in reader.records() {
         let record = result?;
         if 5 < record.len() { continue }
 
-        let codes = record.get(4).unwrap().trim();
-        file.write_all(b"    &[")?;
-        let len = codes.len();
-
-        if  len == 1 {  // https://svs.gsfc.nasa.gov/13873/
-            file.write_fmt(format_args!("(b'{}', 100)",
-                match atomic { 43|61|84..=89|91|93 => "r", _ => codes }))?;
-        } else {    let codes = codes.as_bytes();
+        let codes = record.get(4).unwrap().trim().as_bytes();
+        let (len, mut coll) = (codes.len(), vec![]);
+        if  len == 1 { coll.push((match atomic {    // https://svs.gsfc.nasa.gov/13873/
+                43|61|84..=89|91|93 => 'r', _ => codes[0] as char }, 100.));
+        } else {
             let x: f32 = record.get(3).unwrap().trim().parse()?;
             let frac =   if 2. * x < x_max { 2. * x * x } else {
                 4. * x * x_max - 2. * x * x - x_max_square
             } / x_max_square;
 
             if len == 2 {
-                if 0.99 < frac {
-                    file.write_fmt(format_args!("(b'{}', 100)", codes[0] as char))?;
-                } else {
+                if 0.99 < frac {    coll.push((codes[0] as char, 100.)); } else {
                     let  first = (codes[0] as char, (frac * 100.).round());
                     let second = (codes[1] as char, ((1. - frac) * 100.).round());
-                    if 0.5 < frac {
-                        file.write_fmt(format_args!("(b'{}', {}), (b'{}', {:2})",
-                            first.0, first.1, second.0, second.1))?;
-                    } else {
-                        file.write_fmt(format_args!("(b'{}', {}), (b'{}', {:2})",
-                            second.0, second.1, first.0, first.1))?;
+                    if 0.5 < frac { coll.push(first); coll.push(second); } else {
+                                    coll.push(second); coll.push(first);
                     }
                 }
             } else {    assert!(len == 3);
                 let w = if atomic == 2 { 0.45 } else { 0.37 };
-                file.write_fmt(format_args!("(b'{}', {}), (b'{}', {:2}), (b'{}', {:2})",
-                    codes[2] as char, ((1. - frac) * 100.).round(),
-                    codes[1] as char, (frac * (1. - w) * 100.).round(),
-                    codes[0] as char, (frac * w * 100.).round()))?;
+                coll.push((codes[2] as char, ((1. - frac) * 100.).round()));
+                coll.push((codes[1] as char, (frac * (1. - w) * 100.).round()));
+                coll.push((codes[0] as char, (frac * w * 100.).round()));
             }
-        }       file.write_all(b"],\n")?;   atomic += 1;
+        }
+
+        file.write_all(b"    &[")?;
+        file.write_all(coll.iter().map(|&(c, p)|
+            format!("(CO::from_u8(b'{}'), {:2})", c, p))
+            .collect::<Vec<_>>().join(", ").as_bytes())?;
+        file.write_all(b"],\n")?;   atomic += 1;
     }
 
-    for _ in atomic..=118 { file.write_all(b"    &[(b'z', 100)],\n")?; }
+    for _ in atomic..=118 { file.write_all(b"    &[(CO::from_u8(b'z'), 100)],\n")?; }
     file.write_all(b"];\n\n")?;     file.flush()?;  Ok(())
 }
 
