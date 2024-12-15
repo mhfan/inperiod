@@ -11,6 +11,8 @@ use scraper::{Html, Selector};
 
 /// cargo r --bin syncd -F syncdep
 #[tokio::main] async fn main() -> Result<(), Box<dyn Error>> {
+    //for elem in inperiod::ChemElem::iter() { println!("{}", elem.name_ch()); } return Ok(());
+
     //parse_electronegativity().await?; // use the data from pubchem instead
     parse_nist_asd().await?;
     parse_oxstates().await?;
@@ -80,7 +82,7 @@ async fn parse_oxstates() -> Result<(), Box<dyn Error>> {
         }
 
         if states.iter().all(|&x| x.is_none()) { file.write_all(b"\n")?; continue }
-        file.write_fmt(format_args!("            {an:>3} => &[ "))?;
+        file.write_fmt(format_args!("            {an:>3} => &["))?;
         for (i, &x) in states.iter().enumerate() {
             if x.is_none() { file.write_all(b"   ")?; } else {
                 file.write_fmt(format_args!("{:2},", i as i8 - 5 ))?; }
@@ -331,7 +333,7 @@ async fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
 }
 
 /// https://royalsocietypublishing.org/doi/10.1098/rsta.2019.0301
-fn parse_origin() -> Result<(), Box<dyn Error>> {
+#[allow(unused)] fn parse_origin() -> Result<(), Box<dyn Error>> {
     let mut reader = csv::ReaderBuilder::new().flexible(true)
         .has_headers(false).delimiter(b'|').from_reader(ORIGIN_DATA.as_bytes());
     let (x_max, mut atomic) = (185f32, 1u8);
@@ -383,8 +385,6 @@ fn parse_origin() -> Result<(), Box<dyn Error>> {
     }
 
     for _ in atomic..=118 { file.write_all(b"    &[(CO::from_u8(b'z'), 100)],\n")?; }
-    file.write_all(b"];\n\n")?;     file.flush()?;  Ok(())
-}
 
 /// from comments in https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
 const ORIGIN_DATA: &str = r#"
@@ -499,4 +499,7 @@ Lr|18  |8.5|0  |z
   | 8.7|2.4|0  |c|Exploding~white~dwarfs
   |11.7|0.9|0  |z|Human synthesis~No stable isotopes
 "#;
+
+    file.write_all(b"];\n\n")?;     file.flush()?;  Ok(())
+}
 
