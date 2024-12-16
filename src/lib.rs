@@ -331,6 +331,76 @@ impl ChemElem {
         })
     }
 
+/** https://en.wikipedia.org/wiki/Flame_test
+
+    Fireworks (https://svs.gsfc.nasa.gov/13873/):
+    Li-Pink, Sr-Red, Ca-Orange, Na-Yellow, Ba-Green, Cu-Blue, SrCu-Purple
+
+    https://sciencenotes.org/flame-test-colors-and-procedure-chemistry/
+
+    https://en.wikipedia.org/wiki/Color_of_chemicals
+    https://zh.wikipedia.org/wiki/离子列表 */
+    pub const fn flame_color(&self) -> Option<(u32, &str)> {    use ChemElem::*;
+        Some(match *self {  // 0xRRGGBB
+            H  => (0xADD8E6, "Pale blue"),
+            Li => (0x960018, "Carmine red"),
+            Be => (0xFFFFFF, "White"),
+            B  => (0x66FF00, "Bright green"),
+            Na => (0xFFFF00, "Bright yellow"),
+            Mg => (0xFFFFF0, "Colorless, intense white"),
+            Al => (0xC0C0C0, "Silver-white"),
+            P  => (0xAFEEEE, "Pale blue-green"),
+            S  => (0x0000FF, "Blue"),
+            K  => (0xC8A2C8, "Lilac (pink)"),
+            Ca => (0xCB4154, "Brick/orange red"),
+            Sc => (0xFFA500, "Orange"),
+            Ti => (0xC0C0C0, "Silver-white"),
+            V  => (0x9ACD32, "Yellowish green"),
+            Cr => (0xC0C0C0, "Silvery white"),
+            Co => (0xC0C0C0, "Silvery white"),
+            Ni => (0xC0C0C0, "Colorless to silver-white"),
+            Zn => (0x0D98BA, "Colorless to blue-green"),
+            Ge => (0xADD8E6, "Pale blue"),
+            As => (0x0000FF, "Blue"),
+            Se => (0x007FFF, "Azure blue"),
+            Rb => (0xD02090, "Violet red"),
+            Sr => (0xDC143C, "Crimson to scarlet red"),
+            Y  => (0x960018, "Carmine, crimson, or scarlet red"),
+            Zr => (0xBC8F8F, "Mild/dull red"),
+            Nb => (0x00FFFF, "Green or blue"),
+            Mo => (0x9ACD32, "Yellowish green"),
+            Cd => (0xCB4154, "Brick red"),
+            In => (0x4B0082, "Indigo blue"),
+            Sn => (0x87CEFA, "Blue-white"),
+            Sb => (0x98FB98, "Pale green"),
+            Te => (0x98FB98, "Pale green"),
+            Cs => (0x8A2BE2, "Blue-violet"),
+            Ba => (0x8DB600, "Light apple green"),
+            Ce => (0xFFFF00, "Yellow"),
+            Hf => (0xFFFFFF, "White"),
+            Ta => (0x0000FF, "Blue"),
+            W  => (0x00FF00, "Green"),
+            Hg => (0xFF0000, "Red"),
+            Tl => (0x00FF00, "Pure green"),
+            Pb => (0x87CEFA, "Blue-white"),
+            Bi => (0x007FFF, "Azure blue"),
+            Ra => (0xDC143C, "Crimson red"),
+
+            Mn => (0x9ACD32, "Yellowish green"),
+            Fe => (0xCC5500, "Orange-brown"),
+            Cu => (0x0D98BA, "Blue-green"),
+
+        /*  25/Mn(II)  => (0x9ACD32, "Yellowish green"),
+            26/Fe(II)  => (0xFFD700, "Gold"),
+            26/Fe(III) => (0xCC5500, "Orange-brown"),
+            29/Cu(I)              => (0x0D98BA, "Blue-green"),
+            29/Cu(II)(non-halide) => (0x008000, "Green"),
+            29/Cu(II)(halide)     => (0x0D98BA, "Blue-green"), */
+
+            _  => return None
+        })
+    }
+
     /// https://en.wikipedia.org/wiki/Term_symbol
     /// https://www.nist.gov/pml/periodic-table-elements
     /// https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html
