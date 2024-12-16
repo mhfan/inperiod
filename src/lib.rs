@@ -180,7 +180,6 @@ impl ChemElem {
     pub const fn name_ch(&self) -> char { ELEM_CH[self.atomic_number() as usize] } // XXX: &str?
     pub const fn atomic_number(&self) -> u8 { *self as _ }
     pub const fn iter() -> ElemIter { ElemIter::new() }
-    pub fn list() -> Vec<ChemElem> { ChemElem::iter().collect() }
 
     /** ```
         use inperiod::ChemElem;
@@ -279,9 +278,9 @@ impl ChemElem {
         }
     }
 
-    pub const fn block(&self) -> u8 {
+    pub fn block(&self) -> u8 {
         match self.group() { 1|2 => b's', 3..=12 => b'd',
-            18 if self.atomic_number() == 2 => b's',
+            18 if *self == Self::He => b's',
             13..=18 => b'p', _ => b'f',
         }
     }
@@ -344,7 +343,22 @@ impl ChemElem {
 
     /// https://en.wikipedia.org/wiki/Abundance_of_the_chemical_elements
     /// https://en.wikipedia.org/wiki/Abundances_of_the_elements_(data_page)
-    pub const fn abundance(&self) { todo!() }   // TODO:
+    pub const fn abundance(&self, _: ScopeType) -> Option<f32> { todo!() }   // TODO:
+}
+
+pub enum ScopeType {
+    Universe, Galaxy,
+    SolarSystem, Sun,
+
+    EarthCrust,
+    EarthMantle,
+    EarthCore,
+
+    UrbanSoils,
+    Atmosphere,
+    SeaWater, // Ocean,
+
+    HumanBody,
 }
 
 pub mod l10n;
