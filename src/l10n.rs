@@ -69,6 +69,7 @@ impl Localization {
     "Halogens" => "卤素",
     "Unknown"  => "未知",
 
+    "Flame test" => "焰色反应",
     "Cosmic origin" => "宇宙起源",
     "Big Bang fusion" => "大爆炸聚变",
     "Cosmic ray fission" => "宇宙射线裂变",

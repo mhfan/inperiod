@@ -141,10 +141,12 @@ fn PeriodicTable() -> Element {
                     }
                     select { class: "text-xl font-bold px-1 focus:outline-none",
                         onchange: move |evt| *coloring.write() = match evt.value().as_str() {
-                            "0" => Coloring::Class, "1" => Coloring::Origin, _ => unreachable!(),
+                            "0" => Coloring::Class, "1" => Coloring::Origin,
+                            "2" => Coloring::Flame, _ => unreachable!(),
                         }, name: "coloring-sel",
                         option { value: "0", {tr!(lang, "Categories")} }
                         option { value: "1", {tr!(lang, "Cosmic origin")} }
+                        option { value: "2", {tr!(lang, "Flame test")} }
                     }
                     div { class: "grid grid-cols-2 grid-rows-5 text-center w-[23rem] h-[15rem]",
                         {use ElemClass::*; match *coloring.read() {
@@ -160,7 +162,8 @@ fn PeriodicTable() -> Element {
                                     style: format!("background-color: {};", item.0),
                                     {tr!(lang, item.1)}
                                 }
-                            } }
+                            } },
+                            Coloring::Flame  => rsx! {}
                         }}
                     }
                 }
@@ -250,7 +253,7 @@ masses of all isotopes of an element, weighted by their abundance on Earth")}
 use inperiod::{ChemElem, ElemClass, CosmicOrigin, l10n::Localization, UNICODE_SUPERS, ROMAN_NUM};
 //#[derive(Clone, Copy)] enum SelType { None, Period, Group, Block, Class, }
 //#[derive(Clone, Copy)] struct Selection { r#type: SelType, val: u8, }
-enum Coloring { Class, Origin, }
+enum Coloring { Class, Origin, Flame, }
 
 static COLORING_CLASSES: [(&str, &str);    ElemClass::MAX as usize] = [ // strict aligned order
     ("bg-rose-200",     "Alkali metals"),
@@ -280,10 +283,21 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
 #[component] fn ElemTile(ordinal: u8, annote: bool) -> Element {
     let elem = ChemElem::from(ordinal);
     let mut over_ecfg = use_signal(|| false);
-    let bg_color = COLORING_CLASSES[elem.category() as usize].0;
-    let coloring = use_context::<Signal<Coloring>>();
     let lang = use_context::<Signal<Localization>>();
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
+
+    let coloring = use_context::<Signal<Coloring>>();
+    let (bg_color, bg_style) = match *coloring.read() {
+        Coloring::Class  => (COLORING_CLASSES[elem.category() as usize].0, "".to_string()),
+        Coloring::Origin => ("", format!("background: conic-gradient({});", {  let mut sum = 0;
+            elem.cosmic_origin().iter().map(|&(co, ratio)| { let start = sum; sum += ratio;
+                format!("{} {start}% {sum}%", COLORING_ORIGINS[co as usize].0)
+            }).collect::<Vec<_>>().join(", ")
+        })),
+        Coloring::Flame  => ("", if let Some(color) = &elem.flame_color() {
+            format!("background-color: #{:06x}80;", color.0)
+        } else { "".to_string() }),
+    };
 
     let revised_ecfg = match ordinal {
         //format!("{prefix}{}", ecfg.rfind(' ').map_or("", |pos| &ecfg[pos..]))
@@ -324,13 +338,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
     rsx! { div { //shadow-border-1 shadow-indigo-300    // size: 152x198
         class: "flex flex-col relative rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
-        style: if matches!(*coloring.read(), Coloring::Origin) {
-            format!("background: conic-gradient({});", {  let mut sum = 0;
-                elem.cosmic_origin().iter().map(|&(co, ratio)| { let start = sum; sum += ratio;
-                    format!("{} {start}% {sum}%", COLORING_ORIGINS[co as usize].0)
-                }).collect::<Vec<_>>().join(", ")
-            })
-        }, if annote {
+        style: bg_style, if annote {
             a { class: "absolute top-[-1.5rem] font-bold text-lg/6 text-amber-600 self-center",
                 href: "https://ciaaw.org/radioactive-elements.htm", {tr!(lang, "radioactive")}
             }
