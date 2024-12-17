@@ -341,7 +341,7 @@ impl ChemElem {
     https://en.wikipedia.org/wiki/Color_of_chemicals
     https://zh.wikipedia.org/wiki/离子列表 */
     pub const fn flame_color(&self) -> Option<(u32, &str)> {    use ChemElem::*;
-        Some(match *self {  // 0xRRGGBB
+        Some(match *self {  // 0xRRGGBBAA
             H  => (0xADD8E6, "Pale blue"),
             Li => (0x960018, "Carmine red"),
             Be => (0xFFFFFF, "White"),
