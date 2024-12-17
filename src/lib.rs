@@ -451,17 +451,17 @@ pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹�
 
 #[derive(PartialEq, Debug)] pub enum AtomicWeight {
     //Interval(core::ops::RangeInclusive<f64>), // conversional?
-    //Uncertainty { value: f64, uncertainty: f64 },
-    Abridged { value: f32, uncertainty: f32 },
+    //Uncert { value: f64, uncert: f64 },   // uncertainty
+    Abridged { value: f32, uncert: f32 },
     MassNumber(u32),
 }
 
 /** ```
     use inperiod::AtomicWeight;
     assert!(" 1.0080 ".parse::<AtomicWeight>() ==
-        Ok(AtomicWeight::Abridged { value: 1.008, uncertainty: 0. }));
+        Ok(AtomicWeight::Abridged { value: 1.008, uncert: 0. }));
     assert_eq!("1.0080 (2)".parse::<AtomicWeight>(),
-        Ok(AtomicWeight::Abridged { value: 1.008, uncertainty: 0.0002 }));
+        Ok(AtomicWeight::Abridged { value: 1.008, uncert: 0.0002 }));
     assert_eq!("1.0080(12)".parse::<AtomicWeight>().unwrap().to_string(), "1.0080(12)");
     assert_eq!("39.95 ± 0.16".parse::<AtomicWeight>().unwrap().to_string(), "39.95(16)");
     assert_eq!("[294]".parse::<AtomicWeight>(), Ok(AtomicWeight::MassNumber(294)));
@@ -473,37 +473,36 @@ impl std::str::FromStr for AtomicWeight {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let s = s.trim();
+        let (invalid, s) = ("Invalid value", s.trim());
 
         if s.starts_with('[') && s.ends_with(']') {
             let s = s[1..s.len()-1].trim();
             /* if let Some((start, end)) = s.split_once(',') {
-                let start = start.trim_end().parse().map_err(|_| "Invalid value")?;
-                let end   = end.trim_start().parse().map_err(|_| "Invalid value")?;
-                Ok(AtomicWeight::Interval(core::ops::RangeInclusive::new(start, end)))
+                let start = start.trim_end().parse().map_err(|_| invalid)?;
+                let end   = end.trim_start().parse().map_err(|_| invalid)?;
+                Ok(Self::Interval(core::ops::RangeInclusive::new(start, end)))
             } else { */
-                Ok(AtomicWeight::MassNumber(s.parse().map_err(|_| "Invalid value")?))
+                Ok(Self::MassNumber(s.parse().map_err(|_| invalid)?))
             //}
-        } else if let Some((value_part, uncertainty_part)) = s.split_once('±') {
-            let value = value_part.trim_end().parse().map_err(|_| "Invalid value")?;
-            let uncertainty = uncertainty_part.trim_start()
-                .parse().map_err(|_| "Invalid uncertainty")?;
-            Ok(AtomicWeight::Abridged { value, uncertainty })
+        } else if let Some((value_part, uncert_part)) = s.split_once('±') {
+            let  value =  value_part.trim_end().parse().map_err(|_| invalid)?;
+            let uncert = uncert_part.trim_start().parse()
+                .map_err(|_| "Invalid uncertainty")?;
+            Ok(Self::Abridged { value, uncert })
         } else if let Some((value_part, rest)) = s.split_once('(') {
             let value_part = value_part.replace(' ', "");
-            let value = value_part.parse().map_err(|_| "Invalid value")?;
-            let uncertainty_str = rest.trim_end_matches(')').trim();
+            let value = value_part.parse().map_err(|_| invalid)?;
+            let uncert_str = rest.trim_end_matches(')').trim();
 
             let scale = if let Some(pos) = value_part.find('.') {
                 10f32.powi((value_part.len() - pos - 1) as i32)
             } else { 1. };
 
-            let uncertainty = uncertainty_str.parse::<u8>().map_err(|_|
-                "Invalid uncertainty")? as f32 / scale;
-            Ok(AtomicWeight::Abridged { value, uncertainty })
+            let uncert = uncert_str.parse::<u8>()
+                .map_err(|_| "Invalid uncertainty")? as f32 / scale;
+            Ok(Self::Abridged { value, uncert })
         } else {
-            let value = s.parse().map_err(|_| "Invalid value")?;
-            Ok(AtomicWeight::Abridged { value, uncertainty: 0. })
+            Ok(Self::Abridged { value: s.parse().map_err(|_| invalid)?, uncert: 0. })
         }
     }
 }
@@ -512,18 +511,19 @@ use core::fmt;
 impl fmt::Display for AtomicWeight {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            AtomicWeight::MassNumber(number) => write!(f, "[{}]", number),
-            AtomicWeight::Abridged { value, uncertainty } => {
-                if *uncertainty == 0. { return write!(f, "{value}") }
-                //return write!(f, "{value} ± {uncertainty}")?;
+            AtomicWeight::MassNumber(num) => if 0 < *num {
+                write!(f, "[{num}]") } else { write!(f, "[???]") },
+            AtomicWeight::Abridged { value, uncert } => {
+                if *uncert == 0. { return write!(f, "{value}") }
+                //return write!(f, "{value} ± {uncert}")?;
 
-                if *uncertainty < 1. {
-                    let mut prec = (-uncertainty.log10()).ceil() as i32;
-                    let mut digit =  uncertainty * 10f32.powi(prec);
+                if *uncert < 1. {
+                    let mut prec = (-uncert.log10()).ceil() as i32;
+                    let mut digit =  uncert * 10f32.powi(prec);
                     while f32::EPSILON * 10. < digit.fract() &&
                         digit.fract() < 1. - f32::EPSILON * 10. {  prec += 1; digit *= 10.; }
                     write!(f, "{value:.prec$}({})", digit.round(), prec = prec as usize)
-                } else { write!(f, "{value}({uncertainty})") }
+                } else { write!(f, "{value}({uncert})") }
             }
         }
     }
