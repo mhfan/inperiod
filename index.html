@@ -5,22 +5,16 @@
   <!--meta content="text/html; charset=utf-8" http-equiv="Content-Type" /-->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{app_title}</title> <base href="/{base_path}/"/>
+  <link rel="icon" href="assets/ptable.svg">
 </head>
 
 <body id="main"> <!--div id="main"></div-->
   <script>
 const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-if (isChrome) { document.body.style.zoom = '0.5'; } else {
-/* if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) */
-  /* const elem = document.documentElement; <html> */
-  const elem = document.body;
-  const scale = 0.5;
-  const width  = scale * elem.offsetWidth;
-  const height = scale * elem.offsetHeight;
-  elem.style.transform = `scale(${scale})`;
-  elem.style.transformOrigin = '0 0';
-  elem.style.width  = width  + 'px';
-  elem.style.height = height + 'px';
+if (isChrome) { document.body.style = "zoom: 0.5; width: fit-content"; } else {
+//if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+  document.body.style = //document.documentElement.style = // <html>
+    "transform: scale(0.5); transform-origin: 0px 0px; width: 0px; height: 0px;";
 
   const style = document.createElement('style');
   style.innerHTML = `

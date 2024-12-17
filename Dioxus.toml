@@ -16,7 +16,7 @@ default_platform = "web"    # value: web | desktop | mobile
 level = "4"     # The level wasm-opt should target. z is the smallest. 4 is the fastest.
 
 [web.app]
-#title = "Elements Periodic Table"   # HTML title tag content
+title = "Elements Periodic Table"   # HTML title tag content
 base_path = "inperiod" # "/"
 #index_on_404 = true
 

@@ -22,9 +22,13 @@ Thus, this project was born.
 
 <https://mhfan.github.io/inperiod>
 
-![Elements Periodic Table](https://github.com/user-attachments/assets/34632195-1344-4377-a02e-d654e88a0afb)
-![Show electron configuration diagram](https://github.com/user-attachments/assets/e6a46fba-04cf-4275-b1e0-db78aecf307d)
-![Show crystal structure](https://github.com/user-attachments/assets/32518da9-e1b5-4314-95bc-cffa43ec6fc4)
+![Elements Periodic Table](https://github.com/user-attachments/assets/e467d1da-d49c-40d9-aa81-69da7afbe9e1)
+![Chinese Periodic Table](https://github.com/user-attachments/assets/0e2c2102-7f85-4f81-b42f-9796ee8b1d0c)
+![Elements cosmic origin](https://github.com/user-attachments/assets/838189ca-977d-4c50-9634-d7ccb8e11c9f)
+![Elements flame test](https://github.com/user-attachments/assets/f4bd4a74-91e2-4848-b613-3a33de595d95)
+
+![Show electron configuration diagram](https://github.com/user-attachments/assets/931590e3-34e0-44d8-9209-7febac64306a)
+![Show crystal structure](https://github.com/user-attachments/assets/b9c0c651-5d3c-43be-af42-8cd374c5aa07)
 
 Additionally, this project also targets to provide a set of API in Rust for accessing
 all kinds of information and data about the elements.
@@ -54,7 +58,7 @@ dx serve --platform android #ios
 
 Open the browser to <http://localhost:8080/inperiod>
 
-Note: Recommended to print as PDF on Chrome browser.
+Note: Recommended to `Print to PDF` on Chrome, or `Export to PDF` on Safari.
 
 ## References
 

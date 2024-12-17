@@ -20,13 +20,14 @@ fn App() -> Element {
   @page { size: A4 landscape; margin: 0; }  /* 设置页面的方向为横向并清除默认页边距 */
   body { width: 297mm; margin: auto; }      /* 设置主体样式以适应横向打印 */
   .non-printable { display: none; }         /* 隐藏非打印元素 */
+  select { appearance: none; background: transparent; }
 }";
 
-    use dioxus::document::{Link, Title, Style/*, Script, Meta*/};
+    use dioxus::document::{Link, Style/*, Title, Script, Meta*/};
     rsx! {  //Router::<Route> {}
-        Title { "Elements Periodic Table" }
+        //Title { "Elements Periodic Table" } // ahead put in index.html and Dioxus.toml
         // XXX: asset!("...") does not work for desktop when web.app.base_path is set
-        Link { rel: "icon",       href: "assets/ptable.svg" }
+        //Link { rel: "icon",       href: "assets/ptable.svg" }
         Link { rel: "stylesheet", href: "assets/tailwind.css" }
         //Stylesheet { href: asset!("assets/tailwind.css") }
         //Script { src: "https://cdn.tailwindcss.com" }
@@ -70,7 +71,7 @@ fn PeriodicTable() -> Element {
         }
         p { class: "self-end text-center font-bold text-lg", "VIIIA - 18" }
         p { class: "font-bold leading-none relative -bottom-4 content-center ml-2",
-            style: wm_vert, {tr!(lang, "E-shell")} br{} {tr!(lang, "E-max")}
+            style: wm_vert, {tr!(lang, "E-max")} br{} {tr!(lang, "E-shell")}
         }
         div { class: "grid row-span-7 mx-1 gap-0.5 items-center text-lg font-bold", // divide-y
             for i in 1..=7 { p {
@@ -169,7 +170,7 @@ fn PeriodicTable() -> Element {
                 }
                 div { class: "self-end ml-6 text-lg/6", PhysConsts {} }
             }
-            p { class: "absolute right-0 mt-1", style: wm_vert,
+            p { class: "absolute right-0 mt-1 text-nowrap", style: wm_vert,
                 {tr!(lang, "metal - nonmetal divider")}
             }
         }
@@ -313,7 +314,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
 
     let metal_bound = match ordinal {
         1 => "shadow-black-b", 118 => "shadow-black-l", 4 => "shadow-[0_-2px_black]",
-        21|39|71 => "shadow-spread-2 shadow-amber-300", // rare earth metals indication
+        21|39|71 => "border-amber-300", // rare earth metals indication
         2 => "shadow-[0_2px_#fca5a5]", // indicate He is of s-block, shadow-red-300
         5|14|33|52|85 => "shadow-black-bl", _ => "",
     };
@@ -414,9 +415,10 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                 }
                 div { class: "text-right ml-1 relative",
                     div { class: "absolute w-full h-full group font-bold leading-tight",
-                        for os in os_main.iter().rev() { pre { { format!("{}{os}",
-                            match *os { x if 0 < x => "+", 0 => " ", _ => "" })
-                        } } }
+                        style: if 7 < os_main.len() { "line-height: 1;" } else { "" },
+                        for os in os_main.iter().rev() { pre {
+                        {format!("{}{os}", match *os { x if 0 < x => "+", 0 => " ", _ => "" })}
+                        } }
                         if os_main.len() < os_all.len() { div { class: "absolute hidden
                             left-full -top-2 ml-1.5 p-1 text-lg/5 font-normal rounded
                             border border-orange-600 bg-white group-hover:block z-10",
