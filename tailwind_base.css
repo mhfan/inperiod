@@ -17,6 +17,7 @@
 @tailwind variants;
 
 /* https://tailwindcss.com/docs/reusing-styles#extracting-classes-with-apply */
+.border-rare    { @apply border-amber-300; }
 .text-synthetic { @apply text-gray-500; }
 .text-liquid    { @apply text-blue-700; }
 .text-gas       { @apply text-red-700; }
