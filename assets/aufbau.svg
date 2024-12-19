@@ -2,6 +2,7 @@
 <svg width="500" height="300" xmlns="http://www.w3.org/2000/svg"
     font-size="small" font-family="sans">
 
+<text x="14" y="20" fill="blue" font-size="medium">n</text>
 <text transform="translate(16,16)">
     <tspan x="0" y= "32">1 K<tspan dy="-6" font-size="10">2 </tspan></tspan>
     <tspan x="0" y= "64">2 L<tspan dy="-6" font-size="10">8 </tspan></tspan>
@@ -11,7 +12,7 @@
     <tspan x="0" y="192">6 P<tspan dy="-6" font-size="10">18</tspan></tspan>
     <tspan x="0" y="224">7 Q<tspan dy="-6" font-size="10">8 </tspan></tspan>
 </text>
-<text transform="translate(22,274) rotate(-90)" fill="blue" letter-spacing="-1">n =</text>
+<!--text transform="translate(22,274) rotate(-90)" fill="blue" letter-spacing="-1">n =</text-->
 
 <path transform="translate(16,27)" stroke="gray" stroke-width="0.2"
     d="M0,32 h152 M0,64 h216 M0,96 h280 M0,128h280 M0,160h280 M0,192h216 M0,224h152"/>
@@ -28,8 +29,8 @@
 
 <text x="92" y="296" font-weight="bold">Aufbau Principle (Madelung rule)</text>
 <text x="180" y="52"  font-size="8" fill="blue">
-    <tspan>n: Principle quantum number</tspan>
-    <tspan x="180" dy="16">ℓ: Azimuthal quantum number</tspan>
+    <tspan><tspan font-size="14">n</tspan>: Principle quantum number</tspan>
+    <tspan x="180" dy="16"><tspan font-size="14">ℓ</tspan>: Azimuthal quantum number</tspan>
 </text>
 
 <defs>
