@@ -37,6 +37,25 @@ impl Localization {
 #[allow(non_snake_case)] let zh_CN = hashmap_init!(
     "Periodic Table of the Elements" => "化　学　元　素　周　期　表",
 
+    "Aufbau" => "构造",
+    "Binding" => "结合能",
+    "Abundances" => "丰度分布",
+    "Bubble" => "气泡图",
+    "Solar" => "太阳系",
+    "Earth" => "地球",
+    "Human" => "人体",
+
+    "The most abundant isotopes:" => "最丰富的同位素:",
+    "Relative abundance is proportional to the area." => "面积比例对应相对丰度",
+    "Isotopes with equal numbers of protons and neutrons are unusually abundant." =>
+        "有相同数量的质子和中子的元素通常是最丰富的",
+    "(large blue circle) comprises 74% of the ordinary matter of the universe." =>
+        "(大蓝色圆) 占据了宇宙中所有物质质量的 74%",
+    "Color corresponds to nucleosynthetic process:" => "不同颜色对应于核合成过程:",
+    "Yellow" => "黄色",
+    "Green"  => "绿色",
+    "Blue"   => "蓝色",
+
     "PERIOD" => "周 期",
     "GROUP"  => "族",
     "-block" => " 区",

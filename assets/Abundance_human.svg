@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+""" To recover the Python script to generate this SVG, delete the line above -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="-330 -535 960 960">
+ <title>element abundance human body ppm chart</title>
+ <desc>Parts-per-million cube showing relative abundance of elements by mass in an average adult human body by CMG Lee.</desc>
+ <style type="text/css">
+svg  { font-family:'Liberation Sans',Helvetica,Arial,sans-serif; font-size:30px; fill:#000; stroke:#000; stroke-linecap:round; stroke-linejoin:round; }
+text { stroke:none; }
+.grid { stroke-opacity:0.25; stroke:#000; stroke-width:0.1; stroke-linejoin:bevel; }
+.box  { stroke:none; }
+.lead { fill:none; stroke-opacity:0.3; stroke-width:2; }
+.top   { }
+.right { filter:url(#filter_right); }
+.left  { filter:url(#filter_left ); }
+ </style>
+ <defs>
+  <filter id="filter_blur" x="-100%" y="-100%" width="300%" height="300%">
+   <feGaussianBlur stdDeviation="3"/>
+  </filter>
+  <filter id="filter_right">
+   <feColorMatrix type="matrix" values="0.8,0,0,0,0 0,0.8,0,0,0 0,0,0.8,0,0 0,0,0,1,0"/>
+  </filter>
+  <filter id="filter_left">
+   <feColorMatrix type="matrix" values="0.6,0,0,0,0 0,0.6,0,0,0 0,0,0.6,0,0 0,0,0,1,0"/>
+  </filter>
+  <pattern id="pattern_grid5" patternUnits="userSpaceOnUse" width="5" height="5">
+   <rect class="grid" x="0" y="0" width="5" height="5" fill="none"/>
+   <path class="grid" d="M 1,0 V 5 M 2,0 V 5 M 3,0 V 5 M 4,0 V 5
+                         M 0,1 H 5 M 0,2 H 5 M 0,3 H 5 M 0,4 H 5" opacity="0.5"/>
+  </pattern>
+  <pattern id="pattern_grid10" patternUnits="userSpaceOnUse" width="10" height="10">
+   <rect class="grid" x="0" y="0" width="10" height="10" fill="url(#pattern_grid5)"/>
+  </pattern>
+  <pattern id="pattern_grid50" patternUnits="userSpaceOnUse" width="50" height="50">
+   <rect class="grid" x="0" y="0" width="50" height="50" fill="url(#pattern_grid10)"/>
+  </pattern>
+  <rect id="face" x="0" y="0" width="100" height="100"/>
+  <circle id="swatch" cx="0" cy="0" r="5"/>
+  <path id="figure" d="M 0,50 l 2,50 h 8 c 0,-5 -4,17 0,-75 v 30 c 2,5 11,-37 0,-38 q -9,-1 -6,-6 a 5,7 0 1 0 -8,0 q 3,5 -6,6 c -11,1 -2,43 0,38 v -30 c 4,92 0,70 0,75 h 8 z"/>
+  <g id="bg_figure" stroke="none">
+<!-- BEGIN_DYNAMIC_DEFS -->
+   <path d="M 99,100.0 H -99 V 0 H 99" fill="#fff"/>
+   <path d="M 99,35.0 H -99 V 0 H 99" fill="#999"/>
+   <path d="M 99,17.0 H -99 V 0 H 99" fill="#f33"/>
+   <path d="M 99,6.317 H -99 V 0 H 99" fill="#9cf"/>
+   <path d="M 99,3.317 H -99 V 0 H 99" fill="#f96"/>
+   <path d="M 99,1.917 H -99 V 0 H 99" fill="#9ff"/>
+   <path d="M 99,0.817 H -99 V 0 H 99" fill="#ff6"/>
+   <path d="M 99,0.567 H -99 V 0 H 99" fill="#f99"/>
+   <path d="M 99,0.367 H -99 V 0 H 99" fill="#fc0"/>
+   <path d="M 99,0.217 H -99 V 0 H 99" fill="#6f0"/>
+   <path d="M 99,0.067 H -99 V 0 H 99" fill="#eee"/>
+   <path d="M 99,0.017 H -99 V 0 H 99" fill="#c90"/>
+   <path d="M 99,0.011 H -99 V 0 H 99" fill="#ff0"/>
+   <path d="M 99,0.0073 H -99 V 0 H 99" fill="#099"/>
+   <path d="M 99,0.0041 H -99 V 0 H 99" fill="#ccc"/>
+   <path d="M 99,0.0021 H -99 V 0 H 99" fill="#09f"/>
+   <path d="M 99,0.0016 H -99 V 0 H 99" fill="#c09"/>
+   <path d="M 99,0.0011 H -99 V 0 H 99" fill="#f00"/>
+   <path d="M 99,0.0006 H -99 V 0 H 99" fill="#f90"/>
+   <path d="M 99,0.0003 H -99 V 0 H 99" fill="#ccf"/>
+   <path d="M 99,0.0001 H -99 V 0 H 99" fill="#0c9"/>
+<!--   END_DYNAMIC_DEFS -->
+  </g>
+  <clipPath id="clip_figure">
+   <use xlink:href="#figure"/>
+  </clipPath>
+ </defs>
+ <circle cx="0" cy="0" r="99999" fill="#fff"/>
+ <use xlink:href="#face" transform="matrix( 4,-2 -3,-3 0,400)" fill="#ccc" filter="url(#filter_blur)"/>
+ <g>
+<!-- BEGIN_DYNAMIC_MAIN -->
+
+  <g class="box" fill="#fff" transform="translate(0,140)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="100"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="65"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="100" height="65"/>
+  </g>
+
+  <g class="box" fill="#999" transform="translate(0,68)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="100"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="18"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="100" height="18"/>
+  </g>
+
+  <g class="box" fill="#f33" transform="translate(0,28)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="100"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="10"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="100" height="10"/>
+  </g>
+  <g class="box" fill="#f33" transform="translate(-96,-72)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="68"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="68" height="1"/>
+  </g>
+  <g class="box" fill="#f33" transform="translate(187,-209)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#9cf" transform="translate(-93,-69)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#9cf" transform="translate(0,24)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="31"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="31" height="1"/>
+  </g>
+  <g class="box" fill="#9cf" transform="translate(0,16)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="100"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="2"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="100" height="2"/>
+  </g>
+  <g class="box" fill="#9cf" transform="translate(-96,-84)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="68"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="68" height="1"/>
+  </g>
+  <g class="box" fill="#9cf" transform="translate(187,-221)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#f96" transform="translate(-93,-81)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#f96" transform="translate(0,12)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="31"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="31" height="1"/>
+  </g>
+  <g class="box" fill="#f96" transform="translate(0,8)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="100"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+  </g>
+  <g class="box" fill="#f96" transform="translate(-276,-272)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="8"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="8" height="1"/>
+  </g>
+  <g class="box" fill="#f96" transform="translate(7,-409)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#9ff" transform="translate(-273,-269)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#9ff" transform="translate(0,4)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="91"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="91" height="1"/>
+  </g>
+  <g class="box" fill="#9ff" transform="translate(-246,-246)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="18"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="18" height="1"/>
+  </g>
+  <g class="box" fill="#9ff" transform="translate(37,-383)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#ff6" transform="translate(-243,-243)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#ff6" transform="translate(-171,-171)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="24"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="24" height="1"/>
+  </g>
+  <g class="box" fill="#ff6" transform="translate(112,-308)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#f99" transform="translate(-168,-168)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#f99" transform="translate(-111,-111)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="19"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="19" height="1"/>
+  </g>
+  <g class="box" fill="#f99" transform="translate(172,-248)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#fc0" transform="translate(-108,-108)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#fc0" transform="translate(-66,-66)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="14"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="14" height="1"/>
+  </g>
+  <g class="box" fill="#fc0" transform="translate(217,-203)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#6f0" transform="translate(-63,-63)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#6f0" transform="translate(-21,-21)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="14"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="14" height="1"/>
+  </g>
+  <g class="box" fill="#6f0" transform="translate(262,-158)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#eee" transform="translate(-18,-18)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="70" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#eee" transform="translate(-6,-6)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="100" height="4"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="100" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="4" height="1"/>
+  </g>
+  <g class="box" fill="#eee" transform="translate(277,-143)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="30" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#c90" transform="translate(37,-23)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="60" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="60" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#ff0" transform="translate(-3,-3)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="10" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="10" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <g class="box" fill="#ff0" transform="translate(292,-146)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="27" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="27" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#099" transform="translate(164,-82)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="32" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="32" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#ccc" transform="translate(84,-42)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="20" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="20" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#09f" transform="translate(64,-32)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#c09" transform="translate(44,-22)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#f00" transform="translate(24,-12)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="5" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#f90" transform="translate(12,-6)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="3" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="3" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#ccf" transform="translate(4,-2)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="2" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="2" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+
+  <g class="box" fill="#0c9" transform="translate(0,0)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="1" height="1"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="1" height="1"/>
+  </g>
+  <path class="lead" d="M -210,70 V -510 H 420"/>
+  <g transform="translate(420,-510)">
+   <use xlink:href="#swatch" fill="#fff"/>
+   <text x="10"   y="0.6ex">O</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">65&#8201;%</text>
+  </g>
+  <path class="lead" d="M -180,-76 V -480 H 420"/>
+  <g transform="translate(420,-480)">
+   <use xlink:href="#swatch" fill="#999"/>
+   <text x="10"   y="0.6ex">C</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">18&#8201;%</text>
+  </g>
+  <path class="lead" d="M -150,-102 V -450 H 420"/>
+  <g transform="translate(420,-450)">
+   <use xlink:href="#swatch" fill="#f33"/>
+   <text x="10"   y="0.6ex">H</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">10&#8201;%</text>
+  </g>
+  <path class="lead" d="M -120,-104 V -420 H 420"/>
+  <g transform="translate(420,-420)">
+   <use xlink:href="#swatch" fill="#9cf"/>
+   <text x="10"   y="0.6ex">N</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">3.0&#8201;%</text>
+  </g>
+  <path class="lead" d="M -90,-78 V -390 H 420"/>
+  <g transform="translate(420,-390)">
+   <use xlink:href="#swatch" fill="#f96"/>
+   <text x="10"   y="0.6ex">Ca</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">1.4&#8201;%</text>
+  </g>
+  <path class="lead" d="M -58,-358 V -360 H 420"/>
+  <g transform="translate(420,-360)">
+   <use xlink:href="#swatch" fill="#9ff"/>
+   <text x="10"   y="0.6ex">P</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">1.1&#8201;%</text>
+  </g>
+  <path class="lead" d="M -28,-328 V -330 H 420"/>
+  <g transform="translate(420,-330)">
+   <use xlink:href="#swatch" fill="#ff6"/>
+   <text x="10"   y="0.6ex">S</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">0.25&#8201;%</text>
+  </g>
+  <path class="lead" d="M 0,-207 V -300 H 420"/>
+  <g transform="translate(420,-300)">
+   <use xlink:href="#swatch" fill="#f99"/>
+   <text x="10"   y="0.6ex">K</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">0.20&#8201;%</text>
+  </g>
+  <path class="lead" d="M 30,-150 V -270 H 420"/>
+  <g transform="translate(420,-270)">
+   <use xlink:href="#swatch" fill="#fc0"/>
+   <text x="10"   y="0.6ex">Na</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">0.15&#8201;%</text>
+  </g>
+  <path class="lead" d="M 61,-98 V -240 H 420"/>
+  <g transform="translate(420,-240)">
+   <use xlink:href="#swatch" fill="#6f0"/>
+   <text x="10"   y="0.6ex">Cl</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">0.15&#8201;%</text>
+  </g>
+  <path class="lead" d="M 91,-68 V -210 H 420"/>
+  <g transform="translate(420,-210)">
+   <use xlink:href="#swatch" fill="#eee"/>
+   <text x="10"   y="0.6ex">Mg</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">500&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 120,-69 V -180 H 420"/>
+  <g transform="translate(420,-180)">
+   <use xlink:href="#swatch" fill="#c90"/>
+   <text x="10"   y="0.6ex">Fe</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">60&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 340,-170 V -150 H 420"/>
+  <g transform="translate(420,-150)">
+   <use xlink:href="#swatch" fill="#ff0"/>
+   <text x="10"   y="0.6ex">F</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">37&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 240,-120 V -120 H 420"/>
+  <g transform="translate(420,-120)">
+   <use xlink:href="#swatch" fill="#099"/>
+   <text x="10"   y="0.6ex">Zn</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">32&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 150,-75 V -90 H 420"/>
+  <g transform="translate(420,-90)">
+   <use xlink:href="#swatch" fill="#ccc"/>
+   <text x="10"   y="0.6ex">Si</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">20&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 74,-37 V -60 H 420"/>
+  <g transform="translate(420,-60)">
+   <use xlink:href="#swatch" fill="#09f"/>
+   <text x="10"   y="0.6ex">Ga</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">4.9&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 54,-27 V -30 H 420"/>
+  <g transform="translate(420,-30)">
+   <use xlink:href="#swatch" fill="#c09"/>
+   <text x="10"   y="0.6ex">Rb</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">4.6&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 34,-17 V 0 H 420"/>
+  <g transform="translate(420,0)">
+   <use xlink:href="#swatch" fill="#f00"/>
+   <text x="10"   y="0.6ex">Sr</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">4.6&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 18,-9 V 30 H 420"/>
+  <g transform="translate(420,30)">
+   <use xlink:href="#swatch" fill="#f90"/>
+   <text x="10"   y="0.6ex">Br</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">2.9&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 8,-4 V 60 H 420"/>
+  <g transform="translate(420,60)">
+   <use xlink:href="#swatch" fill="#ccf"/>
+   <text x="10"   y="0.6ex">Pb</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">1.7&#8201;ppm</text>
+  </g>
+  <path class="lead" d="M 2,-1 V 90 H 420"/>
+  <g transform="translate(420,90)">
+   <use xlink:href="#swatch" fill="#0c9"/>
+   <text x="10"   y="0.6ex">Cu</text>
+   <text x="12ex" y="0.6ex" text-anchor="end">1.0&#8201;ppm</text>
+  </g>
+<!--   END_DYNAMIC_MAIN -->
+ </g>
+ <g fill="url(#pattern_grid50)" stroke="none">
+  <use xlink:href="#face" transform="matrix( 4,-2 -3,-3 0,0)"/>
+  <use xlink:href="#face" transform="matrix( 4,-2  0, 4 0,0)"/>
+  <use xlink:href="#face" transform="matrix(-3,-3  0, 4 0,0)"/>
+ </g>
+ <g transform="translate(510,110) scale(2.9)">
+  <ellipse cx="0" cy="99" rx="15" ry="3" fill="#ccc" stroke="none" filter="url(#filter_blur)"/>
+  <use xlink:href="#figure" stroke="#999"/>
+  <use xlink:href="#bg_figure" clip-path="url(#clip_figure)"/>
+ </g>
+</svg>
+<!-- Please retain this and other comments, which contain Python code to generate this SVG. """
+import re, math, numbers
+# class dict2class(dict):
+#  def __getattr__(self, k): return dict2class(self[k]) if isinstance(self[k], dict) else self[k]
+def fmt(string): ## string.format(**vars()) using tags {expression!format} by CMG Lee
+ def f(tag): i_sep = tag.rfind('!'); return (re.sub('\.0$', '', str(eval(tag[1:-1])))
+  if (i_sep < 0) else ('{:%s}' % tag[i_sep + 1:-1]).format(eval(tag[1:i_sep])))
+ return (re.sub(r'(?<!{){[^{}]+}', lambda m:f(m.group()), string)
+         .replace('{{', '{').replace('}}', '}'))
+def append(obj, string): return obj.append(fmt(string))
+def try_int_float(field):
+ try:               return int(field)
+ except Exception:
+  try:              return float(field)
+  except Exception: return field
+def parse_data(data_string, delimiter=None): return [[try_int_float(data.strip())
+  for data in data_l.strip().split(delimiter)] for data_l in data_string.strip().split('\n')]
+def tabbify(cellss, delimiter='|'):
+ cellpadss = [list(rows) + [''] * (len(max(cellss, key=len)) - len(rows)) for rows in cellss]
+ fmts = ['%%%ds' % (max([len(str(cell)) for cell in cols])) for cols in zip(*cellpadss)]
+ return '\n'.join([delimiter.join([('%' if isinstance(rows[i], numbers.Number) else
+  '%-') + fmt[1:] for (i,fmt) in enumerate(fmts)]) % tuple(rows) for rows in cellpadss])
+def roundm(x, multiple=1):
+ if   (isinstance(x, tuple)): return tuple(roundm(list(x), multiple))
+ elif (isinstance(x, list )): return [roundm(x_i, multiple) for x_i in x]
+ else: return int(math.floor(float(x) / multiple + 0.5)) * multiple
+def roundsf(x, sf=3):
+ if   (isinstance(x, tuple)): return tuple(roundm(list(x), multiple))
+ elif (isinstance(x, list )): return [roundm(x_i, multiple) for x_i in x]
+ else:
+  str_round = str(round(x, sf - 1 - int(math.floor(math.log10(abs(x))))))
+  n_pad     = sf - len(re.sub(r'\D', r'', str_round).lstrip('0'))
+  if   n_pad < 0 and '.' in str_round: return str_round[:-2]
+  elif n_pad > 0: return str_round + ('' if '.' in str_round else '.') + '0' * n_pad
+  else:           return str_round
+
+def to_base_100(num):
+ digit_l = []
+ while num > 0:
+  digit_l.append(num % 100)
+  num //= 100
+ return digit_l
+def pad_to_base_100(num): return (to_base_100(num) + [0, 0, 0])[:3]
+def to_xy(x, y, z): return [4 * x - 3 * y, 4 * z - 2 * x - 3 * y]
+def make_box(x, y, z, dx, dy, dz, fill=None): ## origin = centre, z = down
+ xy_l = to_xy(x, y, z)
+ return '''
+  <g class="box"%s transform="translate(%d,%d)">
+   <rect class="top"   transform="matrix( 4,-2 -3,-3 0,0)" x="0" y="0" width="%d" height="%d"/>
+   <rect class="right" transform="matrix( 4,-2  0, 4 0,0)" x="0" y="0" width="%d" height="%d"/>
+   <rect class="left"  transform="matrix(-3,-3  0, 4 0,0)" x="0" y="0" width="%d" height="%d"/>
+  </g>''' % ('' if fill is None else ' fill="%s"' % (fill), xy_l[0],xy_l[1], dx,dy, dx,dz, dy,dz)
+def make_boxes(index_begin, index_end, fill=None):
+ if index_begin >= index_end: return ''
+ index_begin_l = pad_to_base_100(index_begin)
+ index_end_l   = pad_to_base_100(index_end) if index_end < 1000000 else [0, 0, 100]
+ # print(index_begin, index_begin_l, index_end, index_end_l)
+ is_same_z = index_begin_l[2] == index_end_l[2] ## same z (myriads)
+ if is_same_z and index_begin_l[1] == index_end_l[1]: ## same y (hundreds)
+  return make_box(index_begin_l[0], index_begin_l[1], index_begin_l[2],
+                    index_end_l[0] - index_begin_l[0], 1, 1, fill)
+ (dx, dy, dz) = (100, 1, 1)
+ if index_begin_l[0] == 0: ## x == 0 (start of row)
+  dy = (index_end_l[1] if is_same_z else 100) - index_begin_l[1]
+  if not is_same_z and index_begin_l[1] == 0: ## x, y == 0 (start of plane)
+   dz = index_end_l[2] - index_begin_l[2]
+ else: ## x != 0 (not start of row)
+  dx = 100 - index_begin_l[0]
+ d_index = 10000 * (dz - 1) + 100 * (dy - 1) + dx
+ # print(dx, dy, dz, d_index, index_begin + d_index)
+ return (make_boxes(index_begin + d_index, index_end, fill) +
+         make_box(index_begin_l[0], index_begin_l[1], index_begin_l[2], dx, dy, dz, fill))
+
+(out_defs, out_mains) = ([], [])
+
+data_ll = parse_data('''
+Oxygen    |-650000|O |#fff|707000|420,-510
+Carbon    |-180000|C |#999|266000|420,-480
+Hydrogen  | 100000|H |#f33|125000|420,-450
+Nitrogen  | 30000 |N |#9cf| 44000|420,-420
+Calcium   | 14000 |Ca|#f96| 33000|420,-390
+Phosphorus| 11000 |P |#9ff|8650.0|420,-360
+Sulfur    | 2500  |S |#ff6|7650.0|420,-330
+Potassium | 2000  |K |#f99|4634.5|420,-300
+Sodium    | 1500  |Na|#fc0|3030.0|420,-270
+Chlorine  | 1500  |Cl|#6f0|1526.5|420,-240
+Magnesium | 500   |Mg|#eee| 526.5|420,-210
+Iron      | 60    |Fe|#c90| 231.5|420,-180
+Fluorine  | 37    |F |#ff0|  85.0|420,-150
+Zinc      | 32    |Zn|#099|  60.0|420,-120
+Silicon   | 20    |Si|#ccc|  37.5|420, -90
+Gallium   | 4.9   |Ga|#09f|  18.5|420, -60
+Rubidium  | 4.6   |Rb|#c09|  13.5|420, -30
+Strontium | 4.6   |Sr|#f00|   8.5|420,   0
+Bromine   | 2.9   |Br|#f90|   4.5|420,  30
+Lead      | 1.7   |Pb|#ccf|   2.0|420,  60
+Copper    | 1     |Cu|#0c9|   0.5|420,  90
+''', '|')
+ppm_dx_ex   = 12
+i_col_index = len(data_ll[0])
+i_col_ppm   = i_col_index + 1
+## Find indexes by iterating forwards then backwards
+for is_forwards in [True, False]: ## forwards, backwards
+ running_total = 1000000 if is_forwards else 0
+ for data_l in   data_ll if is_forwards else data_ll[::-1]:
+  ppm = roundm(data_l[1])
+  if is_forwards and ppm < 0:
+   running_total += ppm
+   data_l.append(running_total)
+   data_l.append(-ppm)
+  elif not is_forwards and ppm >= 0:
+   data_l.append(running_total)
+   data_l.append(ppm)
+   running_total += ppm
+print(tabbify(data_ll))
+## Draw blocks and figure background
+for (i_data, data_l) in enumerate(data_ll):
+ ppm_previous = data_ll[i_data - 1][i_col_index] if i_data > 0 else 1000000
+ out_mains.append(make_boxes(data_l[i_col_index], ppm_previous, data_l[3]))
+ out_defs.append('''\
+   <path d="M 99,%s H -99 V 0 H 99" fill="%s"/>''' % (ppm_previous / 1e4, data_l[3]))
+## Draw labels
+for (i_data, data_l) in enumerate(data_ll):
+ (x1, y1) = to_xy(*pad_to_base_100(data_l[4]))
+ (x2, y2) = [float(xy) for xy in data_l[5].split(',')]
+ ppm      = abs(data_l[1])
+ out_mains.append('''\
+  <path class="lead" d="M %d,%d V %d H %d"/>
+  <g transform="translate(%d,%d)">
+   <use xlink:href="#swatch" fill="%s"/>
+   <text x="10"   y="0.6ex">%s</text>
+   <text x="%sex" y="0.6ex" text-anchor="end">%s</text>
+  </g>''' % (x1,y1, y2,x2, x2,y2, data_l[3], data_l[2], ppm_dx_ex,
+             '%s&#8201;ppm' % (roundsf(ppm      , 2)) if ppm < 1000 else
+             '%s&#8201;%%'  % (roundsf(ppm / 1e4, 2))))
+# out_mains.append(make_boxes(1234, 1233, '#6cf'))
+# out_mains.append(make_box(0,40,20,50,30,80,'#6cf'))
+out_p = fmt('width="100%" height="100%" viewBox="-330 -535 960 960"')
+
+## Compile everything into an .svg file
+myself   = open(__file__, 'r').read() ## the contents of this very file
+path_out = __file__[:__file__.rfind('.')] + '.svg' ## *.* -> *.svg
+with open(path_out, 'w') as file_out:
+ file_out.write('''<?xml version="1.0" encoding="utf-8"?><!%s%s
+%s%s%s\n%s%s\n%s%s''' % ('-', '-', ## because SVG comments cannot have 2 consecutive '-'s
+  myself[:myself.find('width',myself.find('<svg'))], ## assume width specified before height/viewBox
+  out_p, ## replace SVG width/height/viewBox with {out_p} & dynamic SVG blocks with {out*s} contents
+  myself[myself.find ('>',myself.find('<svg')):
+         myself.find ('\n',myself.find('BEGIN_'+'DYNAMIC_DEFS'))], '\n'.join(out_defs),
+  myself[myself.rfind('\n',0,myself.find('END_'+'DYNAMIC_DEFS')):
+         myself.find ('\n',myself.find('BEGIN_'+'DYNAMIC_MAIN'))], '\n'.join(out_mains),
+  myself[myself.rfind('\n',0,myself.find('END_'+'DYNAMIC_MAIN')):]))
+ print('Output %s' % (path_out))
+
+## SVG-Python near-polyglot framework version 3.1 by CMG Lee (December 2023) -->
