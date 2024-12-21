@@ -42,15 +42,23 @@ fn PeriodicTable() -> Element {
     use_context_provider(|| Signal::new(Localization::new()));
     let mut coloring = use_context::<Signal<Coloring>>();
     let mut lang = use_context::<Signal<Localization>>();
+    let mut diag = use_signal(|| 0u8);
 
     //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
     //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
     let bg_lan = COLORING_CLASSES[ElemClass::Lanthanoids as usize].0;
     let bg_act = COLORING_CLASSES[ElemClass::Actinoids   as usize].0;
-    let style_grp = "self-end text-center font-bold text-lg";
+    let style_blk = "self-start text-center text-lg/6 rounded-sm";
+    let style_grp = "self-end   text-center text-lg font-bold";
+    let style_las = "flex flex-col text-2xl rounded-sm p-1
+        shadow-border-1 shadow-indigo-300";
+    let style_sel = "absolute top-2 text-2xl text-center
+        non-printable focus:outline-none text-red-600";
     let wm_vert = "writing-mode: vertical-lr;";
+    let text_ol = "text-shadow: -1px -1px 0 black,
+        1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;";
 
-    rsx! { div { class: "relative grid grid-cols-[auto_repeat(18,1fr)_auto]
+    rsx! { div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto]
         grid-rows-[auto_repeat(7,1fr)_auto_1fr_1fr_auto] w-[181rem] p-6 gap-0.5",
         // box: [1448, 998] * 2 // scale-50 origin-top-left h-[128rem]
         //style: "transform: scale(0.5); transform-origin: 0 0;", // use js script in index.html
@@ -61,20 +69,30 @@ fn PeriodicTable() -> Element {
         }
         p { class: style_grp, {tr!(lang, "GROUP")} br{} "IA - 1" }
         p { class: "relative col-[span_16_/_span_16] text-center",
+            select { class: "{style_sel} left-0",  name: "lang-sel", //id: "lang-sel",
+                onchange: move |evt| lang.write().set(evt.value()),
+                option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
+            }
             a { class: "font-bold text-5xl", href: "https://github.com/mhfan/inperiod",
                 {tr!(lang, "Periodic Table of the Elements")}
             }
-            select { class: "absolute top-2 left-0 text-2xl text-center
-                non-printable focus:outline-none text-red-600", name: "lang-sel",
-                onchange: move |evt| lang.write().set(evt.value()), //id: "lang-sel",
-                option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
+            select { class: "{style_sel} right-0", name: "diag-sel", //id: "diag-sel",
+                onchange: move |evt| diag.set(evt.value().parse::<u8>().unwrap()),
+                option { value: "0", {tr!(lang,  "Aufbau")} }
+                option { value: "1", {tr!(lang, "Binding")} }
+                optgroup { label: tr!(lang, "Abundances"),
+                    option { value: "2", {tr!(lang, "Bubble")} }
+                    option { value: "3", {tr!(lang,  "Solar")} }
+                    option { value: "4", {tr!(lang,  "Earth")} }
+                    option { value: "4", {tr!(lang,  "Human")} }
+                }
             }
         }
         p { class: style_grp, "VIIIA - 18" }
         p { class: "relative -bottom-4 font-bold leading-none ml-2",
             style: wm_vert, {tr!(lang, "E-max")} br{} {tr!(lang, "E-shell")}
         }
-        div { class: "grid row-span-7 gap-0.5 px-1 items-center text-xl font-bold", // divide-y
+        div { class: "grid row-span-7 px-1 items-center text-xl font-bold", // divide-y
             /* onmouseout:  move |_| group_sel.write().r#type = SelType::None,
             onmouseover: move |evt| {
                 use {dioxus::web::WebEventExt, wasm_bindgen::JsCast};
@@ -85,58 +103,88 @@ fn PeriodicTable() -> Element {
             }, */  for i in 1..=7 { p { "{i}" } } // class: "content-center",
         }
 
-        ElemTile { ordinal: 1 } p { class: style_grp, "IIA - 2" } div { class: "empty" }
-        ElemTile { ordinal: 43, annote: Some(true) } div { class: "empty col-span-2" }
-        div { class: "relative col-span-6",
-            //img { class: "absolute h-[150%]", src: "assets/aufbau.svg" }
-            div { class: "absolute h-[150%]", AufbauPrincipal {} }
-        }   // https://www.nagwa.com/en/explainers/809139094679/
-        for i in 13..=17 { p { class: style_grp, {format!("{}A - {i}", ROMAN_NUM[i - 10])} } }
-        ElemTile { ordinal: 2 }
+        ElemTile { ordinal: 1 } p { class: style_grp, "IIA - 2" }
+        div { class: "empty col-span-2" }   // XXX: can be moved on cell left on needed
+        ElemTile { ordinal: 43, annot: Some(true) } div { class: "empty col-span-2" }
+        div { class: "relative col-span-5",
+            div { class: "absolute h-[150%] w-full flex", {match *diag.read() {
+                // https://www.nagwa.com/en/explainers/809139094679/
+                //0 => rsx! { img { src: "assets/Aufbau.svg" } },
+                0 => rsx! { AufbauPrincipal {} },
 
-        div { class: "grid grid-rows-[repeat(7,1fr)] row-span-7 gap-0.5
-            font-mono text-nowrap text-right tracking-tighter divide-y",
-            div { class: "content-center pl-1", p {  "2 K" } }
-            div { class: "content-center pl-1", p {  "8 L" } p {  "2 K" } }
-            div { class: "content-center pl-1", p {  "8 M" } p {  "8 L" } p {  "2 K" } }
-            div { class: "content-center pl-1",
-                    p {  "8 N" } p { "18 M" }   p {  "8 L" } p {  "2 K" }
-            }
-            div { class: "content-center pl-1", p {  "8 O" } p { "18 N" }
-                    p { "18 M" } p {  "8 L" }   p {  "2 K" }
-            }
-            div { class: "content-center pl-1", p {  "8 P" } p { "18 O" }
-                    p { "32 N" } p { "18 M" }   p {  "8 L" } p {  "2 K" }
-            }
-            div { class: "content-center pl-1", p {  "8 Q" } p { "18 P" }
-                    p { "32 O" } p { "32 N" }   p { "18 M" } p {  "8 L" } p {  "2 K" }
+            // https://commons.wikimedia.org/wiki/File:Binding_energy_curve_-_common_isotopes.svg
+                1 => rsx! { img { class: "h-full", src: "assets/Binding_energy_isotopes.svg" } },
+
+                // https://commons.wikimedia.org/wiki/File:Isotopic_Abundance_bubble_chart.png
+                2 => rsx! { img { class: "h-[130%] relative -top-[15%] -left-[10%]",
+                    src: "assets/Isotopic_Abundance_bubble.png",
+                }
+            div { class: "mt-6", b { {tr!(lang, "The most abundant isotopes:")} }
+                ul { class: "list-disc",
+                    li { {tr!(lang, "Relative abundance is proportional to the area.")} }
+                    li { {tr!(lang, "Isotopes with equal numbers of protons and neutrons are unusually abundant.")} }
+                    li { b { "¹H " } {tr!(lang, "(large blue circle) comprises 74% of the ordinary matter of the universe.")} }
+                    li { {tr!(lang, "Color corresponds to nucleosynthetic process:")}
+                        div { class: "grid grid-cols-[max-content_auto] gap-1",
+                            b { class: "text-yellow-300", style: text_ol, {tr!(lang, "Yellow")} }
+                            span { "- " {tr!(lang, "Exploding massive stars")} }
+                            b { class: "text-green-500",  style: text_ol, {tr!(lang, "Green")} }
+                            span { "- " {tr!(lang, "Dying low-mass stars")} }
+                            b { class: "text-blue-400",   style: text_ol, {tr!(lang, "Blue")}  }
+                            span { "- " {tr!(lang, "Big Bang fusion")} }
+                        }
+                    }
+            } }
+                },
+                // https://commons.wikimedia.org/wiki/File:SolarSystemAbundances.svg
+                3 => rsx! { img { class: "h-[115%] relative -top-[6%] -left-[10%]",
+                    src: "assets/SolarSystemAbundances.png"
+                } },
+                // https://commons.wikimedia.org/wiki/File:Element_abundance_earth_ppm_chart.svg
+                4 => rsx! { img { class: "h-full", src: "assets/Abundance_earth.svg" }
+            // https://commons.wikimedia.org/wiki/File:Element_abundance_human_body_ppm_chart.svg
+                    img { class: "h-full ml-16",   src: "assets/Abundance_human.svg" }
+                },
+                _ => unreachable!(),
+            } } }
+        }
+        div { class: "flex col-span-5",     // XXX: more information can be put here
+            div { class: "w-full grid grid-cols-5 {style_grp}",
+                for i in 13..=17 { p { {format!("{}A - {i}", ROMAN_NUM[i - 10])} } }
             }
         }
 
-        ElemTile { ordinal: 3 } ElemTile { ordinal: 4 } div { class: "empty col-span-10" }
-        for i in 5..=12 {       ElemTile { ordinal: i } }
+        ElemTile { ordinal: 2 }
+        div { class: "row-span-7 grid grid-rows-[repeat(7,1fr)] ml-1
+                font-mono text-nowrap text-right tracking-tighter divide-y",
+            p { class: "content-center", "2 K" }
+            p { class: "content-center", "8 L" br{}  "2 K" }
+            p { class: "content-center", "8 M" br{}  "8 L" br{}  "2 K" }
+            p { class: "content-center", "8 N" br{} "18 M" br{}  "8 L" br{}  "2 K" }
+            p { class: "content-center", "8 O" br{} "18 N" br{} "18 M" br{}
+                 "8 L" br{}  "2 K"
+            }
+            p { class: "content-center", "8 P" br{} "18 O" br{} "32 N" br{}
+                "18 M" br{}  "8 L" br{}  "2 K"
+            }
+            p { class: "content-center", "8 Q" br{} "18 P" br{} "32 O" br{}
+                "32 N" br{} "18 M" br{}  "8 L" br{}  "2 K"
+            }
+        }
 
-        for i in 3..=7  { p { class: style_grp, {format!("{}B - {i}", ROMAN_NUM[i])} } }
-        /* for i in 8..=10 { p {
-            class: "{style_grp} shadow-[0_2px] shadow-indigo-300", "VIIIB - {i}" }
-        } } */     // border-b-2
-        p { class: "{style_grp} col-span-3 shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10" }
-        p { class: style_grp,  "IB - 11" } p { class: style_grp, "IIB - 12" }
-
-        div { class: "absolute flex w-full h-full pb-10", style: "grid-area: 3 / 4 / 5 / 14;",
-            div { class: "flex self-end mx-auto",
-                div { class: "text-lg/6",
-                    div { class: "flex flex-col font-bold mb-4",
-                        p { class: "self-start mb-1 px-1 border-b border-black",
-                            {tr!(lang, "Phase at STP")}
-                        }
-                        p { span { class: "text-liquid", {tr!(lang, "Liquid")} }
-                            span { class: "mx-4 text-gas", {tr!(lang, "Gas")} }
-                            span { {tr!(lang, "Solid")} }
-                            span { class: "ml-4 text-synthetic", {tr!(lang, "Synthetic")} }
-                        }
+        ElemTile { ordinal: 3 } ElemTile { ordinal: 4 }
+        div { class: "relative flex flex-col col-span-10 row-span-2",
+            div { class: "flex mx-auto mt-auto mb-2 text-lg/6",
+                div { class: "flex flex-col",
+                    b { class: "self-start mb-1 px-1 border-b border-black",
+                        {tr!(lang, "Phase at STP")}
                     }
-                    select { class: "text-xl font-bold mx-1 focus:outline-none",
+                    b { span { class: "text-liquid", {tr!(lang, "Liquid")} }
+                        span { class: "mx-4 text-gas", {tr!(lang, "Gas")} }
+                        span { {tr!(lang, "Solid")} }
+                        span { class: "ml-4 text-synthetic", {tr!(lang, "Synthetic")} }
+                    }
+                    select { class: "mt-4 self-start text-xl font-bold focus:outline-none",
                         onchange: move |evt| *coloring.write() = match evt.value().as_str() {
                             "0" => Coloring::Class, "1" => Coloring::Origin,
                             "2" => Coloring::Flame, _ => unreachable!(),
@@ -164,33 +212,37 @@ fn PeriodicTable() -> Element {
                         } }
                     }
                 }
-                div { class: "self-end ml-6 text-lg/6", PhysConsts {} }
+                div { class: "self-end ml-8", PhysConsts {} }
             }
             p { class: "absolute right-0 mt-1 text-nowrap", style: wm_vert,
                 {tr!(lang, "metal - nonmetal divider")}
             }
-        }   // XXX: show legend for abundance?
-        div { class: "absolute flex w-full h-full pb-8", style: "grid-area: 2 / 8 / 3 / 19;", }
+            div { class: "w-full grid grid-cols-10 {style_grp}",
+                for i in 3..=7 { p { {format!("{}B - {i}", ROMAN_NUM[i])} } }
+                /* for i in 8..=10 { p {
+                    class: "shadow-[0_2px] shadow-indigo-300", "VIIIB - {i}" }
+                } } */     // border-b-2
+                p { class: "col-span-3 shadow-[0_2px] shadow-indigo-300", "VIIIB - 8|9|10" }
+                p { "IB - 11" }  p { "IIB - 12" }
+            }
+        }   for i in   5..= 56 { ElemTile { ordinal: i } }
 
-        for i in 13..=56 { ElemTile { ordinal: i } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_lan}
-            shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "71" }
+        div { class: "{style_las} {bg_lan}", span { class: "self-end font-bold", "71" }
             p { class: "text-center m-auto", b { "57 ~ 70" } br{} {tr!(lang, "Lanthanoids")} }
         }   for i in  72..= 88 { ElemTile { ordinal: i } }
-        div { class: "flex flex-col text-2xl rounded-sm p-1 {bg_act}
-            shadow-border-1 shadow-indigo-300", span { class: "self-end font-bold", "103" }
+        div { class: "{style_las} {bg_act}", span { class: "self-end font-bold", "103" }
             p { class: "text-center m-auto", b { "89 ~ 102" } br{} {tr!(lang, "Actinoids")} }
         }   for i in 104..=118 { ElemTile { ordinal: i } }
 
         div { class: "empty row-span-4" }
-        div { class: "text-center text-lg/6 rounded-sm col-span-2  bg-red-100 self-start",
+        div { class: "{style_blk} col-span-2  bg-red-100",
             b { "s" } {tr!(lang, "-block")} " (" {tr!(lang, "plus")} b { " He" } ")"
         }
-        div { class: "text-center text-lg/6 rounded-sm col-span-10 bg-blue-100 border-x mb-6",
+        div { class: "{style_blk} col-span-10 bg-blue-100 border-x mb-6",
             b { "d" } {tr!(lang, "-block")} " (" {tr!(lang, "exclude")}
             i { " Lan/Act " } {tr!(lang, "series")} ")"
         }
-        div { class: "text-center text-lg/6 rounded-sm col-span-6  bg-green-100 self-start",
+        div { class: "{style_blk} col-span-6  bg-green-100",
             b { "p" } {tr!(lang, "-block")} " (" {tr!(lang, "exclude")} i { " He" } ")"
         }   div { class: "empty" }
 
@@ -200,8 +252,7 @@ fn PeriodicTable() -> Element {
                 li { {tr!(lang, "Standard atomic mass (A")} sub { "r" }
                     i { {tr!(lang, "°, in Dalton or ")} }
                     span { class: "text-xl leading-none", "𝓂" sub { "μ" } }
-                     {tr!(lang, ") is the weighted arithmetic mean of the relative isotopic \
-masses of all isotopes of an element, weighted by their abundance on Earth")}
+                        {tr!(lang, ") is the weighted arithmetic mean of the relative isotopic masses of all isotopes of an element, weighted by their abundance on Earth")}
                 }
                 li { i { "[ ]" } {tr!(lang, " indicate mass number of most stable isotope")} }
                 li { {tr!(lang, "Density units are ")} i { "g/cm3" }
@@ -237,12 +288,11 @@ masses of all isotopes of an element, weighted by their abundance on Earth")}
         p { class: "col-span-3 mt-2", {tr!(lang, " All rights reserved.")} " © 2024 "
             a { href: "https://github.com/mhfan", "M.H.Fan" }
         }
-        div { class: "self-start rounded-sm text-center text-lg/6
-            col-[span_14_/_span_14] bg-yellow-100", b { "f" } {tr!(lang, "-block")}
+        div { class: "{style_blk} col-[span_14_/_span_14] bg-yellow-100",
+            b { "f" } {tr!(lang, "-block")}
         }
-        div { class: "self-start rounded-sm border-l bg-blue-100",
-            p { class: "invisible", "d-block" }
-        }   div { class: "empty" }
+        div { class: "{style_blk} bg-blue-100 border-l", p { class: "invisible", "d-block" } }
+        div { class: "empty" }
     } }
 }
 
@@ -276,7 +326,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
     ("#fafafa", "No stable isotopes"),
 ];
 
-#[component] fn ElemTile(ordinal: u8, annote: Option<bool>) -> Element {
+#[component] fn ElemTile(ordinal: u8, annot: Option<bool>) -> Element {
     let elem = ChemElem::from(ordinal);
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
     #[allow(clippy::upper_case_acronyms)] enum Tooltips { None, ECFG, CS, OStates }
@@ -336,7 +386,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
     rsx! { div { //shadow-border-1 shadow-indigo-300    // box: [152, 198]
         class: "relative flex flex-col rounded-sm p-1 border border-indigo-300
             hover:shadow-orange-600 hover:shadow-spread-2 {bg_color} {metal_bound}",
-        style: bg_style, if annote.is_some_and(|bl| bl) {
+        style: bg_style, if annot.is_some_and(|bl| bl) {
             a { class: "absolute bottom-full font-bold text-lg/6 text-amber-600 self-center",
                 href: "https://ciaaw.org/radioactive-elements.htm", {tr!(lang, "radioactive")}
             }
@@ -349,7 +399,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                     {tr!(lang, "1st ionization energy")} " (eV)"
                 }
                 p { class: "mt-3 mb-5", {tr!(lang, "symbol")} } p { {tr!(lang, "name")} }
-                p { span { class: "text-blue-700", {tr!(lang, "melting")} } "/"
+                p { b    { class: "text-blue-700", {tr!(lang, "melting")} } "/"
                     span { class: "text-red-700",  {tr!(lang, "boiling")} }
                     {tr!(lang, " point")} " (℃)"
                 }
@@ -492,7 +542,6 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
                 {elem.en_pauling().map(|en| en.to_string())}
             } }
         }
-        // TODO: show various abundance according to selection?
     } }
 }
 
@@ -608,9 +657,9 @@ fn PhysConsts() -> Element {
     let cmnts = "text-xl leading-none";
     let lang = use_context::<Signal<Localization>>();
     rsx! {
-        p { class: "flex text-lg/6 justify-between px-1",
+        p { class: "flex px-1",
             span { class: "font-bold", {tr!(lang, "Common physical constants")} }
-            span { {tr!(lang, "Source: ")}
+            span { class: "ml-auto",   {tr!(lang, "Source: ")}
                 a { href: "https://physics.nist.gov/constants", "physics.nist.gov" } " (2022)"
             }
         }
@@ -718,7 +767,7 @@ fn AufbauPrincipal() -> Element {
         }
         text { x: "92", y: "296", "font-weight": "bold",
             {tr!(lang, "Aufbau Principle")} " (" {tr!(lang, "Madelung rule")} ")"
-        }
+        }   // https://www.nagwa.com/en/explainers/809139094679/
         text { x: "180", y: "52", fill: "blue", "font-size": "8",
             tspan { tspan { "font-size": "14", "n" } ": "
                 {tr!(lang, "Principle quantum number")}

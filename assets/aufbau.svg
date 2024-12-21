@@ -27,6 +27,7 @@
     <tspan x="448" opacity="0.2">ℓ = 6</tspan>
 </text>
 
+<!-- https://www.nagwa.com/en/explainers/809139094679/ -->
 <text x="92" y="296" font-weight="bold">Aufbau Principle (Madelung rule)</text>
 <text x="180" y="52"  font-size="8" fill="blue">
     <tspan><tspan font-size="14">n</tspan>: Principle quantum number</tspan>
