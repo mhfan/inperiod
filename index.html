@@ -6,32 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{app_title}</title> <base href="/{base_path}/"/>
   <link rel="icon" href="assets/ptable.svg">
+  <link rel="preload" as="style" href="assets/tailwind.css">
 </head>
-
 <body id="main"> <!--div id="main"></div-->
-  <script>
-const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-if (isChrome) { document.body.style = "zoom: 0.5; width: fit-content"; } else {
-//if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent))
-  document.body.style = //document.documentElement.style = // <html>
-    "transform: scale(0.5); transform-origin: 0px 0px; width: 0px; height: 0px;";
+  <div class="spin-container" id="spinner">
+    <style>
+.spin-container { position: absolute;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  min-height: 100vh; width: 100vw;
+}
 
-  const style = document.createElement('style');
-  style.innerHTML = `
-select { appearance: none; }
-select:not([size]) { /* https://flowbite.com/docs/forms/select/ */
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
-  background-position: right .75rem center;
-  background-repeat: no-repeat;
-  background-size: .75em .75em;
-  padding-right: 2.25rem;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-`;
-  document.head.appendChild(style);
-}
-  </script>
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-anim { color: #e5e7eb; stroke: #2563eb; animation: spin 1s linear infinite; }
+    </style>
+    <svg viewBox="0 0 100 100" class="spin-anim" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true" fill="none" stroke-width="5" width="100" height="100">
+      <circle cx="50" cy="50" r="45" stroke="currentColor"/>
+      <path d="M50,5a45,45 0 0 1 45,45" stroke-linecap="round" stroke="currentStroke"/>
+    </svg>
+  </div>
 </body>
 </html>
 

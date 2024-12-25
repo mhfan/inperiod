@@ -6,8 +6,8 @@ module.exports = {
   theme: {
     //container: { center: true, },
     extend: {
-      boxShadow: {
-        'border-1': "1px 0, 0 1px, 1px 1px, inset 1px 0, inset 0 1px", 'spread-2': "0 0 2px 2px",
+      boxShadow: { 'spread-2': "0 0 2px 2px",
+        'border-1': "1px 0, 0 1px, 1px 1px, inset 1px 0, inset 0 1px",
         'black-b': "0 2px black", 'black-l': "-2px 0 black",
         'black-bl': "-2px 0 black, 0 2px black",
       }

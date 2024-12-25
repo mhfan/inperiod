@@ -258,7 +258,7 @@ impl ChemElem {
             //109..=118 if !matches!(self.atomic_number(), 112|114) => Unknown,
             13|31|49|50|81..=84|113..117 => PoorMetals,  // post-transition metals
 
-            // Rare earth metals  (Lanthanoids plus Sc and Y)
+            // Rare earth metals (Lanthanoids plus Sc and Y)
             57..=70  => Lanthanoids,     // Lanthanides (include Lu)
             89..=102 => Actinoids,       // Actinides   (include Lr)
             _ => match self.group() {
@@ -631,6 +631,8 @@ impl From<(u8, u8, u8)> for Subshell {
     ($l:expr, $t:literal, $n:expr) => { Subshell { level: $l, orbital: $t, ecount: $n, } };
 }
 
+/// https://en.wikipedia.org/wiki/Nucleosynthesis, https://svs.gsfc.nasa.gov/13873/
+/// https://commons.wikimedia.org/wiki/File:Nucleosynthesis_periodic_table.svg
 #[derive(Clone, Copy)] #[repr(u8)] pub enum CosmicOrigin {  // Cosmological
     BigBangFusion = 0,
     CosmicRayFission,       // Collisions
@@ -660,7 +662,7 @@ impl CosmicOrigin {
     }
 }
 
-#[repr(u8)] pub enum ElemClass {
+#[derive(Clone, Copy)] #[repr(u8)] pub enum ElemClass {
     AlkaliMetals = 0,
     AlkalineEarthMetals,
     TransitionMetals,
@@ -669,13 +671,13 @@ impl CosmicOrigin {
     OtherNonmetals,
     Halogens,
     NobleGases,
-    Lanthanoids,
+    Lanthanoids, // plus Sc and Y are Rare earth metals
     Actinoids,
     Unknown,
     MAX
 }
 
-const ELEM_NAME:   [&str; ChemElem::MAX as usize] = [ "", // placeholder
+const ELEM_NAME: [&str; ChemElem::MAX as usize] = [  "", // placeholder
     "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron",
     "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon",
     "Sodium", "Magnesium", "Aluminum", "Silicon", "Phosphorus",
@@ -703,7 +705,7 @@ const ELEM_NAME:   [&str; ChemElem::MAX as usize] = [ "", // placeholder
 ];
 
 /// https://en.wikipedia.org/wiki/Chemical_elements_in_East_Asian_languages
-const ELEM_CH: [char; ChemElem::MAX as usize] = [ ' ', // placeholder
+const ELEM_CH:   [char; ChemElem::MAX as usize] = [ ' ', // placeholder
     '氢', '氦', '锂', '铍', '硼', '碳', '氮', '氧', '氟', '氖',
     '钠', '镁', '铝', '硅', '磷', '硫', '氯', '氩', '钾', '钙',
     '钪', '钛', '钒', '铬', '锰', '铁', '钴', '镍', '铜', '锌',
@@ -719,7 +721,7 @@ const ELEM_CH: [char; ChemElem::MAX as usize] = [ ' ', // placeholder
 ];
 
 /// https://github.com/mozillazg/python-pinyin
-const ELEM_PY: [&str; ChemElem::MAX as usize] = [  "", // placeholder
+const ELEM_PY:   [&str; ChemElem::MAX as usize] = [  "", // placeholder
     "qīng", "hài", "lǐ", "pí", "péng", "tàn", "dàn", "yǎng", "fú", "nǎi",
     "nà", "měi", "lǚ", "guī", "lín", "liú", "lǜ", "yà", "jiǎ", "gài",
     "kàng", "tài", "fán", "gè", "měng", "tiě", "gǔ", "niè", "tóng", "xīn",
