@@ -6,7 +6,8 @@ version = "0.1.6"
 license = "MIT OR Apache-2.0"
 authors = ["MeiHui FAN <mhfan@ustc.edu>"]
 homepage = "https://mhfan.github.io/inperiod"
-categories  = ["science", "web-programming", "wasm"]
+repository = "https://github.com/mhfan/inperiod"
+categories = ["science", "web-programming", "wasm"]
 description = "Modern fancy interactive online periodic table of chemistry elements"
 keywords = ["periodic", "periodic-table", "elements", "chemistry-elements", "dioxus"]
 
@@ -25,7 +26,7 @@ scraper = { version = "0.22", optional = true }
 csv = { version = "1.3", optional = true }
 
 [features]
-default = []    # XXX: "syncdep" not work with "dioxus"
+default = ["web"]    # XXX: "syncdep" not work with "dioxus"
 syncdep = ["reqwest", "tokio", "serde", "serde_json", "scraper", "csv"]
 
 desktop = ["dioxus/desktop"]

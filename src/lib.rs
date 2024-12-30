@@ -29,6 +29,7 @@
     https://commons.wikimedia.org/wiki/File:Periodic_Table_of_the_elements.jpg
     https://commons.wikimedia.org/wiki/File:Periodic_table_detailed_enwp.svg
     https://www.futurity.org/periodic-table-new-elements-1087782-2/
+    https://www.halcyonmaps.com/periodic-table-of-the-elements/
     https://elements.wlonk.com/index.htm, https://ptable.com */
 
 //pub struct ChemElem { an: AtomicNumber, group: u8 }

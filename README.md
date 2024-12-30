@@ -40,7 +40,7 @@ all kinds of information and data about the elements.
 3. Run the following command in the root of the project to start the tailwind CSS compiler:
 
 ```bash
-npm install tailwindcss -D -g
+npm install tailwindcss@3.4.17 -D -g
 
 npx tailwindcss -i tailwind_base.css -o assets/tailwind.css -w #-m
 ```
@@ -71,5 +71,6 @@ Note: Recommended to `Print to PDF` on Chrome, or `Export to PDF` on Safari.
 * <https://ciaaw.org/atomic-weights.htm>
 * <https://github.com/Bowserinator/Periodic-Table-JSON>
 * <https://periodictable.com/Properties/A/HumanAbundance.html>
+* <https://www.halcyonmaps.com/periodic-table-of-the-elements/>
 * <https://www.futurity.org/periodic-table-new-elements-1087782-2/>
 * <https://iupac.org/what-we-do/periodic-table-of-elements/>
