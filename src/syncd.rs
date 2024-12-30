@@ -10,7 +10,7 @@ use std::{error::Error, fs::{self, File}, io::Write, path::Path};
 use scraper::{Html, Selector};
 use inperiod::ChemElem;
 
-/// cargo r --bin syncd -F syncdep
+/// cargo r --bin syncd -F syncdep --no-default-features
 #[tokio::main] async fn main() -> Result<(), Box<dyn Error>> {
     //let mut rt = tokio::runtime::Runtime::new()?;   rt.block_on(async { ... })
     //for elem in ChemElem::iter() { println!("{}", elem.name_ch()); } return Ok(());
@@ -96,8 +96,9 @@ async fn parse_oxstates() -> Result<(), Box<dyn Error>> {
             if x.is_none() { file.write_all(b"   ")?; } else {
                 file.write_fmt(format_args!("{:2},", i as i8 - 5 ))?; }
         }   file.write_all(b"],\n")?;
-    }   file.write_all(b"            _  => &[]\n        };\n")?;
+    }   let ts = b"            _  => &[]\n        };\n";
 
+    file.write_all(ts)?;
     file.write_all(b"\n        let main: &[i8] = match *self {\n")?;
     for (an, states) in os_all.iter().enumerate().skip(1) {
         if states.iter().all(|&x| x.is_none_or(|x| !x)) { continue }
@@ -108,7 +109,7 @@ async fn parse_oxstates() -> Result<(), Box<dyn Error>> {
             if !state.unwrap_or(false) { continue }
             file.write_fmt(format_args!("{:2},", i as i8 - 5 ))?;
         }   file.write_all(b"],\n")?;
-    }   file.write_all(b"            _  => &[]\n        };\n")?;
+    }   file.write_all(ts)?;
 
     file.write_all(b"\n        (main, all)\n    }\n}\n\n")?;
     file.flush()?;  Ok(())
@@ -134,12 +135,13 @@ async fn parse_nist_asd() -> Result<(), Box<dyn Error>> {
     let mut file = File::create("nist_asd.rs")?;
     file.write_all(USE_STMT)?;  file.write_all(IMPL_STMT)?;
     file.write_all(b"    pub const fn ionization_energy(&self) -> Option<(f64, f64)> {\n")?;
-    file.write_all(b"        Some(match *self {\n")?;
 
     let mut fil2 = File::create("ground_level.rs")?;
     fil2.write_all(USE_STMT)?;  fil2.write_all(IMPL_STMT)?;
     fil2.write_all(b"    pub const fn ground_level(&self) -> Option<(&str, &str, &str)> {\n")?;
-    fil2.write_all(b"        Some(match *self {\n")?;
+
+    let hs = b"        Some(match *self {\n";
+    fil2.write_all(hs)?;      file.write_all(hs)?;
 
     let mut reader = csv::ReaderBuilder::new()
         .flexible(true).from_reader(content.as_bytes());
@@ -182,9 +184,9 @@ async fn parse_nist_asd() -> Result<(), Box<dyn Error>> {
         fil2.write_all(b"            Og => (\"1\", \"S\" , \"0\"),\n")?;
     }
 
-    file.write_all(b"            _  => return None\n        })\n    }\n}\n\n")?;
-    fil2.write_all(b"            _  => return None\n        })\n    }\n}\n\n")?;
-    fil2.flush()?;  file.flush()?;  Ok(())
+    let ts = b"            _  => return None\n        })\n    }\n}\n\n";
+    fil2.write_all(ts)?;    fil2.flush()?;
+    file.write_all(ts)?;    file.flush()?;  Ok(())
 }
 
 /// XXX: https://ciaaw.org/atomic-weights.htm
