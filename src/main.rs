@@ -73,9 +73,9 @@ fn PeriodicTable() -> Element {
     use_context_provider(|| Signal::new(Localization::new()));
     let mut coloring = use_context::<Signal<Coloring>>();
     let mut lang = use_context::<Signal<Localization>>();
-
     //use_context_provider(|| Signal::new(Selection { r#type: SelType::None, val: 0, }));
     //let mut group_sel = use_context::<Signal<Selection>>();   // move to ahead of rsx!
+
     let bg_lan = COLORING_CLASSES[ElemClass::Lanthanoids as usize].0;
     let bg_act = COLORING_CLASSES[ElemClass::Actinoids   as usize].0;
     let style_blk = "self-start text-center text-lg/6 rounded-sm";
@@ -130,18 +130,19 @@ fn PeriodicTable() -> Element {
         }
 
         ElemTile { ordinal: 1 } p { class: style_grp, "IIA - 2" }
-        div { class: "empty col-span-2" }   // XXX: can be moved on cell left on needed
+        div { class: "empty col-span-2" }   // XXX: can be moved one cell left on needed
         ElemTile { ordinal: 43, annot: Some(true) } div { class: "empty col-span-2" }
         div { class: "relative col-span-5", div { class: "absolute h-[150%] w-full flex",
             if !diag_is_loaded(*diag.read()) { div {
                 class: "absolute self-center w-full flex justify-center", LoadSpinner {}
-            } } {match diag.read().0 {  0 => rsx! { AufbauPrincipal {} },
+            } } {match diag.read().0 {  0 => rsx! { AufbauPrinciple {} },
                 // https://www.nagwa.com/en/explainers/809139094679/
                 //0 => rsx! { img { src: "assets/Aufbau.svg" } },
 
             // https://commons.wikimedia.org/wiki/File:Binding_energy_curve_-_common_isotopes.svg
-                1 => rsx! { img { src: "assets/Binding_energy_isotopes.svg", onload: load_diag } },
-
+                1 => rsx! { img { src: "assets/Binding_energy_isotopes.svg",
+                    class: "h-[108%] relative -top-[4%]", onload: load_diag,
+                } },
                 // https://commons.wikimedia.org/wiki/File:Isotopic_Abundance_bubble_chart.png
                 2 => rsx! { img { src: "assets/Isotopic_Abundance_bubble.png",
                         class: "h-[130%] relative -top-[15%] -left-[10%]", onload: load_diag,
@@ -307,8 +308,8 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                 a { href: "https://www.webelements.com/periodicity/contents/", "WebElements" } ", "
                 a { href: "https://en.wikipedia.org/wiki/Periodic_table", "Wikipedia" } ", " br{}
                 a { href: "https://www.vertex42.com/ExcelTemplates/periodic-table-of-elements.html",
-                    "Vertex42" } ", and "
-                a { href: "https://github.com/lmmentel/mendeleev", "mendeleev" }
+                    "Vertex42" } ", "
+                a { href: "https://github.com/lmmentel/mendeleev", "mendeleev" } ", etc."
             }
         }
 
@@ -768,7 +769,7 @@ fn PhysConsts() -> Element {
     } }
 }
 
-fn AufbauPrincipal() -> Element {
+fn AufbauPrinciple() -> Element {
     let lang = use_context::<Signal<Localization>>();
     rsx! { svg { width: "500", height: "300", xmlns: "http://www.w3.org/2000/svg",
         "font-size": "small", "font-family": "sans", //title { {title} }
