@@ -1,0 +1,49 @@
+
+/*  https://tailwindcss.com/docs/installation/tailwind-cli
+    npm install tailwindcss @tailwindcss/cli #-D -g   # npx @tailwindcss/upgrade@next
+    npx tailwindcss -i input.css -o assets/tailwind.css -w #-m */
+
+@import 'tailwindcss' source(none);
+/* https://tailwindcss.com/docs/functions-and-directives */
+
+/* The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+
+@layer base {
+  *, ::after, ::before, ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+} */
+
+/* @config './tailwind.config.js'; */
+/* https://github.com/tailwindlabs/tailwindcss/blob/master/stubs/ */
+
+@source "./src/main.rs";
+
+@theme {
+  --shadow-spread-2: 0 0 2px 2px;
+  --shadow-border-1: 1px 0, 0 1px, 1px 1px, inset 1px 0, inset 0 1px;
+  --shadow-black-bl: -2px 0 black, 0 2px black;
+  --shadow-black-l:  -2px 0 black;
+  --shadow-black-b:   0 2px black;
+}
+
+/* https://tailwindcss.com/docs/adding-custom-styles */
+.border-rare    { @apply border-amber-300; }
+.text-synthetic { @apply text-gray-500; }
+.text-liquid    { @apply text-blue-700; }
+.text-gas       { @apply text-red-700; }
+
+/*  @plugin "@tailwindcss/forms";
+@plugin "tailwindcss-children";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "@tailwindcss/line-clamp";
+@plugin "tw-elements/plugin.cjs";
+    npm install tw-elements #-D */
+

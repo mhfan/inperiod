@@ -55,6 +55,7 @@ select:not([size]) { /* https://flowbite.com/docs/forms/select/ */
         //Link { rel: "icon",       href: "assets/ptable.svg" }
         Link { rel: "stylesheet", href: "assets/tailwind.css" }
         //Stylesheet { href: asset!("assets/tailwind.css") }
+        //Script { src: "https://unpkg.com/@tailwindcss/browser@4" }
         //Script { src: "https://cdn.tailwindcss.com" }
         Style { {media_print} } script { {dom_repair} }
         PeriodicTable {}
@@ -78,10 +79,10 @@ fn PeriodicTable() -> Element {
 
     let bg_lan = COLORING_CLASSES[ElemClass::Lanthanoids as usize].0;
     let bg_act = COLORING_CLASSES[ElemClass::Actinoids   as usize].0;
-    let style_blk = "self-start text-center text-lg/6 rounded-sm";
+    let style_blk = "self-start text-center text-lg/6 rounded-xs";
     let style_grp = "self-end   text-center text-lg font-bold";
     let style_sel = "absolute top-2 text-2xl text-center
-        print:hidden focus:outline-none text-red-600";
+        print:hidden focus:outline-hidden text-red-600";
     let wm_vert = "writing-mode: vertical-lr;";
 
     rsx! { div { class: "grid grid-cols-[auto_repeat(18,1fr)_auto]
@@ -94,7 +95,7 @@ fn PeriodicTable() -> Element {
             style: wm_vert,   {tr!(lang, "PERIOD")}
         }
         p { class: style_grp, {tr!(lang, "GROUP")} br{} "IA - 1" }
-        p { class: "relative col-[span_16_/_span_16] text-center",
+        p { class: "relative col-span-16 text-center",
             select { class: "{style_sel} left-0",  name: "lang-sel", //id: "lang-sel",
                 onchange: move |evt| lang.write().set(evt.value()),
                 option { value: "en-US", "en" } option { value: "zh-CN", "中文" }
@@ -212,7 +213,7 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                         span { {tr!(lang, "Solid")} }
                         span { class: "ml-4 text-synthetic", {tr!(lang, "Synthetic")} }
                     }
-                    select { class: "mt-4 mb-1 self-start text-xl font-bold focus:outline-none",
+                    select { class: "mt-4 mb-1 self-start text-xl font-bold focus:outline-hidden",
                         onchange: move |evt| *coloring.write() = match evt.value().as_str() {
                             "0" => Coloring::Class, "1" => Coloring::Origin,
                             "2" => Coloring::Flame, _ => unreachable!(),
@@ -227,16 +228,16 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                                 NobleGases, AlkalineEarthMetals, Halogens, TransitionMetals,
                                 OtherNonmetals, PoorMetals, Metalloids, Lanthanoids, Actinoids]
                                 .map(|x| (COLORING_CLASSES[x as usize], x)) { p {
-                                    class: format!("content-center rounded-sm {}", item.0),
+                                    class: format!("content-center rounded-xs {}", item.0),
                                     {tr!(lang, item.1)} if matches!(cls, Lanthanoids) { "*" }
                                 } }
                             },
                             Coloring::Origin => rsx! { for item in COLORING_ORIGINS { p {
                                 style: format!("background-color: {};", item.0),
-                                class: "content-center rounded-sm px-2", {tr!(lang, item.1)}
+                                class: "content-center rounded-xs px-2", {tr!(lang, item.1)}
                             } } },
                             Coloring::Flame  => rsx! { img { src: "assets/flame-test.jpg",
-                                class: "rounded-sm row-span-full col-span-full h-full",
+                                class: "rounded-xs row-span-full col-span-full h-full",
                             } }
                         } }
                     }
@@ -320,7 +321,7 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
         p { class: "col-span-3 mt-2", {tr!(lang, "All rights reserved.")} " © 2024 "
             a { href: "https://github.com/mhfan", "M.H.Fan" } //" v" {env!("CARGO_PKG_VERSION")}
         }
-        div { class: "{style_blk} col-[span_14_/_span_14] bg-yellow-100",
+        div { class: "{style_blk} col-span-14 bg-yellow-100",
             b { "f" } {tr!(lang, "-block")}
         }
         div { class: "{style_blk} bg-blue-100 border-l", p { class: "invisible", "d-block" } }
@@ -358,7 +359,7 @@ static COLORING_ORIGINS: [(&str, &str); CosmicOrigin::MAX as usize] = [ // stric
     ("#fafafa", "No stable isotopes"),
 ];
 
-static STYLE_TILE: &str = "flex flex-col rounded-sm p-1 border border-indigo-300";
+static STYLE_TILE: &str = "flex flex-col rounded-xs p-1 border border-indigo-300";
 
 #[component] fn ElemTile(ordinal: u8, annot: Option<bool>) -> Element {
     let elem = ChemElem::from(ordinal);
@@ -392,7 +393,7 @@ static STYLE_TILE: &str = "flex flex-col rounded-sm p-1 border border-indigo-300
         }
     };
 
-    let tips_cmn = "absolute rounded-sm border border-orange-600 bg-white z-10";
+    let tips_cmn = "absolute rounded-xs border border-orange-600 bg-white z-10";
     let metal_bound  = match ordinal {  // hidden peer-hover:block // group-hover::block
         1 => "shadow-black-b", 118 => "shadow-black-l", 4 => "shadow-[0_-2px_black]",
         21|39|71 => "border-rare",      // Rare earth metals indication

@@ -36,13 +36,13 @@ all kinds of information and data about the elements.
 ## Instructions
 
 1. Install npm: <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>
-2. Install the tailwind css cli: <https://tailwindcss.com/docs/installation>
+2. Install the tailwind cli: <https://tailwindcss.com/docs/installation/tailwind-cli>
 3. Run the following command in the root of the project to start the tailwind CSS compiler:
 
 ```bash
-npm install tailwindcss@3.4.17 -D -g
+npm install tailwindcss @tailwindcss/cli #-D -g
 
-npx tailwindcss -i tailwind_base.css -o assets/tailwind.css -w #-m
+npx tailwindcss -i input.css -o assets/tailwind.css -w #-m
 ```
 
 Launch the Dioxus Web/Desktop/Mobile app:
