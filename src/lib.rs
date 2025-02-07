@@ -452,7 +452,7 @@ pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹�
 
 #[derive(PartialEq, Debug)] pub enum AtomicWeight {
     //Interval(core::ops::RangeInclusive<f64>), // conversional?
-    //Uncert { value: f64, uncert: f64 },   // uncertainty
+    //Measure  { value: f64, uncert: f64 },     // uncertainty
     Abridged { value: f32, uncert: f32 },
     MassNumber(u32),
 }
@@ -508,17 +508,22 @@ impl std::str::FromStr for AtomicWeight {
     }
 }
 
+impl From<u32> for AtomicWeight {  fn from(n: u32) -> Self { Self::MassNumber(n) } }
+impl From<(f32, f32)> for AtomicWeight {
+    fn from((value, uncert): (f32, f32)) -> Self { Self::Abridged { value, uncert } }
+}
+
 use core::fmt;
 impl fmt::Display for AtomicWeight {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            AtomicWeight::MassNumber(num) => if 0 < *num {
-                write!(f, "[{num}]") } else { write!(f, "[???]") },
+        match *self {
+            AtomicWeight::MassNumber(num) =>
+                if 0 < num { write!(f, "[{num}]") } else { write!(f, "[???]") },
             AtomicWeight::Abridged { value, uncert } => {
-                if *uncert == 0. { return write!(f, "{value}") }
-                //return write!(f, "{value} ± {uncert}")?;
+                if uncert == 0.  { return write!(f, "{value}") }
+                if f.alternate() { return write!(f, "{value} ± {uncert}") }
 
-                if *uncert < 1. {
+                if uncert < 1. {
                     let mut prec = (-uncert.log10()).ceil() as i32;
                     let mut digit =  uncert * 10f32.powi(prec);
                     while f32::EPSILON * 10. < digit.fract() &&
