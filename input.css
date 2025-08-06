@@ -1,7 +1,7 @@
 
 /*  https://tailwindcss.com/docs/installation/tailwind-cli
     npm install tailwindcss @tailwindcss/cli #-D -g   # npx @tailwindcss/upgrade@next
-    npx tailwindcss -i input.css -o assets/tailwind.css -w #-m */
+    npx @tailwindcss/cli -i input.css -o assets/tailwind.css -w #-m */
 
 @import 'tailwindcss' source(none);
 /* https://tailwindcss.com/docs/functions-and-directives */

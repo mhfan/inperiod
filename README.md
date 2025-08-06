@@ -42,7 +42,7 @@ all kinds of information and data about the elements.
 ```bash
 npm install tailwindcss @tailwindcss/cli #-D -g
 
-npx tailwindcss -i input.css -o assets/tailwind.css -w #-m
+npx @tailwindcss/cli -i input.css -o assets/tailwind.css -w #-m
 ```
 
 Launch the Dioxus Web/Desktop/Mobile app:

@@ -412,7 +412,7 @@ async fn parse_ciaaw() -> Result<(), Box<dyn Error>> {
 
         file.write_all(b"    &[")?;
         file.write_all(coll.iter().map(|&(c, p)|
-            format!("(CO::from_u8(b'{}'), {:2})", c, p))
+            format!("(CO::from_u8(b'{c}'), {p:2})"))
             .collect::<Vec<_>>().join(", ").as_bytes())?;
         file.write_all(b"],\n")?;   atomic += 1;
     }

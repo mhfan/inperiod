@@ -210,7 +210,7 @@ impl ChemElem {
                 }
             }
             for elem in ChemElem::iter() {
-                if s == format!("{:?}", elem) { return Some(elem) }
+                if s == format!("{elem:?}") { return Some(elem) }
             }   None
             //ELEM_SYMBOL.iter().position(|&x| x == s).map(|x| (x as u8).into())
         } else {
