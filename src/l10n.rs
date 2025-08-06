@@ -27,10 +27,9 @@ impl Localization {
         } else { id }
     }
 
-    //pub fn get(&self) -> &str { match self.lidx { Some(0) => "zh-CN", _ => "en-US" } }
-
+    pub fn get(&self) -> &str { match self.lidx { Some(1) => "zh-CN", _ => "" } }
     pub fn set<T: AsRef<str>>(&mut self, lang: T) {
-        self.lidx = if "zh-CN" == lang.as_ref() { Some(0) } else { None };
+        self.lidx = if "zh-CN" == lang.as_ref() { Some(1) } else { None };
     }
 
     #[allow(clippy::new_without_default)] pub fn new() -> Self {
@@ -44,6 +43,7 @@ impl Localization {
     "Solar" => "太阳系",
     "Earth" => "地球",
     "Human" => "人体",
+    "SModel" => "标准模型",
 
     "The most abundant isotopes" => "最丰富的同位素",
     "Relative abundance is proportional to the area." => "面积比例对应相对丰度",

@@ -65,10 +65,12 @@ select:not([size]) { /* https://flowbite.com/docs/forms/select/ */
 macro_rules! tr { ($lang:expr, $id:expr) => { $lang.read().translate($id) } }
 
 fn PeriodicTable() -> Element {
-    let mut diag = use_signal(|| (0u8, 0x01u8));
-    fn diag_is_loaded(v: (u8, u8)) -> bool { (0x01 << v.0) & v.1 != 0x00 }
+    #[derive(Clone, Copy)] #[repr(u8)] enum DiagType {
+        Aufbau = 0, Binding, Bubble, Solar, Earth, /* Human, */ SModel, }
+    let mut diag = use_signal(|| (DiagType::Aufbau, 0x01u8));
+    fn diag_is_loaded(v: (DiagType, u8)) -> bool {   (0x01 << v.0 as u8) & v.1 != 0x00 }
     let load_diag = move |_|
-        diag.with_mut(|v| v.1 |= 0x01 << v.0);
+        diag.with_mut(|v| v.1 |= 0x01 << v.0 as u8);
 
     use_context_provider(|| Signal::new(Coloring::Class));
     use_context_provider(|| Signal::new(Localization::new()));
@@ -104,15 +106,17 @@ fn PeriodicTable() -> Element {
                 {tr!(lang, "Periodic Table of the Elements")} // env!("CARGO_PKG_REPOSITORY")
             }
             select { class: "{style_sel} right-0", name: "diag-sel", //id: "diag-sel",
-                onchange: move |evt| diag.with_mut(|v| v.0 = evt.value().parse::<u8>().unwrap()),
-                option { value: "0", {tr!(lang,  "Aufbau")} }
-                option { value: "1", {tr!(lang, "Binding")} }
+                onchange: move |evt| diag.with_mut(|v| v.0 = unsafe {
+                    std::mem::transmute::<u8, DiagType>(evt.value().parse::<u8>().unwrap()) }),
+                option { value: DiagType::Aufbau  as u8, {tr!(lang,  "Aufbau")} }
+                option { value: DiagType::Binding as u8, {tr!(lang, "Binding")} }
                 optgroup { label: tr!(lang, "Abundances"),
-                    option { value: "2", {tr!(lang, "Bubble")} }
-                    option { value: "3", {tr!(lang,  "Solar")} }
-                    option { value: "4", {tr!(lang,  "Earth")} }
-                    option { value: "4", {tr!(lang,  "Human")} }
+                    option { value: DiagType::Bubble as u8, {tr!(lang, "Bubble")} }
+                    option { value: DiagType::Solar  as u8, {tr!(lang,  "Solar")} }
+                    option { value: DiagType::Earth  as u8, {tr!(lang,  "Earth")} }
+                    option { value: DiagType::Earth  as u8, {tr!(lang,  "Human")} }
                 }
+                option { value: DiagType::SModel  as u8, {tr!(lang,  "SModel")} }
             }
         }
         p { class: style_grp, "VIIIA - 18" }
@@ -136,16 +140,16 @@ fn PeriodicTable() -> Element {
         div { class: "relative col-span-5", div { class: "absolute h-[150%] w-full flex",
             if !diag_is_loaded(*diag.read()) { div {
                 class: "absolute self-center w-full flex justify-center", LoadSpinner {}
-            } } {match diag.read().0 {  0 => rsx! { AufbauPrinciple {} },
+            } } {match diag.read().0 {  DiagType::Aufbau => rsx! { AufbauPrinciple {} },
+                //DiagType::Aufbau => rsx! { img { src: "assets/Aufbau.svg" } },
                 // https://www.nagwa.com/en/explainers/809139094679/
-                //0 => rsx! { img { src: "assets/Aufbau.svg" } },
 
             // https://commons.wikimedia.org/wiki/File:Binding_energy_curve_-_common_isotopes.svg
-                1 => rsx! { img { src: "assets/Binding_energy_isotopes.svg",
+                DiagType::Binding => rsx! { img { src: "assets/Binding_energy_isotopes.svg",
                     class: "h-[108%] relative -top-[4%]", onload: load_diag,
                 } },
                 // https://commons.wikimedia.org/wiki/File:Isotopic_Abundance_bubble_chart.png
-                2 => rsx! { img { src: "assets/Isotopic_Abundance_bubble.png",
+                DiagType::Bubble => rsx! { img { src: "assets/Isotopic_Abundance_bubble.png",
                         class: "h-[130%] relative -top-[15%] -left-[10%]", onload: load_diag,
                     }
                     if diag_is_loaded(*diag.read_unchecked()) { div {
@@ -173,14 +177,19 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                     } }
                 },
                 // https://commons.wikimedia.org/wiki/File:SolarSystemAbundances.svg
-                3 => rsx! { img { src: "assets/SolarSystemAbundances.png",
+                DiagType::Solar => rsx! { img { src: "assets/SolarSystemAbundances.png",
                     class: "h-[118%] relative -top-[8%] -left-[10%]", onload: load_diag,
                 } },
                 // https://commons.wikimedia.org/wiki/File:Element_abundance_earth_ppm_chart.svg
-                4 => rsx! { img { src: "assets/Abundance_earth.svg",  onload: load_diag }
-                            img { src: "assets/Abundance_human.svg", class: "ml-16", }
+                DiagType::Earth => rsx! {
+                    img { src: "assets/Abundance_earth.svg", onload: load_diag }
+                    img { src: "assets/Abundance_human.svg", class: "ml-16", }
             // https://commons.wikimedia.org/wiki/File:Element_abundance_human_body_ppm_chart.svg
-                },  _ => unreachable!(),
+                },
+                DiagType::SModel => rsx! { img {    // https://en.wikipedia.org/wiki/Standard_Model
+                    src: format!("assets/Standard_Model_{}.svg", lang.read().get()),
+                    class: "h-[200%] relative -top-[4%]", onload: load_diag,
+                } }, //_ => unreachable!(),
             } }
         } }
         div { class: "flex col-span-5",     // XXX: more information can be put here
@@ -242,7 +251,8 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                         } }
                     }
                 }
-                div { class: "self-end ml-8", PhysConsts {} }
+                div { visibility: if matches!(diag.read().0, DiagType::SModel) { "hidden"
+                } else { "visible" }, class: "self-end ml-8", PhysConsts {} }
             }
             p { class: "absolute right-0 mt-1 text-nowrap", style: wm_vert,
                 {tr!(lang, "metal - nonmetal divider")}
