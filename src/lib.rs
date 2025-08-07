@@ -440,6 +440,7 @@ pub mod ostates;
 pub mod pubchem;    //include!(concat!(env!("OUT_DIR"), "/pubchem.rs"));
 pub mod nist_asd;
 //pub mod en_pauling;
+pub mod phys_consts;
 pub mod ground_level;
 
 pub const ROMAN_NUM: [&str; 11] = [ "",
@@ -450,24 +451,24 @@ pub const UNICODE_SUPERS: [char; 16] = [ //&str = r"⁰¹²³⁴⁵⁶⁷⁸⁹�
 //const UNICODE_SUBS: [char; 16] = [ //&str = r"₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⸝";
 //    '₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₊', '₋', '₌', '₍', '₎', 'ₐ', ];
 
-#[derive(PartialEq, Debug)] pub enum AtomicWeight {
+#[derive(Clone, Copy, PartialEq, Debug)] pub enum AtomicWeight {
     //Interval(core::ops::RangeInclusive<f64>), // conversional?
-    //Measure  { value: f64, uncert: f64 },     // uncertainty
-    Abridged { value: f32, uncert: f32 },
+    //Measure  { value: f64, prec: u8, uncer: u16 },
+    Abridged { value: f32, prec: u8, uncer: u8 },
     MassNumber(u32),
 }
 
 /** ```
     use inperiod::AtomicWeight;
-    assert!(" 1.0080 ".parse::<AtomicWeight>() ==
-        Ok(AtomicWeight::Abridged { value: 1.008, uncert: 0. }));
-    assert_eq!("1.0080 (2)".parse::<AtomicWeight>(),
-        Ok(AtomicWeight::Abridged { value: 1.008, uncert: 0.0002 }));
-    assert_eq!("1.0080(12)".parse::<AtomicWeight>().unwrap().to_string(), "1.0080(12)");
-    assert_eq!("39.95 ± 0.16".parse::<AtomicWeight>().unwrap().to_string(), "39.95(16)");
+    let (foo, bar) = ((1.008, 4, 2).into(), "1.0080 ± 0.0002");
+    assert_eq!(format!("{foo:#}"), bar);
+    assert_eq!(bar.parse::<AtomicWeight>(), Ok(foo));
+    assert_eq!("1.0080(2)".parse::<AtomicWeight>(), Ok(foo));
+    assert!(" 1.0080 ".parse::<AtomicWeight>() == Ok((1.008, 4, 0).into()));
+    assert_eq!("1.080".parse::<AtomicWeight>().unwrap().to_string(), "1.080");
     assert_eq!("[294]".parse::<AtomicWeight>(), Ok(AtomicWeight::MassNumber(294)));
-    assert_eq!("1.0080(2)".parse::<AtomicWeight>().unwrap(),
-        "1.0080 ±  0.0002".parse::<AtomicWeight>().unwrap());
+    assert_eq!("39.95 ± 0.16".parse::<AtomicWeight>().unwrap().to_string(),  "39.95(16)");
+    assert_eq!("207.2 ± 1.1" .parse::<AtomicWeight>().unwrap().to_string(), "207.2(1.1)");
     assert!("9.109 383 7139(28)".parse::<AtomicWeight>().is_ok());
 ``` */
 impl std::str::FromStr for AtomicWeight {
@@ -485,51 +486,68 @@ impl std::str::FromStr for AtomicWeight {
             } else { */
                 Ok(Self::MassNumber(s.parse().map_err(|_| invalid)?))
             //}
-        } else if let Some((value_part, uncert_part)) = s.split_once('±') {
-            let  value =  value_part.trim_end().parse().map_err(|_| invalid)?;
-            let uncert = uncert_part.trim_start().parse()
-                .map_err(|_| "Invalid uncertainty")?;
-            Ok(Self::Abridged { value, uncert })
-        } else if let Some((value_part, rest)) = s.split_once('(') {
-            let value_part = value_part.replace(' ', "");
-            let value = value_part.parse().map_err(|_| invalid)?;
-            let uncert_str = rest.trim_end_matches(')').trim();
-
-            let scale = if let Some(pos) = value_part.find('.') {
-                10f32.powi((value_part.len() - pos - 1) as i32)
-            } else { 1. };
-
-            let uncert = uncert_str.parse::<u8>()
-                .map_err(|_| "Invalid uncertainty")? as f32 / scale;
-            Ok(Self::Abridged { value, uncert })
-        } else {
-            Ok(Self::Abridged { value: s.parse().map_err(|_| invalid)?, uncert: 0. })
+        } else  if let Some((vpart, upart)) = s.split_once('±') {
+            let value = vpart.replace(' ', "").parse().map_err(|_| invalid)?;
+            let upart = upart.replace(' ', "");
+            let prec   = upart.find('.').map(|pos|
+                upart[pos + 1..].len() as u8).unwrap_or(0);
+            let uncer  = upart.replace('.', "").parse().map_err(|_| "Invalid uncertainty")?;
+            Ok(Self::Abridged { value, prec, uncer })
+        } else  if let Some((vpart, upart)) = s.split_once('(') {
+            let value = vpart.replace(' ', "").parse().map_err(|_| invalid)?;
+            let prec   = vpart.split('.').nth(1).map_or(0, |dec| dec.len() as u8);
+            let uncer  = upart.trim_end_matches(')')
+                .parse().map_err(|_| "Invalid uncertainty")?;
+            Ok(Self::Abridged { value, prec, uncer })
+        } else {    let vpart = s.replace(' ', "");
+            let prec = vpart.find('.').map(|pos|
+                vpart[pos + 1..].len() as u8).unwrap_or(0);
+            Ok(Self::Abridged { value: vpart.parse().map_err(|_| invalid)?, prec, uncer: 0 })
         }
     }
 }
 
 impl From<u32> for AtomicWeight {  fn from(n: u32) -> Self { Self::MassNumber(n) } }
-impl From<(f32, f32)> for AtomicWeight {
-    fn from((value, uncert): (f32, f32)) -> Self { Self::Abridged { value, uncert } }
+/* impl From<(f32, f32)> for AtomicWeight {
+    fn from((value, uncer): (f32, f32)) -> Self { todo!() }
+} */
+impl From<(f32, u8, u8)> for AtomicWeight {
+    fn from((value, prec, uncer): (f32, u8, u8)) -> Self {
+        Self::Abridged { value, prec, uncer }
+    }
+}
+
+impl AtomicWeight {
+    pub fn uncertainty(&self) -> f32 {
+        match *self {   Self::MassNumber(_) => 0.,
+            Self::Abridged { prec,uncer, .. } =>
+                uncer as f32 / 10f32.powi(prec as i32),
+        }
+    }
 }
 
 use core::fmt;
 impl fmt::Display for AtomicWeight {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            AtomicWeight::MassNumber(num) =>
+            Self::MassNumber(num) =>
                 if 0 < num { write!(f, "[{num}]") } else { write!(f, "[???]") },
-            AtomicWeight::Abridged { value, uncert } => {
-                if uncert == 0.  { return write!(f, "{value}") }
-                if f.alternate() { return write!(f, "{value} ± {uncert}") }
-
-                if uncert < 1. {
-                    let mut prec = (-uncert.log10()).ceil() as i32;
-                    let mut digit =  uncert * 10f32.powi(prec);
-                    while f32::EPSILON * 10. < digit.fract() &&
-                        digit.fract() < 1. - f32::EPSILON * 10. {  prec += 1; digit *= 10.; }
-                    write!(f, "{value:.prec$}({})", digit.round(), prec = prec as usize)
-                } else { write!(f, "{value}({uncert})") }
+            Self::Abridged { value, prec, uncer } => {
+                let prec =  prec as usize;
+                write!(f, "{value:.prec$}")?;
+                if uncer == 0 { Ok(()) } else if f.alternate() {
+                    if prec == 0 { write!(f, " ± {uncer}") } else {
+                        let scale = 10f32.powi(prec as i32);
+                        if  scale < uncer as f32 {
+                            write!(f, " ± {:.prec$}", uncer as f32 / scale)
+                        } else { write!(f, " ± 0.{uncer:0>prec$}") }
+                    }
+                } else if prec == 0 { write!(f, "({uncer})") } else {
+                    let scale = 10f32.powi(prec as i32);
+                    if  scale < uncer as f32 {  // XXX: some non-standard odd case
+                        write!(f, "({:.prec$})", uncer as f32 / scale)
+                    } else { write!(f, "({uncer})") }
+                }
             }
         }
     }
