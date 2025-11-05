@@ -136,8 +136,8 @@ async fn parse_oxstates() -> Result<(), Box<dyn Error>> {
     for row in table.select(&Selector::parse("tr")?).skip(4) {
         let cells = row.select(&td_selector).collect::<Vec<_>>();
 
-        let an = cells[0].text().next().unwrap().trim().parse::<u8>()?;
-        let states = &mut os_all[an as usize];
+        let an = cells[0].text().next().unwrap().trim().parse::<usize>()?;
+        let states = &mut os_all[an];
         assert!(18 < cells.len());
 
         for (i, cell) in cells[3..18].iter().enumerate() {
@@ -149,7 +149,7 @@ async fn parse_oxstates() -> Result<(), Box<dyn Error>> {
 
         if states.iter().all(|&x| x.is_none()) { file.write_all(b"\n")?; continue }
         file.write_fmt(format_args!("            {:2} => &[",
-            //format!("{:?}", ChemElem::from(an))))?;
+            //format!("{:?}", ChemElem::from(an as u8))))?;
             cells[2].text().next().unwrap().trim_end()))?;
 
         for (i, &x) in states.iter().enumerate() {

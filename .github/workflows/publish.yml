@@ -43,7 +43,8 @@ jobs:
           #cargo r --bin syncd -F syncdep --no-default-features
           npm install tailwindcss @tailwindcss/cli #-D -g
           npx tailwindcss -i input.css -o assets/tailwind.css -m
-          dx build -r --platform web #--verbose --trace
+          #dx build -r --web #--verbose --trace
+          dx bundle -r --web --out-dir dist
 
       #- name: Setup GitHub Pages
       #  uses: actions/configure-pages@v4
@@ -52,8 +53,9 @@ jobs:
         #env:
         #  REPO_NAME: ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
         with:   # https://github.com/actions/upload-pages-artifact
-          path: target/dx/${{ github.event.repository.name }}/release/web/public
-        #  path: target/dx/${{ env.REPO_NAME }}/release/web/public
+          #path: target/dx/${{ github.event.repository.name }}/release/web/public
+          #path: target/dx/${{ env.REPO_NAME }}/release/web/public
+          path: dist/public
 
   deploy:
     #if: github.ref == 'refs/heads/master'

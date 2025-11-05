@@ -12,6 +12,9 @@ asset_dir = "assets"	    # resource (static) file folder
 #out_dir = "dist"    # Web `build` & `serve` dist path
 #hot_reload = true   # hot reload by default
 
+#tailwind_input = "input.css"
+#tailwind_outpu = "assets/tailwind.css"
+
 [web.wasm_opt]
 level = "4"     # The level wasm-opt should target. z is the smallest. 4 is the fastest.
 

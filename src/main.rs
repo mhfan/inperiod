@@ -51,10 +51,9 @@ select:not([size]) { /* https://flowbite.com/docs/forms/select/ */
     use dioxus::document::{Link, Style/*, Title, Script, Meta*/};
     rsx! {  //Router::<Route> {}
         //Title { "Elements Periodic Table" } // ahead put in index.html and Dioxus.toml
-        // XXX: asset!("...") does not work for desktop when web.app.base_path is set
-        //Link { rel: "icon",       href: "assets/ptable.svg" }
-        Link { rel: "stylesheet", href: "assets/tailwind.css" }
+        //Link { rel: "icon",       href: asset!("assets/ptable.svg") }
         //Stylesheet { href: asset!("assets/tailwind.css") }
+        Link { rel: "stylesheet", href: asset!("assets/tailwind.css") }
         //Script { src: "https://unpkg.com/@tailwindcss/browser@4" }
         //Script { src: "https://cdn.tailwindcss.com" }
         Style { {media_print} } script { {dom_repair} }
@@ -126,7 +125,7 @@ fn PeriodicTable() -> Element {
         div { class: "grid row-span-7 px-1 items-center text-xl font-bold", // divide-y
             /* onmouseout:  move |_| group_sel.write().r#type = SelType::None,
             onmouseover: move |evt| {
-                use {dioxus::web::WebEventExt, wasm_bindgen::JsCast};
+                use {dioxus::web::WebEventExt, web_sys::wasm_bindgen::JsCast};
                 let ep = evt.as_web_event().target()
                     .and_then(|e| e.dyn_ref::<web_sys::HtmlElement>()).unwrap();
                 let val = ep.inner_text().parse::<u8>();
@@ -145,11 +144,13 @@ fn PeriodicTable() -> Element {
                 // https://www.nagwa.com/en/explainers/809139094679/
 
             // https://commons.wikimedia.org/wiki/File:Binding_energy_curve_-_common_isotopes.svg
-                DiagType::Binding => rsx! { img { src: "assets/Binding_energy_isotopes.svg",
+                DiagType::Binding => rsx! { img {
+                    src: asset!("assets/Binding_energy_isotopes.svg"),
                     class: "h-[108%] relative -top-[4%]", onload: load_diag,
                 } },
                 // https://commons.wikimedia.org/wiki/File:Isotopic_Abundance_bubble_chart.png
-                DiagType::Bubble => rsx! { img { src: "assets/Isotopic_Abundance_bubble.png",
+                DiagType::Bubble => rsx! { img {
+                        src: asset!("assets/Isotopic_Abundance_bubble.png"),
                         class: "h-[130%] relative -top-[15%] -left-[10%]", onload: load_diag,
                     }
                     if diag_is_loaded(*diag.read_unchecked()) { div {
@@ -177,17 +178,19 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                     } }
                 },
                 // https://commons.wikimedia.org/wiki/File:SolarSystemAbundances.svg
-                DiagType::Solar => rsx! { img { src: "assets/SolarSystemAbundances.png",
-                    class: "h-[118%] relative -top-[8%] -left-[10%]", onload: load_diag,
-                } },
+                DiagType::Solar => rsx! { img { src: asset!("assets/SolarSystemAbundances.png"),
+                        class: "h-[118%] relative -top-[8%] -left-[10%]", onload: load_diag,
+                    } },
                 // https://commons.wikimedia.org/wiki/File:Element_abundance_earth_ppm_chart.svg
                 DiagType::Earth => rsx! {
-                    img { src: "assets/Abundance_earth.svg", onload: load_diag }
-                    img { src: "assets/Abundance_human.svg", class: "ml-16", }
+                    img { src: asset!("assets/Abundance_earth.svg"), onload: load_diag }
+                    img { src: asset!("assets/Abundance_human.svg"), class: "ml-16", }
             // https://commons.wikimedia.org/wiki/File:Element_abundance_human_body_ppm_chart.svg
                 },
                 DiagType::SModel => rsx! { img {    // https://en.wikipedia.org/wiki/Standard_Model
-                    src: format!("assets/Standard_Model_{}.svg", lang.read().get()),
+                    src: if lang.read().get() == "zh-CN" {
+                                 asset!("assets/Standard_Model_zh-CN.svg")
+                        } else { asset!("assets/Standard_Model_.svg") }, // en-US
                     class: "h-[200%] relative -top-[4%]", onload: load_diag,
                 } }, //_ => unreachable!(),
             } }
@@ -231,7 +234,7 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                         option { value: "1", {tr!(lang, "Cosmic origin")} }
                         option { value: "2", {tr!(lang, "Flame test")} }
                     }
-                    div { class: "grid grid-cols-2 grid-rows-5 text-center w-[23rem] h-[15rem]",
+                    div { class: "grid grid-cols-2 grid-rows-5 text-center w-92 h-60",
                         {use ElemClass::*; match *coloring.read() {
                             Coloring::Class  => rsx! { for (item, cls) in [AlkaliMetals,
                                 NobleGases, AlkalineEarthMetals, Halogens, TransitionMetals,
@@ -245,7 +248,7 @@ text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 bl
                                 style: format!("background-color: {};", item.0),
                                 class: "content-center rounded-xs px-2", {tr!(lang, item.1)}
                             } } },
-                            Coloring::Flame  => rsx! { img { src: "assets/flame-test.jpg",
+                            Coloring::Flame  => rsx! { img { src: asset!("assets/flame-test.jpg"),
                                 class: "rounded-xs row-span-full col-span-full h-full",
                             } }
                         } }
@@ -373,6 +376,7 @@ static STYLE_TILE: &str = "flex flex-col rounded-xs p-1 border border-indigo-300
 
 #[component] fn ElemTile(ordinal: u8, annot: Option<bool>) -> Element {
     let elem = ChemElem::from(ordinal);
+    let assets_crystal = format!("{}", asset!("assets/crystal-s"));
     let (name, (os_main, os_all)) = (elem.name(), elem.oxidation_states());
     #[allow(clippy::upper_case_acronyms)] enum Tooltips { None, ECFG, CS, OStates }
     let lang = use_context::<Signal<Localization>>();
@@ -548,7 +552,7 @@ static STYLE_TILE: &str = "flex flex-col rounded-xs p-1 border border-indigo-300
                     } },
                     figcaption { class: "text-center text-lg text-blue-600 font-bold",
                         {tr!(lang, file.replace(['-', '_'], " ").as_str())}
-                    }   img { class: "w-full", src: "assets/crystal-s/{file}.svg" }
+                    }   img { class: "w-full", src: "{assets_crystal}/{file}.svg" }
                 } }
             })}
         }
@@ -572,7 +576,7 @@ static STYLE_TILE: &str = "flex flex-col rounded-xs p-1 border border-indigo-300
                 onmouseover: move |_| tips.set(Tooltips::ECFG), {revised_ecfg}
             }
             if matches!(*tips.read(), Tooltips::ECFG) { figure {
-                class: "{tips_cmn} w-[40rem] mx-0.5", // peer-hover:block
+                class: "{tips_cmn} w-160 mx-0.5", // peer-hover:block
                 style: {match  ordinal {
                     2|7..=10 => "right: 100%;    top: -0.2rem;",
                     57|89    =>  "left: 100%; bottom: -0.2rem;",

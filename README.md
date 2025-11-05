@@ -48,12 +48,12 @@ npx @tailwindcss/cli -i input.css -o assets/tailwind.css -w #-m
 Launch the Dioxus Web/Desktop/Mobile app:
 
 ```bash
-dx serve --platform web #--verbose
+dx serve --web #--verbose
 
-dx serve --platform desktop #rm -rf dist
+dx serve --desktop #rm -rf dist
 #cd dist && cargo r -F desktop
 
-dx serve --platform android #ios
+dx serve --android #--ios
 ```
 
 Open the browser to <http://localhost:8080/inperiod>
